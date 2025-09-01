@@ -8,13 +8,13 @@ const CACHE_NAME = 'weather-dashboard-cache-v1';
 
 // List of essential files to cache for the application to work offline
 const urlsToCache = [
-  '/', // The root of the application
-  '/index.html', // The main HTML file
-  '/style.css', // The main stylesheet
-  '/script.js', // The main JavaScript file
-  '/config.js', // The configuration file
-  'https://fonts.googleapis.com/css2?family=Material+Icons', // Google Fonts for icons
-  'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap' // Google Fonts for typography
+  './',
+  './index.html',
+  './style.css',
+  './script.js',
+  './config.js',
+  'https://fonts.googleapis.com/css2?family=Material+Icons',
+  'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap'
 ];
 
 // Install event: triggered when the service worker is first installed.
