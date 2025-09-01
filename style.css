@@ -19,13 +19,105 @@ body {
     100% { transform: rotate(360deg); }
 }
 /* For horizontal scrolling */
+/* 
+    This file contains the custom CSS for the Weather Dashboard application.
+    It includes styles for the overall layout, dark mode, loading spinner, animations, and other UI elements.
+*/
+
+/* Basic body styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #e5e7eb; /* Light mode background color */
+}
+
+/* Dark mode styles */
+.dark body {
+    background-color: #111827; /* Dark mode background color */
+}
+
+/* Loading spinner styles */
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite; /* Animation for the spinner */
+}
+
+/* Keyframe animation for the loading spinner */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Utility class to hide the scrollbar for an element */
 .no-scrollbar::-webkit-scrollbar {
-    display: none;
+    display: none; /* For Chrome, Safari, and Opera */
 }
 .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;  /* For IE and Edge */
+    scrollbar-width: none;  /* For Firefox */
 }
+
+/* Transition effects for the hourly and weekly forecast sections */
+#hourly-forecast-section, #weekly-forecast-section {
+    transition: opacity 0.3s ease-in-out, max-height 0.4s ease-in-out;
+}
+
+/* Class to hide elements with a smooth transition */
+.view-hidden {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    pointer-events: none;
+    margin-bottom: 0 !important;
+}
+
+/* Styles for interactive elements on hover */
+.interactive-element {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.interactive-element:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Pop animation for icons */
+.icon-pop {
+    animation: pop 0.5s ease-out;
+}
+
+@keyframes pop {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Staggered fade-in animation for elements */
+.fade-in-stagger {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animated transition for progress bars */
+.progress-bar-animated {
+    transition: width 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Animated transition for the UV index progress circle */
+#uv-progress {
+    transition: stroke-dasharray 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
 #hourly-forecast-section, #weekly-forecast-section {
     transition: opacity 0.3s ease-in-out, max-height 0.4s ease-in-out;
 }
