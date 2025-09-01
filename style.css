@@ -1,0 +1,67 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #e5e7eb;
+}
+.dark body {
+    background-color: #111827;
+}
+/* Added for loading spinner */
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+/* For horizontal scrolling */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+#hourly-forecast-section, #weekly-forecast-section {
+    transition: opacity 0.3s ease-in-out, max-height 0.4s ease-in-out;
+}
+.view-hidden {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    pointer-events: none;
+    margin-bottom: 0 !important;
+}
+.interactive-element {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.interactive-element:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.icon-pop {
+    animation: pop 0.5s ease-out;
+}
+@keyframes pop {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+.fade-in-stagger {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeIn 0.5s forwards;
+}
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.progress-bar-animated {
+    transition: width 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
