@@ -1,15 +1,6 @@
-/**
- * This script handles the functionality of the Weather Dashboard application.
- * It includes service worker registration, fetching weather data from an API,
- * updating the UI, and handling user interactions.
- */
-
-// --- Service Worker Registration ---
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-            .then(reg => console.log('ServiceWorker registration successful.'))
-            .catch(err => console.log('ServiceWorker registration failed: ', err));
+        navigator.serviceWorker.register('/service-worker.js').then(reg => console.log('ServiceWorker registration successful.')).catch(err => console.log('ServiceWorker registration failed: ', err));
     });
 }
 
@@ -24,12 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
         DARK: 'dark',
     };
 
-    // --- State Variables ---
-    let unitGroup = UNITS.METRIC; // Default unit group
-    let currentWeatherData = null; // Holds the current weather data
-    let isInitialLoad = true; // Flag to track the initial loading of the application
+    // --- State ---
+    let unitGroup = UNITS.METRIC;
+    let currentWeatherData = null;
+    let isInitialLoad = true;
 
-    // --- DOM Element References ---
+    // --- DOM Elements ---
     const loadingOverlay = document.getElementById('loading-overlay');
     const weatherDashboard = document.getElementById('weather-dashboard');
     const searchInput = document.getElementById('search-input');
@@ -50,10 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggleButton = document.getElementById('theme-toggle');
 
     // --- API Functions ---
-    /**
-     * Fetches weather data from the Visual Crossing API for a given location.
-     * @param {string} location - The location to fetch weather data for (e.g., "London, UK" or "40.7128,-74.0060").
-     */
     async function fetchWeatherData(location) {
         if (isInitialLoad) {
             loadingOverlay.style.display = 'flex';
@@ -87,9 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- UI Functions ---
-    /**
-     * Updates the UI with the fetched weather data.
-     */
     function updateUI() {
         if (!currentWeatherData || !currentWeatherData.days || currentWeatherData.days.length === 0) {
              if (!isInitialLoad) hideSkeleton();
@@ -102,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const speedUnit = unitGroup === UNITS.METRIC ? 'km/h' : 'mph';
         const distUnit = unitGroup === UNITS.METRIC ? 'km' : 'miles';
 
-        // Update weather alerts
         if (data.alerts && data.alerts.length > 0) {
             alertText.textContent = data.alerts[0].event;
             alertBanner.classList.remove('hidden');
@@ -112,13 +95,11 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => alertBanner.classList.add('hidden'), 300);
         }
 
-        // Update main weather icon
         const mainWeatherIcon = document.getElementById('main-weather-icon');
         mainWeatherIcon.textContent = getWeatherIcon(current.icon);
         mainWeatherIcon.classList.add('icon-pop');
         mainWeatherIcon.addEventListener('animationend', () => mainWeatherIcon.classList.remove('icon-pop'));
 
-        // Update current weather details
         document.getElementById('current-temp').textContent = `${Math.round(current.temp)}${tempUnit}`;
         document.getElementById('feels-like-temp').textContent = `Feels like ${Math.round(current.feelslike)}${tempUnit}`;
         document.getElementById('current-datetime').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', hour: '2-digit', minute: '2-digit' });
@@ -128,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('location-name').textContent = data.resolvedAddress;
         document.getElementById('location-image').src = `https://placehold.co/300x100/a7a7a7/ffffff?text=${data.address.split(',')[0]}`;
 
-        // Update hourly forecast
         const hourlyContainer = document.getElementById('hourly-forecast-container');
         hourlyContainer.innerHTML = '';
         const currentHour = new Date().getHours();
@@ -140,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
             hourlyContainer.appendChild(card);
         });
 
-        // Update weekly forecast
         const forecastGrid = document.getElementById('forecast-grid');
         forecastGrid.innerHTML = '';
         data.days.slice(0, 7).forEach((day, index) => {
@@ -151,9 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
             forecastGrid.appendChild(card);
         });
 
-        // Update today's highlights
         const highlightsGrid = document.getElementById('highlights-grid');
-        const airQuality = Math.floor(Math.random() * 150) + 50; // Placeholder for air quality
+        const airQuality = Math.floor(Math.random() * 150) + 50;
         highlightsGrid.innerHTML = `
             <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 interactive-element"><p class="text-gray-500 dark:text-gray-400">UV Index</p><div class="relative h-24 w-24 mx-auto my-2"><svg class="w-full h-full" viewBox="0 0 36 36"><path class="text-gray-200 dark:text-gray-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path><path id="uv-progress" class="text-yellow-500 progress-bar-animated" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831" fill="none" stroke="currentColor" stroke-dasharray="0, 100" stroke-linecap="round" stroke-width="3"></path></svg><div class="absolute inset-0 flex items-center justify-center"><span class="text-3xl font-bold text-gray-800 dark:text-white">${today.uvindex}</span></div></div></div>
             <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 interactive-element"><p class="text-gray-500 dark:text-gray-400">Wind Status</p><p class="text-3xl sm:text-4xl font-bold my-4 text-gray-800 dark:text-white"><span>${current.windspeed}</span> <span class="text-xl">${speedUnit}</span></p><div class="flex items-center text-gray-600 dark:text-gray-300"><span class="material-icons" style="transform: rotate(${current.winddir}deg)">navigation</span><p class="ml-2">${getWindDirection(current.winddir)}</p></div></div>
@@ -163,7 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 interactive-element"><p class="text-gray-500 dark:text-gray-400">Air Quality</p><p class="text-3xl sm:text-4xl font-bold my-4 text-gray-800 dark:text-white">${airQuality}</p><div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mt-2 overflow-hidden"><div id="air-quality-bar" class="bg-orange-500 dark:bg-orange-400 h-1.5 rounded-full progress-bar-animated" style="width: 0%"></div></div></div>
         `;
         
-        // Animate progress bars
         setTimeout(() => {
             document.getElementById('uv-progress').style.strokeDasharray = `${(today.uvindex / 10) * (2 * Math.PI * 15.9155)}, 100`;
             document.getElementById('humidity-bar').style.width = `${current.humidity}%`;
@@ -174,9 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isInitialLoad) hideSkeleton();
     }
 
-    /**
-     * Shows skeleton loaders while data is being fetched.
-     */
     function showSkeleton() {
         leftPanelContent.classList.add('hidden');
         rightPanelContent.classList.add('hidden');
@@ -184,9 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
         rightPanelSkeleton.classList.remove('hidden');
     }
 
-    /**
-     * Hides skeleton loaders after data has been fetched.
-     */
     function hideSkeleton() {
         leftPanelContent.classList.remove('hidden');
         rightPanelContent.classList.remove('hidden');
@@ -194,10 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
         rightPanelSkeleton.classList.add('hidden');
     }
 
-    /**
-     * Displays an error message to the user.
-     * @param {string} message - The error message to display.
-     */
     function showError(message) {
         const errorBox = document.createElement('div');
         errorBox.textContent = message;
@@ -207,10 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { errorBox.classList.add('translate-x-full'); errorBox.addEventListener('transitionend', () => errorBox.remove()); }, 4000);
     }
 
-    /**
-     * Toggles between the hourly and weekly forecast views.
-     * @param {string} view - The view to display ('today' or 'week').
-     */
     function toggleForecastView(view) {
         if (view === 'today') {
             hourlySection.classList.remove('view-hidden');
@@ -225,10 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /**
-     * Sets the unit for temperature and other measurements.
-     * @param {string} unit - The unit to set ('metric' or 'us').
-     */
     function setUnit(unit) {
         if (unitGroup === unit) return;
         unitGroup = unit;
@@ -243,10 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchWeatherData(currentLocation);
     }
 
-    /**
-     * Sets the color theme for the application.
-     * @param {string} theme - The theme to set ('light' or 'dark').
-     */
     function setTheme(theme) {
         localStorage.setItem('theme', theme);
         if (theme === THEMES.DARK) {
@@ -259,32 +214,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Utility Functions ---
-    /**
-     * Maps a weather condition string to a Material Icon name.
-     * @param {string} condition - The weather condition string from the API.
-     * @returns {string} The corresponding Material Icon name.
-     */
     function getWeatherIcon(condition) {
         const iconMap = { 'partly-cloudy-day': 'cloud', 'partly-cloudy-night': 'cloud', 'cloudy': 'cloud', 'clear-day': 'wb_sunny', 'clear-night': 'nightlight_round', 'rain': 'grain', 'snow': 'ac_unit', 'sleet': 'ac_unit', 'wind': 'air', 'fog': 'foggy', 'thunderstorm': 'thunderstorm' };
         return iconMap[condition] || 'cloud';
     }
 
-    /**
-     * Converts a wind direction in degrees to a cardinal direction.
-     * @param {number} deg - The wind direction in degrees.
-     * @returns {string} The cardinal wind direction (e.g., 'N', 'NE').
-     */
     function getWindDirection(deg) {
         const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
         const index = Math.round((deg % 360) / 22.5);
         return directions[index % 16];
     }
 
-    /**
-     * Formats a time string (HH:MM:SS) to a 12-hour format (e.g., 4PM).
-     * @param {string} timeStr - The time string to format.
-     * @returns {string} The formatted time string.
-     */
     function formatTime(timeStr) {
         const [hour, minute] = timeStr.split(':');
         const date = new Date();
@@ -293,9 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Event Listeners ---
-    /**
-     * Adds all the necessary event listeners to the DOM elements.
-     */
     function addEventListeners() {
         todayButton.addEventListener('click', () => toggleForecastView('today'));
         weekButton.addEventListener('click', () => toggleForecastView('week'));
@@ -326,13 +263,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Initialization ---
-    /**
-     * Initializes the application by adding event listeners, setting the initial theme,
-     * and fetching weather data for a default location.
-     */
     function initialize() {
         addEventListeners();
-        // Set initial theme based on user preference or saved theme
         const savedTheme = localStorage.getItem('theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (savedTheme) {
@@ -340,7 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (prefersDark) {
             setTheme(THEMES.DARK);
         }
-        // Fetch initial weather data
         fetchWeatherData('Ottawa, Canada');
     }
 
