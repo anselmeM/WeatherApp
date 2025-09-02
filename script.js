@@ -63,12 +63,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=${unitGroup}&key=${API_KEY}&contentType=json&include=hours,alerts`;
         try {
             const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                if (response.status === 404) {
+                    throw new Error('City not found. Please try again.');
+                } else {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            }
             currentWeatherData = await response.json();
             updateUI();
         } catch (error) {
             console.error("Error fetching weather data:", error);
-            showError("City not found. Please try again.");
+            showError(error.message || "An error occurred while fetching weather data.");
             if (!isInitialLoad) hideSkeleton();
         } finally {
             if (isInitialLoad) {
@@ -79,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+
     // --- UI Functions ---
     /**
      * Updates the UI with the fetched weather data.
@@ -91,9 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = currentWeatherData;
         const today = data.days[0];
         const current = data.currentConditions || today.hours[0];
-        const tempUnit = unitGroup === 'metric' ? '°C' : '°F';
-        const speedUnit = unitGroup === 'metric' ? 'km/h' : 'mph';
-        const distUnit = unitGroup === 'metric' ? 'km' : 'miles';
+        const tempUnit = unitGroup === UNITS.METRIC ? '°C' : '°F';
+        const speedUnit = unitGroup === UNITS.METRIC ? 'km/h' : 'mph';
+        const distUnit = unitGroup === UNITS.METRIC ? 'km' : 'miles';
 
         // Update weather alerts
         if (data.alerts && data.alerts.length > 0) {
@@ -167,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isInitialLoad) hideSkeleton();
     }
 
-<<<<<<< HEAD
     /**
      * Shows skeleton loaders while data is being fetched.
      */
@@ -205,8 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
      * Toggles between the hourly and weekly forecast views.
      * @param {string} view - The view to display ('today' or 'week').
      */
-=======
->>>>>>> parent of 1d4b097 (Enhance README and improve code structure)
     function toggleForecastView(view) {
         if (view === 'today') {
             hourlySection.classList.remove('view-hidden');
@@ -220,10 +224,15 @@ document.addEventListener('DOMContentLoaded', () => {
             todayButton.className = 'text-gray-500 dark:text-gray-400 font-semibold interactive-element';
         }
     }
+
+    /**
+     * Sets the unit for temperature and other measurements.
+     * @param {string} unit - The unit to set ('metric' or 'us').
+     */
     function setUnit(unit) {
         if (unitGroup === unit) return;
         unitGroup = unit;
-        if (unit === 'metric') {
+        if (unit === UNITS.METRIC) {
             celsiusButton.className = 'bg-white text-black rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs interactive-element';
             fahrenheitButton.className = 'w-6 h-6 flex items-center justify-center font-bold text-xs interactive-element';
         } else {
@@ -233,123 +242,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentLocation = document.getElementById('location-name').textContent;
         fetchWeatherData(currentLocation);
     }
-<<<<<<< HEAD
-
-    // --- Utility Functions ---
-    /**
-     * Maps a weather condition string to a Material Icon name.
-     * @param {string} condition - The weather condition string from the API.
-     * @returns {string} The corresponding Material Icon name.
-     */
-    function getWeatherIcon(condition) {
-        const iconMap = { 'partly-cloudy-day': 'cloud', 'partly-cloudy-night': 'cloud', 'cloudy': 'cloud', 'clear-day': 'wb_sunny', 'clear-night': 'nightlight_round', 'rain': 'grain', 'snow': 'ac_unit', 'sleet': 'ac_unit', 'wind': 'air', 'fog': 'foggy', 'thunderstorm': 'thunderstorm' };
-        return iconMap[condition] || 'cloud';
-    }
 
     /**
-     * Converts a wind direction in degrees to a cardinal direction.
-     * @param {number} deg - The wind direction in degrees.
-     * @returns {string} The cardinal wind direction (e.g., 'N', 'NE').
+     * Sets the color theme for the application.
+     * @param {string} theme - The theme to set ('light' or 'dark').
      */
-    function getWindDirection(deg) {
-        const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
-        const index = Math.round((deg % 360) / 22.5);
-        return directions[index % 16];
-    }
-
-    /**
-     * Formats a time string (HH:MM:SS) to a 12-hour format (e.g., 4PM).
-     * @param {string} timeStr - The time string to format.
-     * @returns {string} The formatted time string.
-     */
-    function formatTime(timeStr) {
-        const [hour, minute] = timeStr.split(':');
-        const date = new Date();
-        date.setHours(hour, minute);
-        return date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }).replace(' ', '');
-    }
-
-    // --- Event Listeners ---
-    /**
-     * Adds all the necessary event listeners to the DOM elements.
-     */
-    function addEventListeners() {
-        todayButton.addEventListener('click', () => toggleForecastView('today'));
-        weekButton.addEventListener('click', () => toggleForecastView('week'));
-        celsiusButton.addEventListener('click', () => setUnit(UNITS.METRIC));
-        fahrenheitButton.addEventListener('click', () => setUnit(UNITS.US));
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && searchInput.value.trim()) {
-                fetchWeatherData(searchInput.value.trim());
-            }
-        });
-        geolocationButton.addEventListener('click', () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    position => fetchWeatherData(`${position.coords.latitude},${position.coords.longitude}`),
-                    error => showError("Could not get your location.")
-                );
-            } else {
-                showError("Geolocation is not supported by this browser.");
-            }
-        });
-        closeAlertButton.addEventListener('click', () => {
-            alertBanner.classList.add('-translate-y-full');
-        });
-        themeToggleButton.addEventListener('click', () => {
-            const newTheme = document.documentElement.classList.contains(THEMES.DARK) ? THEMES.LIGHT : THEMES.DARK;
-            setTheme(newTheme);
-        });
-    }
-
-    // --- Initialization ---
-    /**
-     * Initializes the application by adding event listeners, setting the initial theme,
-     * and fetching weather data for a default location.
-     */
-    function initialize() {
-        addEventListeners();
-        // Set initial theme based on user preference or saved theme
-        const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (savedTheme) {
-            setTheme(savedTheme);
-        } else if (prefersDark) {
-            setTheme(THEMES.DARK);
-        }
-        // Fetch initial weather data
-        fetchWeatherData('Ottawa, Canada');
-=======
-    
-    todayButton.addEventListener('click', () => toggleForecastView('today'));
-    weekButton.addEventListener('click', () => toggleForecastView('week'));
-    celsiusButton.addEventListener('click', () => setUnit('metric'));
-    fahrenheitButton.addEventListener('click', () => setUnit('us'));
-    searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && searchInput.value.trim()) {
-            fetchWeatherData(searchInput.value.trim());
-        }
-    });
-    geolocationButton.addEventListener('click', () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                position => fetchWeatherData(`${position.coords.latitude},${position.coords.longitude}`),
-                error => showError("Could not get your location.")
-            );
-        } else {
-            showError("Geolocation is not supported by this browser.");
-        }
-    });
-    closeAlertButton.addEventListener('click', () => {
-        alertBanner.classList.add('-translate-y-full');
-    });
     function setTheme(theme) {
         localStorage.setItem('theme', theme);
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
+        if (theme === THEMES.DARK) {
+            document.documentElement.classList.add(THEMES.DARK);
             themeToggleButton.querySelector('.material-icons').textContent = 'dark_mode';
         } else {
-            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.remove(THEMES.DARK);
             themeToggleButton.querySelector('.material-icons').textContent = 'light_mode';
         }
     }
@@ -440,17 +344,5 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchWeatherData('Ottawa, Canada');
     }
 
-    fetchWeatherData('Ottawa, Canada');
-
-    // Set initial theme
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (savedTheme) {
-        setTheme(savedTheme);
-    } else if (prefersDark) {
-        setTheme('dark');
->>>>>>> parent of 1d4b097 (Enhance README and improve code structure)
-    }
-
-    fetchWeatherData('Ottawa, Canada');
+    initialize();
 });
