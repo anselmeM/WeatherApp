@@ -27,27 +27,19 @@ self.addEventListener('install', event => {
   );
 });
 
+// Fetch event: triggered for every network request made by the page.
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-
-  // Handle API requests with a stale-while-revalidate strategy
-  if (url.hostname.includes('visualcrossing.com')) {
-    event.respondWith(
-      caches.open(CACHE_NAME).then(cache => {
-        return fetch(event.request).then(response => {
-          cache.put(event.request, response.clone());
+  event.respondWith(
+    // Check if the request is in the cache
+    caches.match(event.request)
+      .then(response => {
+        // If a cached response is found, return it.
+        if (response) {
           return response;
-        }).catch(() => {
-          return caches.match(event.request);
-        });
-      })
-    );
-  } else {
-    // Use cache-first for all other requests
-    event.respondWith(
-      caches.match(event.request).then(response => {
-        return response || fetch(event.request);
-      })
-    );
-  }
+        }
+        // Otherwise, fetch the request from the network.
+        return fetch(event.request);
+      }
+    )
+  );
 });
