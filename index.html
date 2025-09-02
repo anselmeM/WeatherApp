@@ -33,13 +33,13 @@
         </div>
     </div>
 
-    <div id="weather-dashboard" class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl shadow-lg w-full max-w-7xl p-4 md:p-8 flex flex-col lg:flex-row space-y-8 lg:space-y-0 lg:space-x-8 hidden">
+    <div id="weather-dashboard" class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl shadow-lg w-full max-w-7xl p-4 md:p-8 flex flex-col lg:flex-row space-y-8 lg:space-y-0 lg:space-x-8 hidden" aria-live="polite">
         <!-- Left Panel -->
         <aside class="w-full lg:w-1/3 bg-white dark:bg-gray-800 rounded-3xl p-4 sm:p-6 flex flex-col">
             <div class="flex items-center justify-between text-gray-500 dark:text-gray-400">
                 <span class="material-icons">search</span>
                 <input id="search-input" class="bg-transparent focus:outline-none ml-2 flex-grow text-gray-800 dark:text-white" placeholder="Search for places ..." type="text" aria-label="Search for a city or location" />
-                <span id="geolocation-button" class="material-icons cursor-pointer interactive-element rounded-full p-1" aria-label="Get current location's weather">my_location</span>
+                                <button id="geolocation-button" class="material-icons cursor-pointer interactive-element rounded-full p-1" aria-label="Get current location's weather">my_location</button>
             </div>
             <div id="left-panel-content">
                 <div class="my-8 flex justify-center items-center h-48">
@@ -121,6 +121,7 @@
     </div>
 
     <!-- External JavaScript -->
+    <script src="config.js"></script>
     <script src="script.js" defer></script>
 </body>
 </html>
