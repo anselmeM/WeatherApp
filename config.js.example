@@ -1,0 +1,2 @@
+// Create a config.js file in the root directory and add your API key.
+const API_KEY = 'YOUR_API_KEY_HERE';
