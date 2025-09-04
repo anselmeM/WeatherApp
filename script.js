@@ -5,7 +5,6 @@ if ('serviceWorker' in navigator) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const API_KEY = 'JWU45QG3RE6P24773WJVY6QJN';
     let unitGroup = 'metric';
     let currentWeatherData = null;
     let isInitialLoad = true;
@@ -73,12 +72,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=${unitGroup}&key=${API_KEY}&contentType=json&include=hours,alerts`;
         try {
             const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                const error = new Error(`HTTP error! Status: ${response.status}`);
+                error.status = response.status;
+                throw error;
+            }
             currentWeatherData = await response.json();
             updateUI();
         } catch (error) {
             console.error("Error fetching weather data:", error);
-            showError("City not found. Please try again.");
+            if (error instanceof TypeError && error.message === 'Failed to fetch') {
+                showError("Network error. Please check your internet connection.");
+            } else if (error.status) {
+                if (error.status === 400 || error.status === 404) {
+                    showError("City not found. Please enter a valid city name.");
+                } else if (error.status === 401) {
+                    showError("Invalid API Key. Please check the configuration.");
+                } else {
+                    showError("An unexpected error occurred. Please try again later.");
+                }
+            } else {
+                showError("An unexpected error occurred. Please try again.");
+            }
             if (!isInitialLoad) hideSkeleton();
         } finally {
             if (isInitialLoad) {
