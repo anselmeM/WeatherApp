@@ -5,7 +5,7 @@ body {
 .dark body {
     background-color: #111827;
 }
-/* Added for loading spinner */
+/* aaAdded for loading spinner */
 .loader {
     border: 5px solid #f3f3f3;
     border-top: 5px solid #3498db;
