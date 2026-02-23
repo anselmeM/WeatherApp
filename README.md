@@ -4,7 +4,7 @@ A simple and clean weather application that allows you to get the current weathe
 
 ## Live Demo
 
-You can view the live application here: [WeatherApp Live](https://anselmem.github.io/WeatherApp/)
+You can view the live application here: [WeatherApp Live](https://weatherapp-p6lo.onrender.com/)
 
 ## Screenshots
 
