@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     unitGroup: localStorage.getItem("unitGroup") || "metric",
     currentWeatherData: null,
     isInitialLoad: true,
-    recentSearches: JSON.parse(localStorage.getItem("recentSearches") || "[]"),
+    recentSearches: JSON.parse(localStorage.getItem("recentSearches") || "[]").filter(c => !c.match(/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/)),
   };
 
   const loadingOverlay = document.getElementById("loading-overlay");
@@ -630,10 +630,22 @@ document.addEventListener("DOMContentLoaded", () => {
   geolocationButton.addEventListener("click", () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) =>
-          fetchWeatherData(
-            `${position.coords.latitude},${position.coords.longitude}`,
-          ),
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          try {
+            const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+            if (response.ok) {
+              const data = await response.json();
+              const city = data.city || data.locality || `${lat},${lon}`;
+              fetchWeatherData(city);
+            } else {
+              fetchWeatherData(`${lat},${lon}`);
+            }
+          } catch (e) {
+            fetchWeatherData(`${lat},${lon}`);
+          }
+        },
         (error) => showError("Could not get your location."),
         { timeout: 5000 } // Add timeout to button click as well
       );
