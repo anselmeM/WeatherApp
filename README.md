@@ -22,7 +22,10 @@ You can view the live application here: [WeatherApp Live](https://anselmem.githu
 ## How to Run Locally
 
 1. Clone this repository to your local machine.
-2. Open the `index.html` file in your web browser.
+2. Install the dependencies using `npm install`.
+3. Create a `.env` file in the root of the project and add your Visual Crossing Weather API key as `WEATHER_API_KEY=YOUR_API_KEY_HERE`.
+4. Run the server with `node server.js`.
+5. Open your browser and navigate to `http://localhost:3000`.
 
 ## Technologies Used
 

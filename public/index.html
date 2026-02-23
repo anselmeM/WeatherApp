@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Dashboard</title>
+    
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.json" />
+    
+    <!-- Theme color for browser UI -->
+    <!-- Theme color for browser UI (light and dark mode support) -->
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)">
+    
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="style.css" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body class="flex items-center justify-center min-h-screen p-2 sm:p-4">
+    <div id="loading-overlay" class="fixed inset-0 bg-gray-200 dark:bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="loader"></div>
+    </div>
+    
+    <div id="weather-alert-banner" class="fixed top-0 left-0 right-0 bg-yellow-400 text-yellow-900 p-4 text-center z-40 transform -translate-y-full transition-transform duration-300 ease-in-out hidden">
+        <div class="container mx-auto flex justify-between items-center">
+            <span class="material-icons mr-2">warning</span>
+            <p id="weather-alert-text" class="flex-grow"></p>
+            <button id="close-alert-button" class="ml-4" aria-label="Close weather alert">&times;</button>
+        </div>
+    </div>
+
+    <div id="weather-dashboard" class="rounded-3xl shadow-2xl w-full max-w-7xl p-4 md:p-8 flex flex-col lg:flex-row space-y-8 lg:space-y-0 lg:space-x-8 hidden transition-all duration-700">
+        <!-- Left Panel -->
+        <aside class="w-full lg:w-1/3 glass-panel rounded-3xl p-4 sm:p-6 flex flex-col shadow-xl">
+            <div class="relative flex items-center justify-between text-gray-500 dark:text-gray-400 bg-gray-100/50 dark:bg-gray-700/50 p-3 rounded-2xl mb-6">
+                <span class="material-icons">search</span>
+                <input id="search-input" autocomplete="off" class="bg-transparent focus:outline-none ml-2 flex-grow text-gray-800 dark:text-white placeholder-gray-400" placeholder="Search for places ..." type="text" aria-label="Search for a city or location" />
+                <span id="geolocation-button" class="material-icons cursor-pointer interactive-element rounded-full p-1 hover:bg-white/20" aria-label="Get current location's weather">my_location</span>
+                
+                <!-- Autocomplete Dropdown -->
+                <ul id="search-autocomplete-dropdown" class="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-2xl z-50 hidden"></ul>
+            </div>
+
+            <!-- Recent Searches -->
+            <div id="recent-searches-container" class="mb-6 hidden">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2 px-1">Recent Searches</h3>
+                <div id="recent-searches-list" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <div id="left-panel-content">
+                <div class="my-4 flex justify-center items-center h-48">
+                    <div class="relative flex items-center justify-center">
+                        <div id="main-weather-bg" class="absolute w-40 h-40 bg-yellow-400 rounded-full blur-3xl opacity-50 animate-pulse"></div>
+                        <span id="main-weather-icon" class="material-icons text-9xl text-yellow-500 z-10 drop-shadow-2xl">wb_sunny</span>
+                    </div>
+                </div>
+                <div class="text-center mt-auto">
+                    <h1 id="current-temp" class="text-7xl sm:text-8xl font-bold text-gray-800 dark:text-white tracking-tighter">12°C</h1>
+                    <p id="feels-like-temp" class="text-xl font-medium text-gray-500 dark:text-gray-400 mt-1">Feels like 10°C</p>
+                    <p id="current-datetime" class="text-gray-400 dark:text-gray-500 mt-2 font-medium">Monday, 16:00</p>
+                    <hr class="my-8 border-gray-200/50 dark:border-gray-700/50" />
+                    <div class="flex items-center text-gray-700 dark:text-gray-200 justify-center text-lg font-medium">
+                        <span id="condition-icon" class="material-icons text-2xl mr-3 text-blue-500">cloud</span>
+                        <span id="condition-text">Mostly Cloudy</span>
+                    </div>
+                    <div class="flex items-center text-blue-600 dark:text-blue-400 mt-3 justify-center text-lg font-medium">
+                        <span class="material-icons text-2xl mr-3">water_drop</span>
+                        <span id="rain-chance">Rain - 30%</span>
+                    </div>
+                    <div class="mt-10 rounded-2xl overflow-hidden relative shadow-lg group">
+                        <img id="location-image" alt="City skyline" class="w-full h-32 object-cover transition-transform duration-700 group-hover:scale-110" src="https://placehold.co/300x120/a7a7a7/ffffff?text=Loading..." />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center pb-4">
+                            <p id="location-name" class="text-white font-bold text-center px-4 text-xl">New York, NY, USA</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="left-panel-skeleton" class="hidden">
+                <div class="my-8 flex justify-center items-center h-48"><div class="w-40 h-40 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div></div>
+                <div class="text-center mt-auto">
+                    <div class="h-24 w-48 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse mx-auto"></div>
+                    <div class="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mx-auto mt-2"></div>
+                    <div class="h-6 w-48 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mx-auto mt-4"></div>
+                    <hr class="my-8 border-gray-200/50 dark:border-gray-700/50" />
+                    <div class="h-8 w-40 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mx-auto"></div>
+                    <div class="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mx-auto mt-3"></div>
+                    <div class="mt-10 rounded-2xl h-32 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Panel -->
+        <main class="w-full lg:w-2/3 flex flex-col">
+            <div class="flex justify-between items-center mb-8 bg-white/30 dark:bg-gray-800/30 p-4 rounded-3xl backdrop-blur-md border border-white/20">
+                <div class="flex space-x-8 items-center">
+                    <button id="today-button" class="text-gray-900 dark:text-white font-bold text-lg border-b-4 border-blue-500 pb-1 interactive-element" aria-label="Show today's forecast">Today</button>
+                    <button id="week-button" class="text-gray-500 dark:text-gray-400 font-bold text-lg interactive-element hover:text-gray-700 dark:hover:text-gray-200" aria-label="Show weekly forecast">Week</button>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="theme-toggle" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Toggle dark and light mode">
+                        <span class="material-icons text-gray-700 dark:text-gray-200">light_mode</span>
+                    </button>
+                    <div class="flex items-center bg-gray-900/10 dark:bg-white/10 p-1 rounded-2xl">
+                        <button id="celsius-button" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-md rounded-xl px-3 py-1.5 flex items-center justify-center font-bold text-sm interactive-element" aria-label="Switch to Celsius">°C</button>
+                        <button id="fahrenheit-button" class="px-3 py-1.5 flex items-center justify-center font-bold text-sm text-gray-500 dark:text-gray-400 interactive-element" aria-label="Switch to Fahrenheit">°F</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="right-panel-content">
+                <div id="hourly-forecast-section">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center">
+                        <span class="material-icons mr-2 text-blue-500">schedule</span>
+                        24-Hour Forecast
+                    </h2>
+                    
+                    <!-- Temp Chart -->
+                    <div class="temp-chart-container bg-white/40 dark:bg-gray-800/40 rounded-3xl p-4 mb-8 border border-white/20 shadow-inner overflow-hidden">
+                        <svg id="temp-chart-svg" width="100%" height="100%" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="temp-gradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.5" />
+                                    <stop offset="100%" stop-color="#3b82f6" stop-opacity="0" />
+                                </linearGradient>
+                            </defs>
+                            <path class="temp-area" />
+                            <path class="temp-line" />
+                        </svg>
+                    </div>
+
+                    <div id="hourly-forecast-container" class="flex space-x-4 overflow-x-auto pb-6 no-scrollbar mb-8"></div>
+                </div>
+                <div id="weekly-forecast-section" class="view-hidden">
+                     <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center">
+                        <span class="material-icons mr-2 text-blue-500">calendar_month</span>
+                        7-Day Forecast
+                     </h2>
+                     <div id="forecast-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8"></div>
+                </div>
+                
+                <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center">
+                    <span class="material-icons mr-2 text-blue-500">stars</span>
+                    Today's Weather Highlights
+                </h2>
+                <div id="highlights-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+            </div>
+            <div id="right-panel-skeleton" class="hidden">
+                <div class="h-10 w-64 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse mb-8"></div>
+                <div class="h-40 bg-gray-200 dark:bg-gray-700 rounded-3xl animate-pulse mb-8"></div>
+                <div class="flex space-x-4 mb-12">
+                    <div class="h-32 w-24 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse flex-shrink-0"></div>
+                    <div class="h-32 w-24 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse flex-shrink-0"></div>
+                    <div class="h-32 w-24 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse flex-shrink-0"></div>
+                </div>
+                <div class="h-10 w-64 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse mb-8"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <div class="h-44 bg-gray-200 dark:bg-gray-700 rounded-3xl animate-pulse"></div>
+                    <div class="h-44 bg-gray-200 dark:bg-gray-700 rounded-3xl animate-pulse"></div>
+                    <div class="h-44 bg-gray-200 dark:bg-gray-700 rounded-3xl animate-pulse"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- External JavaScript -->
+    <script type="module" src="script.js" defer></script>
+</body>
+</html>
