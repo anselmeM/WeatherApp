@@ -1,7 +1,7 @@
 // service-worker.js
 
 // Define a name for the cache
-const CACHE_NAME = 'weather-dashboard-cache-v9';
+const CACHE_NAME = 'weather-dashboard-cache-v10';
 
 const urlsToCache = [
   '/',
