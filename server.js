@@ -9,12 +9,27 @@ const port = process.env.PORT || 3000;
 
 app.use(express.static('public'));
 
+// ⚡ Bolt: Simple in-memory cache for weather data to reduce external API calls
+const weatherCache = new Map();
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+const MAX_CACHE_SIZE = 100; // Prevent memory exhaustion
+
 app.get('/api/weather', async (req, res) => {
     const { location, unitGroup = 'metric' } = req.query;
     console.log(`[${new Date().toISOString()}] Weather request: ${location} (${unitGroup})`);
 
     if (!location) {
         return res.status(400).json({ error: 'Location is required' });
+    }
+
+    // Ensure location is a string to prevent TypeError if it's an array
+    const locString = typeof location === 'string' ? location : String(location);
+    const cacheKey = `${locString.toLowerCase()}-${unitGroup}`;
+    const cachedItem = weatherCache.get(cacheKey);
+
+    if (cachedItem && (Date.now() - cachedItem.timestamp < CACHE_TTL)) {
+        console.log(`[${new Date().toISOString()}] Cache hit for: ${cacheKey}`);
+        return res.json(cachedItem.data);
     }
 
     const apiKey = process.env.WEATHER_API_KEY;
@@ -32,6 +47,19 @@ app.get('/api/weather', async (req, res) => {
         }
 
         const data = await response.json();
+
+        // ⚡ Bolt: Cache the successful response and enforce size limit
+        if (weatherCache.size >= MAX_CACHE_SIZE) {
+            // Simple eviction: remove the oldest item (first inserted in Map)
+            const oldestKey = weatherCache.keys().next().value;
+            weatherCache.delete(oldestKey);
+        }
+
+        weatherCache.set(cacheKey, {
+            timestamp: Date.now(),
+            data: data
+        });
+
         console.log(`[${new Date().toISOString()}] Success: Data received for ${data.resolvedAddress}`);
         res.json(data);
     } catch (error) {

@@ -379,19 +379,30 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!state.isInitialLoad) hideSkeleton();
   }
 
+  // ⚡ Bolt: Cache city images to prevent redundant network requests on unit toggle or repeated searches
+  const imageCache = new Map();
+
   async function getCityImage(cityName) {
+    if (imageCache.has(cityName)) {
+      return imageCache.get(cityName);
+    }
+
     try {
       const response = await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=pageimages&titles=${encodeURIComponent(cityName)}&pithumbsize=600&format=json&origin=*`);
       const data = await response.json();
       const pages = data.query.pages;
       const pageId = Object.keys(pages)[0];
       if (pageId !== "-1" && pages[pageId].thumbnail) {
-        return pages[pageId].thumbnail.source;
+        const imageUrl = pages[pageId].thumbnail.source;
+        imageCache.set(cityName, imageUrl);
+        return imageUrl;
       }
     } catch (e) {
       console.error("Failed to fetch city image:", e);
     }
-    return `https://placehold.co/400x150/1f2937/ffffff?text=${encodeURIComponent(cityName)}`;
+    const fallbackUrl = `https://placehold.co/400x150/1f2937/ffffff?text=${encodeURIComponent(cityName)}`;
+    imageCache.set(cityName, fallbackUrl);
+    return fallbackUrl;
   }
 
   function updateCurrentWeather(current, today, tempUnit, data) {
