@@ -1,0 +1,3 @@
+## 2024-05-15 - Interactive Elements Must Be Buttons
+**Learning:** Found a clickable `<span>` used for the geolocation button. While `onClick` works, `<span>` elements are not keyboard focusable by default and are not announced as interactive buttons by screen readers. This breaks keyboard navigation and reduces accessibility.
+**Action:** Always refactor interactive, non-navigational `<span>` or `<div>` elements into semantic `<button type="button">` elements. Add `focus-visible` styling to ensure visual feedback during keyboard navigation.
