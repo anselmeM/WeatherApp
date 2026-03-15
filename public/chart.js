@@ -46,6 +46,8 @@ export function drawTempChart(hours, unit) {
 
     // Add points
     svg.querySelectorAll('.temp-point').forEach(p => p.remove());
+    // ⚡ Bolt: Use DocumentFragment to batch DOM appends
+    const fragment = document.createDocumentFragment();
     points.forEach((p, i) => {
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circle.setAttribute('cx', p.x);
@@ -58,6 +60,7 @@ export function drawTempChart(hours, unit) {
         title.textContent = `${displayHours[i].datetime.substring(0, 5)}: ${displayHours[i].temp}${unit}`;
         circle.appendChild(title);
         
-        svg.appendChild(circle);
+        fragment.appendChild(circle);
     });
+    svg.appendChild(fragment);
 }
