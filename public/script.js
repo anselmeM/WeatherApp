@@ -171,14 +171,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return directions[index % 16];
   }
 
-  function formatTime(timeStr) {
-    if (!timeStr) return "";
-    const [hour, minute] = timeStr.split(":");
-    return new Date(2023, 0, 1, hour, minute)
-      .toLocaleTimeString("en-US", { hour: "numeric", hour12: true })
-      .replace(" ", "");
-  }
-
   function showError(message) {
     const errorBox = document.createElement("div");
     errorBox.textContent = message;
