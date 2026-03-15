@@ -38,3 +38,9 @@ test('formatTime utility function', async (t) => {
         });
     }
 });
+
+test('formatTime utility function with seconds', async (t) => {
+    await t.test('formats time with seconds correctly (13:00:45 -> 1:00PM)', () => {
+        assert.strictEqual(formatTime('13:00:45'), '1:00PM');
+    });
+});
