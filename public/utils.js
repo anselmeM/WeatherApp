@@ -28,23 +28,9 @@ export function getWindDirection(deg) {
 
 export function formatTime(timeStr) {
     if (!timeStr) return "";
-    const match = timeStr.match(/^(?<hour>\d{1,2}):(?<minute>\d{2})$/);
-    if (!match) {
-        return "";
-    }
-    const hour = parseInt(match.groups.hour, 10);
-    const minute = parseInt(match.groups.minute, 10);
-
-    if (hour > 23 || minute > 59) {
-        return "";
-    }
-    const date = new Date(2023, 0, 1, hour, minute);
-    return date
-       .toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      })
+    const [hour, minute] = timeStr.split(":");
+    return new Date(2023, 0, 1, hour, minute)
+      .toLocaleTimeString("en-US", { hour: "numeric", hour12: true })
       .replace(" ", "");
 }
 

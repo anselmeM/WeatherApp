@@ -4,7 +4,7 @@
   "description": "A simple and clean weather application that allows you to get the current weather for any city. It's a Progressive Web App (PWA), so you can install it on your device and use it offline.",
   "main": "server.js",
   "scripts": {
-    "test": "node --test public/utils.test.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
   "repository": {

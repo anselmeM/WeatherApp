@@ -1,0 +1,7 @@
+
+> weatherapp@1.0.0 start /app
+> node server.js
+
+[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+Server is running on port 3000
+ ELIFECYCLE  Command failed.

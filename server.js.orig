@@ -29,21 +29,17 @@ app.get('/api/weather', async (req, res) => {
 
     if (cachedItem && (Date.now() - cachedItem.timestamp < CACHE_TTL)) {
         console.log(`[${new Date().toISOString()}] Cache hit for: ${cacheKey}`);
-        // ⚡ Bolt: Refresh item for LRU eviction policy to optimize cache hit rates
-        weatherCache.delete(cacheKey);
-        weatherCache.set(cacheKey, cachedItem);
         return res.json(cachedItem.data);
     }
 
     const apiKey = process.env.WEATHER_API_KEY;
     // Use next7days to limit the payload size.
-    // ⚡ Bolt: Use sanitized locString for consistency with cache key
-    const apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${encodeURIComponent(locString)}/next7days?unitGroup=${unitGroup}&key=${apiKey}&contentType=json&include=hours,alerts,current`;
+    const apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${encodeURIComponent(location)}/next7days?unitGroup=${unitGroup}&key=${apiKey}&contentType=json&include=hours,alerts,current`;
 
     try {
         console.log(`[${new Date().toISOString()}] Fetching from: ${apiUrl.replace(apiKey, 'REDACTED')}`);
         const response = await fetch(apiUrl);
-        
+
         if (!response.ok) {
             const errorText = await response.text();
             console.error(`[${new Date().toISOString()}] API error (${response.status}): ${errorText}`);

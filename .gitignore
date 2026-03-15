@@ -1,4 +1,2 @@
-# Ignore configuration files containing sensitive information
-config.js
-.env 
-*.log
+node_modules/
+package-lock.json
