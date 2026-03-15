@@ -67,11 +67,11 @@ test('getWindDirection utility function', async (t) => {
     });
 
     await t.test('handles negative degrees', () => {
-        assert.strictEqual(getWindDirection(-90), undefined); // Javascript array[-index] is undefined
+        assert.strictEqual(getWindDirection(-90), 'W');
     });
 
     await t.test('returns undefined for invalid inputs', () => {
-        assert.strictEqual(getWindDirection(null), 'N'); // Number(null) is 0
+        assert.strictEqual(getWindDirection(null), undefined);
         assert.strictEqual(getWindDirection(undefined), undefined);
         assert.strictEqual(getWindDirection('foo'), undefined);
     });

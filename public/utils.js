@@ -18,11 +18,14 @@ export function getWeatherIcon(condition) {
 }
 
 export function getWindDirection(deg) {
+    if (typeof deg !== 'number' || isNaN(deg)) {
+        return undefined;
+    }
     const directions = [
       "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
       "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"
     ];
-    const index = Math.round((deg % 360) / 22.5);
+    const index = Math.round(((deg % 360) + 360) % 360 / 22.5);
     return directions[index % 16];
 }
 
