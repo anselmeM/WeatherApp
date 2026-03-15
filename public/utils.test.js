@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { formatTime } from './utils.js';
+import { formatTime, getWindDirection } from './utils.js';
 
 test('formatTime utility function', async (t) => {
     await t.test('formats afternoon time correctly (13:00 -> 1:00PM)', () => {
@@ -42,5 +42,37 @@ test('formatTime utility function', async (t) => {
 test('formatTime utility function with seconds', async (t) => {
     await t.test('formats time with seconds correctly (13:00:45 -> 1:00PM)', () => {
         assert.strictEqual(formatTime('13:00:45'), '1:00PM');
+    });
+});
+
+test('getWindDirection utility function', async (t) => {
+    await t.test('returns correct cardinal directions', () => {
+        assert.strictEqual(getWindDirection(0), 'N');
+        assert.strictEqual(getWindDirection(90), 'E');
+        assert.strictEqual(getWindDirection(180), 'S');
+        assert.strictEqual(getWindDirection(270), 'W');
+        assert.strictEqual(getWindDirection(360), 'N');
+    });
+
+    await t.test('returns correct intermediate directions', () => {
+        assert.strictEqual(getWindDirection(45), 'NE');
+        assert.strictEqual(getWindDirection(135), 'SE');
+        assert.strictEqual(getWindDirection(225), 'SW');
+        assert.strictEqual(getWindDirection(315), 'NW');
+    });
+
+    await t.test('handles degrees outside 0-360 range via modulo', () => {
+        assert.strictEqual(getWindDirection(450), 'E'); // 450 % 360 = 90 -> E
+        assert.strictEqual(getWindDirection(720), 'N'); // 720 % 360 = 0 -> N
+    });
+
+    await t.test('handles negative degrees', () => {
+        assert.strictEqual(getWindDirection(-90), undefined); // Javascript array[-index] is undefined
+    });
+
+    await t.test('returns undefined for invalid inputs', () => {
+        assert.strictEqual(getWindDirection(null), 'N'); // Number(null) is 0
+        assert.strictEqual(getWindDirection(undefined), undefined);
+        assert.strictEqual(getWindDirection('foo'), undefined);
     });
 });
