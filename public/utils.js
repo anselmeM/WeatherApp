@@ -30,7 +30,11 @@ export function formatTime(timeStr) {
     if (!timeStr) return "";
     const [hour, minute] = timeStr.split(":");
     return new Date(2023, 0, 1, hour, minute)
-      .toLocaleTimeString("en-US", { hour: "numeric", hour12: true })
+      .toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      })
       .replace(" ", "");
 }
 
