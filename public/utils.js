@@ -37,9 +37,9 @@ export function formatTime(timeStr) {
     }
     const hour = parseInt(match.groups.hour, 10);
     const minute = parseInt(match.groups.minute, 10);
-    const second = match.groups.second ? parseInt(match.groups.second, 10) : null;
+    const second = match.groups.second;
 
-    if (hour > 23 || minute > 59 || (second !== null && second > 59)) {
+    if (hour > 23 || minute > 59 || (second && parseInt(second, 10) > 59)) {
         return "";
     }
     const date = new Date(2023, 0, 1, hour, minute);
