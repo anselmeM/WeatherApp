@@ -8,10 +8,10 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // 🧹 Code Health: Define constants for upstream API error handling
-const UPSTREAM_API_ERROR = {
+const UPSTREAM_API_ERROR = Object.freeze({
   STATUS: 502,
   MESSAGE: 'Could not retrieve weather data',
-};
+});
 
 app.use(express.static('public'));
 
