@@ -28,12 +28,12 @@ export function getWindDirection(deg) {
 
 export function formatTime(timeStr) {
     if (!timeStr) return "";
-    const match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+    const match = timeStr.match(/^(?<hour>\d{1,2}):(?<minute>\d{2})$/);
     if (!match) {
         return "";
     }
-    const hour = parseInt(match[1], 10);
-    const minute = parseInt(match[2], 10);
+    const hour = parseInt(match.groups.hour, 10);
+    const minute = parseInt(match.groups.minute, 10);
 
     if (hour > 23 || minute > 59) {
         return "";
