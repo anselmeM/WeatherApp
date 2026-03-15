@@ -18,7 +18,7 @@ export function getWeatherIcon(condition) {
 }
 
 export function getWindDirection(deg) {
-    if (typeof deg !== 'number' || isNaN(deg)) {
+    if (typeof deg !== 'number' || !isFinite(deg)) {
         return undefined;
     }
     const directions = [

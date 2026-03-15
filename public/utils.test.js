@@ -74,5 +74,7 @@ test('getWindDirection utility function', async (t) => {
         assert.strictEqual(getWindDirection(null), undefined);
         assert.strictEqual(getWindDirection(undefined), undefined);
         assert.strictEqual(getWindDirection('foo'), undefined);
+        assert.strictEqual(getWindDirection(Infinity), undefined);
+        assert.strictEqual(getWindDirection(-Infinity), undefined);
     });
 });
