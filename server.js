@@ -8,8 +8,10 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // 🧹 Code Health: Define constants for upstream API error handling
-const UPSTREAM_API_ERROR_STATUS = 502;
-const UPSTREAM_API_ERROR_MESSAGE = 'Could not retrieve weather data';
+const UPSTREAM_API_ERROR = {
+  STATUS: 502,
+  MESSAGE: 'Could not retrieve weather data',
+};
 
 app.use(express.static('public'));
 
@@ -51,7 +53,7 @@ app.get('/api/weather', async (req, res) => {
         if (!response.ok) {
             const errorText = await response.text();
             console.error(`[${new Date().toISOString()}] API error (${response.status}): ${errorText}`);
-            return res.status(UPSTREAM_API_ERROR_STATUS).json({ error: UPSTREAM_API_ERROR_MESSAGE });
+            return res.status(UPSTREAM_API_ERROR.STATUS).json({ error: UPSTREAM_API_ERROR.MESSAGE });
         }
 
         const data = await response.json();
