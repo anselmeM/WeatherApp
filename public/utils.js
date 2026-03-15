@@ -28,9 +28,16 @@ export function getWindDirection(deg) {
 
 export function formatTime(timeStr) {
     if (!timeStr) return "";
+    if (!/^\d{1,2}:\d{2}$/.test(timeStr)) {
+        return "";
+    }
     const [hour, minute] = timeStr.split(":");
-    return new Date(2023, 0, 1, hour, minute)
-      .toLocaleTimeString("en-US", {
+    const date = new Date(2023, 0, 1, hour, minute);
+    if (isNaN(date)) {
+      return "";
+    }
+    return date
+       .toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "2-digit",
         hour12: true,
