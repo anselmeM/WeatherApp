@@ -7,6 +7,10 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
+// 🧹 Code Health: Define constants for upstream API error handling
+const UPSTREAM_API_ERROR_STATUS = 502;
+const UPSTREAM_API_ERROR_MESSAGE = 'Could not retrieve weather data';
+
 app.use(express.static('public'));
 
 // ⚡ Bolt: Simple in-memory cache for weather data to reduce external API calls
@@ -47,7 +51,7 @@ app.get('/api/weather', async (req, res) => {
         if (!response.ok) {
             const errorText = await response.text();
             console.error(`[${new Date().toISOString()}] API error (${response.status}): ${errorText}`);
-            return res.status(502).json({ error: 'Could not retrieve weather data' });
+            return res.status(UPSTREAM_API_ERROR_STATUS).json({ error: UPSTREAM_API_ERROR_MESSAGE });
         }
 
         const data = await response.json();
