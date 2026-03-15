@@ -99,8 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // ⚡ Bolt: Use DocumentFragment to batch DOM appends
-    const fragment = document.createDocumentFragment();
     results.forEach(result => {
       const li = document.createElement("li");
       li.className = "px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-800 dark:text-gray-200 border-b border-gray-100 dark:border-gray-700 last:border-0 truncate flex items-center";
@@ -122,10 +120,9 @@ document.addEventListener("DOMContentLoaded", () => {
         startApp(locationText); 
       });
       
-      fragment.appendChild(li);
+      autocompleteDropdown.appendChild(li);
     });
 
-    autocompleteDropdown.appendChild(fragment);
     autocompleteDropdown.classList.remove("hidden");
   }
 
@@ -169,6 +166,14 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
     const index = Math.round((deg % 360) / 22.5);
     return directions[index % 16];
+  }
+
+  function formatTime(timeStr) {
+    if (!timeStr) return "";
+    const [hour, minute] = timeStr.split(":");
+    return new Date(2023, 0, 1, hour, minute)
+      .toLocaleTimeString("en-US", { hour: "numeric", hour12: true })
+      .replace(" ", "");
   }
 
   function showError(message) {
@@ -261,17 +266,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     recentSearchesContainer.classList.remove("hidden");
     recentSearchesList.innerHTML = "";
-    // ⚡ Bolt: Use DocumentFragment to batch DOM appends
-    const fragment = document.createDocumentFragment();
     state.recentSearches.forEach((city) => {
       const btn = document.createElement("button");
       btn.className =
         "bg-white/30 dark:bg-gray-700/50 hover:bg-white/50 dark:hover:bg-gray-600/50 text-gray-800 dark:text-white text-xs font-bold px-3 py-1.5 rounded-full transition-all interactive-element";
       btn.textContent = city;
       btn.onclick = () => fetchWeatherData(city);
-      fragment.appendChild(btn);
+      recentSearchesList.appendChild(btn);
     });
-    recentSearchesList.appendChild(fragment);
   }
 
     function drawTempChart(hours, unit) {
@@ -458,8 +460,6 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     hourlyContainer.innerHTML = "";
     const currentHour = new Date().getHours();
-    // ⚡ Bolt: Use DocumentFragment to batch DOM appends
-    const fragment = document.createDocumentFragment();
     today.hours
       .filter((h) => parseInt(h.datetime.substring(0, 2)) >= currentHour)
       .slice(0, 12)
@@ -473,16 +473,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span class="material-icons text-blue-500 dark:text-blue-400 text-4xl my-2">${getWeatherIcon(h.icon)}</span>
                 <p class="text-xl font-bold text-gray-800 dark:text-white mt-1">${Math.round(h.temp)}°</p>
             `;
-        fragment.appendChild(card);
+        hourlyContainer.appendChild(card);
       });
-    hourlyContainer.appendChild(fragment);
   }
 
   function updateWeeklyForecast(data, tempUnit) {
     const forecastGrid = document.getElementById("forecast-grid");
     forecastGrid.innerHTML = "";
-    // ⚡ Bolt: Use DocumentFragment to batch DOM appends
-    const fragment = document.createDocumentFragment();
     data.days.slice(0, 7).forEach((day, index) => {
       const card = document.createElement("div");
       card.className =
@@ -497,9 +494,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     <span class="text-lg font-medium text-gray-400">${Math.round(day.tempmin)}°</span>
                 </div>
             `;
-      fragment.appendChild(card);
+      forecastGrid.appendChild(card);
     });
-    forecastGrid.appendChild(fragment);
   }
 
   function updateHighlights(today, current, speedUnit, distUnit) {

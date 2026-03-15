@@ -27,7 +27,7 @@ test('formatTime utility function', async (t) => {
         assert.strictEqual(formatTime(undefined), '');
     });
 
-    await t.test('returns empty string for empty string input', () => {
+await t.test('returns empty string for empty string input', () => {
         assert.strictEqual(formatTime(''), '');
     });
 
