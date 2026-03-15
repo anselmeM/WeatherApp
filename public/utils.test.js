@@ -31,23 +31,10 @@ test('formatTime utility function', async (t) => {
         assert.strictEqual(formatTime(''), '');
     });
 
-    await t.test('returns empty string for malformed input: foo', () => {
-        assert.strictEqual(formatTime('foo'), '');
-    });
-
-    await t.test('returns empty string for malformed input: 13', () => {
-        assert.strictEqual(formatTime('13'), '');
-    });
-
-    await t.test('returns empty string for malformed input: 13:', () => {
-        assert.strictEqual(formatTime('13:'), '');
-    });
-
-    await t.test('returns empty string for malformed input: :30', () => {
-        assert.strictEqual(formatTime(':30'), '');
-    });
-
-    await t.test('returns empty string for malformed input: 1a:2b', () => {
-        assert.strictEqual(formatTime('1a:2b'), '');
-    });
+    const malformedInputs = ['foo', '13', '13:', ':30', '1a:2b', '24:00', '13:60'];
+    for (const input of malformedInputs) {
+        await t.test(`returns empty string for malformed input: ${input}`, () => {
+            assert.strictEqual(formatTime(input), '');
+        });
+    }
 });

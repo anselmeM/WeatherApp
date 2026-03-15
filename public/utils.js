@@ -28,14 +28,17 @@ export function getWindDirection(deg) {
 
 export function formatTime(timeStr) {
     if (!timeStr) return "";
-    if (!/^\d{1,2}:\d{2}$/.test(timeStr)) {
+    const match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+    if (!match) {
         return "";
     }
-    const [hour, minute] = timeStr.split(":");
-    const date = new Date(2023, 0, 1, hour, minute);
-    if (isNaN(date)) {
-      return "";
+    const hour = parseInt(match[1], 10);
+    const minute = parseInt(match[2], 10);
+
+    if (hour > 23 || minute > 59) {
+        return "";
     }
+    const date = new Date(2023, 0, 1, hour, minute);
     return date
        .toLocaleTimeString("en-US", {
         hour: "numeric",
