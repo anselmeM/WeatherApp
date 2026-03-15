@@ -1,0 +1,3 @@
+## 2026-03-15 - Refine focus states for semantic interactive elements
+ **Learning:** The `focus-visible` pseudo-class relies on heuristic behavior to show the focus ring only in certain situations (e.g. keyboard navigation), which might not behave uniformly if the parent uses `focus-within`. Using `focus:outline-none` guarantees that the focus indicator is cleanly delegated to the parent wrapper in all contexts, avoiding double focus rings during click events.
+ **Action:** Prefer `focus:outline-none` over `focus-visible:outline-none` when delegating focus indication to a parent component's `focus-within` styling to ensure robust and consistent visual output.
