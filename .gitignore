@@ -1,3 +1,4 @@
 # Ignore configuration files containing sensitive information
 config.js
 .env 
+*.log
