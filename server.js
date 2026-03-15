@@ -47,7 +47,7 @@ app.get('/api/weather', async (req, res) => {
         if (!response.ok) {
             const errorText = await response.text();
             console.error(`[${new Date().toISOString()}] API error (${response.status}): ${errorText}`);
-            return res.status(response.status).json({ error: 'Weather API error' });
+            return res.status(502).json({ error: 'Could not retrieve weather data' });
         }
 
         const data = await response.json();
