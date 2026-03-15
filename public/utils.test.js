@@ -31,7 +31,7 @@ test('formatTime utility function', async (t) => {
         assert.strictEqual(formatTime(''), '');
     });
 
-    const malformedInputs = ['foo', '13', '13:', ':30', '1a:2b', '24:00', '13:60'];
+    const malformedInputs = ['foo', '13', '13:', ':30', '1a:2b', '24:00', '13:60', '10:20:80', '10:20:60', '13:00:60'];
     for (const input of malformedInputs) {
         await t.test(`returns empty string for malformed input: ${input}`, () => {
             assert.strictEqual(formatTime(input), '');
