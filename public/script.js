@@ -90,7 +90,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Check cache first
     if (autocompleteCache.has(lowercaseQuery)) {
-      renderAutocomplete(autocompleteCache.get(lowercaseQuery));
+      const cachedResults = autocompleteCache.get(lowercaseQuery);
+      // Refresh item for LRU eviction policy by re-inserting it.
+      autocompleteCache.delete(lowercaseQuery);
+      autocompleteCache.set(lowercaseQuery, cachedResults);
+
+      if (searchInput.value.trim().toLowerCase() === lowercaseQuery) {
+        renderAutocomplete(cachedResults);
+      }
       return;
     }
 
