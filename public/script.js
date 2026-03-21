@@ -64,6 +64,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const autocompleteDropdown = document.getElementById("search-autocomplete-dropdown");
 
   let autocompleteTimeout;
+  const autocompleteCache = new Map();
+  const MAX_AUTOCOMPLETE_CACHE_SIZE = 50;
 
   searchInput.addEventListener("input", (e) => {
     clearTimeout(autocompleteTimeout);
@@ -82,11 +84,34 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   async function fetchAutocomplete(query) {
+    const lowercaseQuery = query.toLowerCase();
+    const stillCurrentQuery = () =>
+      searchInput.value.trim().toLowerCase() === lowercaseQuery;
+
+    // Check cache first
+    if (autocompleteCache.has(lowercaseQuery)) {
+      if (stillCurrentQuery()) {
+        renderAutocomplete(autocompleteCache.get(lowercaseQuery));
+      }
+      return;
+    }
+
     try {
       const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`);
       if (!response.ok) return;
       const data = await response.json();
-      renderAutocomplete(data.results || []);
+      const results = data.results || [];
+
+      // Enforce cache size limit
+      if (autocompleteCache.size >= MAX_AUTOCOMPLETE_CACHE_SIZE) {
+        const oldestKey = autocompleteCache.keys().next().value;
+        autocompleteCache.delete(oldestKey);
+      }
+
+      autocompleteCache.set(lowercaseQuery, results);
+      if (stillCurrentQuery()) {
+        renderAutocomplete(results);
+      }
     } catch (error) {
       console.error("Autocomplete fetch error: ", error);
     }
