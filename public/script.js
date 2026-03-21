@@ -81,12 +81,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // ⚡ Bolt: Cache autocomplete results to prevent redundant API calls on backspacing or re-typing
+  const autocompleteCache = new Map();
+  const MAX_AUTOCOMPLETE_CACHE_SIZE = 50;
+
   async function fetchAutocomplete(query) {
+    const lowercaseQuery = query.toLowerCase();
+
+    // Check cache first
+    if (autocompleteCache.has(lowercaseQuery)) {
+      renderAutocomplete(autocompleteCache.get(lowercaseQuery));
+      return;
+    }
+
     try {
       const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`);
       if (!response.ok) return;
       const data = await response.json();
-      renderAutocomplete(data.results || []);
+      const results = data.results || [];
+
+      // Enforce cache size limit
+      if (autocompleteCache.size >= MAX_AUTOCOMPLETE_CACHE_SIZE) {
+        const oldestKey = autocompleteCache.keys().next().value;
+        autocompleteCache.delete(oldestKey);
+      }
+
+      autocompleteCache.set(lowercaseQuery, results);
+      renderAutocomplete(results);
     } catch (error) {
       console.error("Autocomplete fetch error: ", error);
     }
