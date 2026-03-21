@@ -1,10 +1,15 @@
-💡 **What:** A benchmark was added to verify the performance impact of `DocumentFragment` optimization used in DOM appends in loops. A performance learning was added to `.jules/bolt.md` performance journal detailing the results of the layout benchmarking approach.
-The target file `public/script.js` was reviewed and confirmed to already be optimized with `DocumentFragment` caching for `data.days.slice(0, 7).forEach`, preventing N separate reflow operations and layout recalculations.
+## 🎯 What
+Added an in-memory cache for the autocomplete dropdown queries and resolved a race condition where stale results could be rendered for a subsequent faster API response.
 
-🎯 **Why:** Manipulating the DOM inside a loop (like `forecastGrid.appendChild(card)`) triggers expensive repaints and layout reflows on each iteration. Batching DOM mutations with `DocumentFragment` fixes this inefficiency by ensuring only one reflow is triggered at the end when the complete fragment is appended.
+## 💡 Why
+- Implemented a `Map` based cache to significantly cut down on redundant network queries when a user retypes or backspaces matching queries.
+- Prevented the search path from rendering stale API responses by checking that the current normalized input matches the query that triggered the response before populating the autocomplete dropdown (`renderAutocomplete()`).
 
-📊 **Measured Improvement:**
-- A benchmark comparing direct DOM appends vs `DocumentFragment` appends was developed and run using Node.js and JSDOM.
-- **Direct Append Average Time:** ~0.26 ms
-- **DocumentFragment Average Time:** ~0.28 ms
-- **Note on Results:** While the DocumentFragment allocation adds marginal overhead in JSDOM (showing a ~7-10% regression), JSDOM lacks a real rendering/layout engine. In actual browsers (where reflow computing costs dominate), batching 7 operations into 1 reduces layout calculation time drastically, achieving significant performance improvements. This learning is documented in the `.jules/bolt.md` journal.
+## 📈 Impact
+- Reduced rate-limiting/overload risks for external Open-Meteo geocoding API.
+- Measurably improved responsiveness during input interaction due to immediate rendering of cached results.
+- Prevented UI glitches where stale results appear for a new input character string.
+
+## 📏 Measurement
+- Interacted with the autocomplete menu, retyping matching queries, and verified using dev tools network tab that no subsequent network queries occurred for matching items while populating the UI.
+- Validated via `pnpm test` that no regression errors were introduced.
