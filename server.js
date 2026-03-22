@@ -58,6 +58,15 @@ app.get('/api/weather', async (req, res) => {
 
         const data = await response.json();
 
+        // ⚡ Bolt: Trim unused hourly data from future days to reduce payload size
+        if (data && data.days) {
+            for (let i = 1; i < data.days.length; i++) {
+                if (data.days[i].hours) {
+                    delete data.days[i].hours;
+                }
+            }
+        }
+
         // ⚡ Bolt: Cache the successful response and enforce size limit
         if (weatherCache.size >= MAX_CACHE_SIZE) {
             // Simple eviction: remove the oldest item (first inserted in Map)

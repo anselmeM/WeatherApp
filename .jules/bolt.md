@@ -6,3 +6,7 @@
 ## $(date +%Y-%m-%d) - [LRU Cache Eviction Policy]
 **Learning:** For Map-based client-side caches, an LRU (Least Recently Used) eviction policy can be easily implemented by deleting and re-setting an entry on a cache hit. This pushes the entry to the end of the insertion order, preventing frequently used items from being evicted.
 **Action:** When implementing Map caches with maximum sizes, always consider if LRU is more appropriate than FIFO, and implement it by refreshing the entry order on hits.
+
+## 2026-03-22 - [Trimming Unused External API Data]
+**Learning:** Caching raw external API responses without trimming unused nested properties (like hourly forecast data for future days) drastically inflates memory usage and network payload size, causing performance bottlenecks.
+**Action:** Always inspect the required data payload for the frontend and aggressively trim unused fields from external API responses before caching and transmitting them.
