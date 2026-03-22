@@ -81,6 +81,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/" && document.activeElement !== searchInput) {
+      e.preventDefault();
+      searchInput.focus();
+    }
+  });
+
   // ⚡ Bolt: Cache autocomplete results to prevent redundant API calls on backspacing or re-typing
   const autocompleteCache = new Map();
   const MAX_AUTOCOMPLETE_CACHE_SIZE = 50;

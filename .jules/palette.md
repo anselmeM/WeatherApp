@@ -1,3 +1,3 @@
-## 2024-05-15 - Interactive Elements Must Be Buttons
-**Learning:** Found a clickable `<span>` used for the geolocation button. While `onClick` works, `<span>` elements are not keyboard focusable by default and are not announced as interactive buttons by screen readers. This breaks keyboard navigation and reduces accessibility.
-**Action:** Always refactor interactive, non-navigational `<span>` or `<div>` elements into semantic `<button type="button">` elements. Add `focus-visible` styling to ensure visual feedback during keyboard navigation.
+## 2024-05-24 - Search Input Keyboard Shortcut Hints
+**Learning:** Adding a keyboard shortcut like `/` is a great power-user feature, but it needs an `aria-keyshortcuts` attribute on the input itself so screen readers announce it, while the visual `<kbd>` element should be hidden from screen readers using `aria-hidden="true"` to prevent redundant/confusing announcements.
+**Action:** Always pair visual keyboard shortcut indicators with `aria-keyshortcuts` on the interactive element they control.
