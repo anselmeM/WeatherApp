@@ -63,6 +63,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const recentSearchesList = document.getElementById("recent-searches-list");
   const autocompleteDropdown = document.getElementById("search-autocomplete-dropdown");
 
+  // ⚡ Bolt: Cache DOM elements at initialization to avoid redundant querying during rendering
+  const mainWeatherIcon = document.getElementById("main-weather-icon");
+  const currentTempEl = document.getElementById("current-temp");
+  const feelsLikeTempEl = document.getElementById("feels-like-temp");
+  const currentDatetimeEl = document.getElementById("current-datetime");
+  const conditionIconEl = document.getElementById("condition-icon");
+  const conditionTextEl = document.getElementById("condition-text");
+  const rainChanceEl = document.getElementById("rain-chance");
+  const locationNameEl = document.getElementById("location-name");
+  const locationImage = document.getElementById("location-image");
+  const hourlyContainer = document.getElementById("hourly-forecast-container");
+  const forecastGrid = document.getElementById("forecast-grid");
+  const highlightsGrid = document.getElementById("highlights-grid");
+
   let autocompleteTimeout;
 
   searchInput.addEventListener("input", (e) => {
@@ -350,32 +364,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateCurrentWeather(current, today, tempUnit, data) {
-    const mainWeatherIcon = document.getElementById("main-weather-icon");
     mainWeatherIcon.textContent = getWeatherIcon(current.icon);
     mainWeatherIcon.classList.remove("icon-pop");
     void mainWeatherIcon.offsetWidth; // Trigger reflow
     mainWeatherIcon.classList.add("icon-pop");
 
-    document.getElementById("current-temp").textContent =
+    currentTempEl.textContent =
       `${Math.round(current.temp)}${tempUnit}`;
-    document.getElementById("feels-like-temp").textContent =
+    feelsLikeTempEl.textContent =
       `Feels like ${Math.round(current.feelslike)}${tempUnit}`;
-    document.getElementById("current-datetime").textContent =
+    currentDatetimeEl.textContent =
       new Date().toLocaleDateString("en-US", {
         weekday: "long",
         hour: "2-digit",
         minute: "2-digit",
       });
-    document.getElementById("condition-icon").textContent = getWeatherIcon(
+    conditionIconEl.textContent = getWeatherIcon(
       current.icon,
     );
-    document.getElementById("condition-text").textContent = current.conditions;
-    document.getElementById("rain-chance").textContent =
+    conditionTextEl.textContent = current.conditions;
+    rainChanceEl.textContent =
       `Rain - ${Math.round(today.precipprob)}%`;
-    document.getElementById("location-name").textContent = data.resolvedAddress;
+    locationNameEl.textContent = data.resolvedAddress;
 
     const cityName = data.address.split(",")[0];
-    const locationImage = document.getElementById("location-image");
     
     // Set loading placeholder immediately
     locationImage.src = `https://placehold.co/400x150/1f2937/ffffff?text=Loading...`;
@@ -388,9 +400,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   function updateHourlyForecast(today, tempUnit) {
-    const hourlyContainer = document.getElementById(
-      "hourly-forecast-container",
-    );
     hourlyContainer.innerHTML = "";
     const currentHour = new Date().getHours();
     // ⚡ Bolt: Use DocumentFragment to batch DOM appends
@@ -414,7 +423,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateWeeklyForecast(data, tempUnit) {
-    const forecastGrid = document.getElementById("forecast-grid");
     forecastGrid.innerHTML = "";
     // ⚡ Bolt: Use DocumentFragment to batch DOM appends
     const fragment = document.createDocumentFragment();
@@ -438,7 +446,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateHighlights(today, current, speedUnit, distUnit) {
-    const highlightsGrid = document.getElementById("highlights-grid");
     const airQuality = Math.floor(Math.random() * 80) + 20; // Simulated
     const pressure = current.pressure || 1013;
     const dewPoint = current.dew || 0;
@@ -559,8 +566,7 @@ document.addEventListener("DOMContentLoaded", () => {
       celsiusButton.className =
         "px-3 py-1.5 flex items-center justify-center font-bold text-sm text-gray-500 dark:text-gray-400 interactive-element";
     }
-    const currentLocation =
-      document.getElementById("location-name").textContent;
+    const currentLocation = locationNameEl.textContent;
     fetchWeatherData(currentLocation);
   }
 

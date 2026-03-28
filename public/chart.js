@@ -1,11 +1,18 @@
 // chart.js
 
+// ⚡ Bolt: Cache DOM elements at module scope to avoid redundant queries on resize
+let svg, pathLine, pathArea;
+
 export function drawTempChart(hours, unit) {
-    const svg = document.getElementById('temp-chart-svg');
-    if (!svg) return;
-    const pathLine = svg.querySelector('.temp-line');
-    const pathArea = svg.querySelector('.temp-area');
-    if (!pathLine || !pathArea) return;
+    if (!svg) {
+        svg = document.getElementById('temp-chart-svg');
+        if (svg) {
+            pathLine = svg.querySelector('.temp-line');
+            pathArea = svg.querySelector('.temp-area');
+        }
+    }
+
+    if (!svg || !pathLine || !pathArea) return;
     
     // Use a 12-hour window starting from current hour
     const currentHour = new Date().getHours();
