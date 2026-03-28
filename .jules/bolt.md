@@ -10,3 +10,7 @@
 ## 2026-03-22 - [Trimming Unused External API Data]
 **Learning:** Caching raw external API responses without trimming unused nested properties (like hourly forecast data for future days) drastically inflates memory usage and network payload size, causing performance bottlenecks.
 **Action:** Always inspect the required data payload for the frontend and aggressively trim unused fields from external API responses before caching and transmitting them.
+
+## 2024-03-28 - [DOM Element Query Caching]
+**Learning:** Repeating `document.getElementById` and `querySelector` calls within frequently executed functions (like rendering loops or resize handlers) introduces redundant DOM traversal overhead, degrading rendering performance.
+**Action:** Cache DOM element references in the module initialization scope or within a higher-level context (e.g., `DOMContentLoaded` listener) to avoid repeatedly querying the DOM for the same elements.
