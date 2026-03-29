@@ -79,6 +79,11 @@ function isTokenBlacklisted(token) {
 app.use(express.json());
 app.use(express.static('public'));
 
+// Serve landing.html as the default page (instead of index.html)
+app.get('/', (req, res) => {
+  res.sendFile('landing.html', { root: 'public' });
+});
+
 // 🔐 JWT Authentication Middleware
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];

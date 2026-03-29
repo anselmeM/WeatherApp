@@ -2,10 +2,10 @@
   "name": "weatherapp",
   "version": "1.0.0",
   "description": "A simple and clean weather application that allows you to get the current weather for any city. It's a Progressive Web App (PWA), so you can install it on your device and use it offline.",
-  "main": "server.js",
+  "main": "server-auth.js",
   "scripts": {
     "test": "node --test public/utils.test.js",
-    "start": "node server.js"
+    "start": "node server-auth.js"
   },
   "repository": {
     "type": "git",
