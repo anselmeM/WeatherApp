@@ -52,11 +52,40 @@ export function formatTime(timeStr) {
       .replace(" ", "");
 }
 
-export function showError(message) {
+export function showError(message, errorType = 'generic') {
     const errorBox = document.createElement("div");
-    errorBox.textContent = message;
+    
+    // 🛡️ UX: Differentiated error messages based on type
+    let displayMessage = message;
+    let showRetry = false;
+    
+    if (errorType === 'network') {
+      displayMessage = `Network error: ${message}`;
+      showRetry = true;
+    } else if (errorType === 'timeout') {
+      displayMessage = 'Request timed out. Please check your connection and try again.';
+      showRetry = true;
+    } else if (errorType === 'api') {
+      displayMessage = `Weather service unavailable: ${message}`;
+      showRetry = true;
+    } else if (errorType === 'location') {
+      displayMessage = `Location not found: ${message}`;
+    }
+    
+    // Build error toast HTML with optional retry button
+    errorBox.innerHTML = `
+      <div class="flex items-start">
+        <span class="material-icons mr-2">error_outline</span>
+        <span class="flex-grow">${displayMessage}</span>
+        ${showRetry ? '<button class="retry-btn ml-2 bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm font-bold">Retry</button>' : ''}
+      </div>
+    `;
+    
     errorBox.className =
-      "fixed top-5 right-5 bg-red-600/90 backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl z-50 transition-all duration-500 transform translate-x-[120%]";
+      "fixed top-5 right-5 bg-red-600/90 backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl z-50 transition-all duration-500 transform translate-x-[120%] max-w-sm";
+    // 🛡️ Accessibility: Add ARIA role for screen reader announcement
+    errorBox.setAttribute("role", "alert");
+    errorBox.setAttribute("aria-live", "assertive");
     document.body.appendChild(errorBox);
     setTimeout(() => {
       errorBox.classList.remove("translate-x-[120%]");
@@ -64,5 +93,21 @@ export function showError(message) {
     setTimeout(() => {
       errorBox.classList.add("translate-x-[120%]");
       errorBox.addEventListener("transitionend", () => errorBox.remove());
-    }, 4000);
+    }, 5000);
+    
+    // Attach retry handler if button exists
+    if (showRetry) {
+      const retryBtn = errorBox.querySelector('.retry-btn');
+      if (retryBtn) {
+        retryBtn.addEventListener('click', () => {
+          errorBox.classList.add("translate-x-[120%]");
+          // Trigger a fresh weather fetch - location will come from current UI state
+          if (typeof window.triggerWeatherRefresh === 'function') {
+            window.triggerWeatherRefresh();
+          }
+        });
+      }
+    }
+    
+    return errorBox;
 }

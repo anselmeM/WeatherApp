@@ -187,3 +187,48 @@ body {
   stroke: #fff;
   stroke-width: 2;
 }
+
+/* 🛡️ Accessibility: Focus-visible styles for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* 🛡️ Accessibility: Color contrast fix - use gray-500 on light backgrounds */
+.text-gray-400 {
+  color: #6b7280;
+}
+
+.dark .text-gray-400 {
+  color: #9ca3af;
+}
+
+/* Ensure buttons have visible focus states */
+button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+}
+
+/* Input focus visible */
+input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+/* Autocomplete dropdown items focus */
+#search-autocomplete-dropdown li:focus-visible {
+  background-color: rgba(59, 130, 246, 0.1);
+  outline: none;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

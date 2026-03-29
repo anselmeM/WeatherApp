@@ -7,6 +7,8 @@
     
     <!-- PWA Manifest Link -->
     <link rel="manifest" href="manifest.json" />
+    <!-- 🛡️ iOS PWA Support: Apple touch icon -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%233b82f6'/%3E%3Cpath d='M132 108a24 24 0 0 0-38-19.5 32 32 0 1 0-42 43.5h80a24 24 0 0 0 0-48z' fill='%23ffffff'/%3E%3C/svg%3E" />
     
     <!-- Theme color for browser UI -->
     <!-- Theme color for browser UI (light and dark mode support) -->
@@ -31,7 +33,7 @@
         <div class="loader"></div>
     </div>
     
-    <div id="weather-alert-banner" class="fixed top-0 left-0 right-0 bg-yellow-400 text-yellow-900 p-4 text-center z-40 transform -translate-y-full transition-transform duration-300 ease-in-out hidden">
+    <div id="weather-alert-banner" class="fixed top-0 left-0 right-0 bg-yellow-400 text-yellow-900 p-4 text-center z-40 transform -translate-y-full transition-transform duration-300 ease-in-out hidden" role="alert" aria-live="polite">
         <div class="container mx-auto flex justify-between items-center">
             <span class="material-icons mr-2">warning</span>
             <p id="weather-alert-text" class="flex-grow"></p>
@@ -45,11 +47,12 @@
             <div class="relative flex items-center justify-between text-gray-500 dark:text-gray-400 bg-gray-100/50 dark:bg-gray-700/50 p-3 rounded-2xl mb-6 focus-within:ring-2 focus-within:ring-blue-500">
                 <span class="material-icons flex-shrink-0">search</span>
                 <input id="search-input" autocomplete="off" class="bg-transparent focus:outline-none mx-2 flex-grow min-w-0 w-full text-gray-800 dark:text-white placeholder-gray-400" placeholder="Search for places ..." type="text" aria-label="Search for a city or location" aria-keyshortcuts="/" />
+                <button type="button" id="clear-search-button" class="material-icons flex-shrink-0 cursor-pointer interactive-element rounded-full p-1 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 hidden" aria-label="Clear search">close</button>
                 <kbd class="hidden sm:inline-block border border-gray-300 dark:border-gray-600 rounded px-1.5 py-0.5 text-xs font-mono text-gray-400 mr-2 bg-white/50 dark:bg-gray-800/50" aria-hidden="true">/</kbd>
                 <button type="button" id="geolocation-button" class="material-icons flex-shrink-0 cursor-pointer interactive-element rounded-full p-1 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500" aria-label="Get current location's weather">my_location</button>
                 
                 <!-- Autocomplete Dropdown -->
-                <ul id="search-autocomplete-dropdown" class="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-2xl z-50 hidden"></ul>
+                <ul id="search-autocomplete-dropdown" class="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-2xl z-50 hidden" role="listbox" aria-label="Location suggestions"></ul>
             </div>
 
             <!-- Recent Searches -->
@@ -77,6 +80,12 @@
                     <div class="flex items-center text-blue-600 dark:text-blue-400 mt-3 justify-center text-lg font-medium">
                         <span class="material-icons text-2xl mr-3">water_drop</span>
                         <span id="rain-chance">Rain - 30%</span>
+                    </div>
+                    <!-- 🔗 Phase 11.5: Minute-by-Minute Precipitation -->
+                    <div id="minutely-precip" class="mt-6">
+                        <p class="text-xs font-bold text-gray-400 uppercase mb-2">Next 60 Minutes</p>
+                        <div class="h-12 flex items-end space-x-1" id="minutely-bars"></div>
+                        <p class="text-xs text-gray-400 mt-1" id="minutely-summary">Loading precipitation data...</p>
                     </div>
                     <div class="mt-10 rounded-2xl overflow-hidden relative shadow-lg group">
                         <img id="location-image" alt="City skyline" class="w-full h-32 object-cover transition-transform duration-700 group-hover:scale-110" src="https://placehold.co/300x120/a7a7a7/ffffff?text=Loading..." />
@@ -108,6 +117,12 @@
                     <button id="week-button" class="text-gray-500 dark:text-gray-400 font-bold text-lg interactive-element hover:text-gray-700 dark:hover:text-gray-200" aria-label="Show weekly forecast">Week</button>
                 </div>
                 <div class="flex items-center space-x-4">
+                    <button id="compare-button" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Compare locations">
+                        <span class="material-icons text-gray-700 dark:text-gray-200">compare_arrows</span>
+                    </button>
+                    <button id="share-button" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Share weather">
+                        <span class="material-icons text-gray-700 dark:text-gray-200">share</span>
+                    </button>
                     <button id="theme-toggle" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Toggle dark and light mode">
                         <span class="material-icons text-gray-700 dark:text-gray-200">light_mode</span>
                     </button>
@@ -115,6 +130,9 @@
                         <button id="celsius-button" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-md rounded-xl px-3 py-1.5 flex items-center justify-center font-bold text-sm interactive-element" aria-label="Switch to Celsius">°C</button>
                         <button id="fahrenheit-button" class="px-3 py-1.5 flex items-center justify-center font-bold text-sm text-gray-500 dark:text-gray-400 interactive-element" aria-label="Switch to Fahrenheit">°F</button>
                     </div>
+                    <button id="logout-button" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Logout">
+                        <span class="material-icons text-gray-700 dark:text-gray-200">logout</span>
+                    </button>
                 </div>
             </div>
             

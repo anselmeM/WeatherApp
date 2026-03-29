@@ -1,7 +1,7 @@
 // service-worker.js
 
 // Define a name for the cache
-const CACHE_NAME = 'weather-dashboard-cache-v10';
+const CACHE_NAME = 'weather-dashboard-cache-v11';
 
 const urlsToCache = [
   '/',
@@ -18,12 +18,10 @@ const urlsToCache = [
 // Install event: triggered when the service worker is first installed.
 self.addEventListener('install', event => {
   self.skipWaiting(); // Force the waiting service worker to become the active service worker.
-  // Perform install steps
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Opened cache');
-        // Add all the specified URLs to the cache
         return cache.addAll(urlsToCache);
       })
   );
@@ -31,18 +29,54 @@ self.addEventListener('install', event => {
 
 // Fetch event: triggered for every network request made by the page.
 self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+  
+  // ⚡ Performance: Use stale-while-revalidate for API calls (get fresh data in background)
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then(cache => {
+        return cache.match(event.request).then(cachedResponse => {
+          const fetchPromise = fetch(event.request).then(networkResponse => {
+            if (networkResponse.ok) {
+              cache.put(event.request, networkResponse.clone());
+            }
+            return networkResponse;
+          }).catch(() => {
+            // Network failed, return cached or error
+            return cachedResponse || new Response(JSON.stringify({ error: 'Offline' }), {
+              status: 503,
+              headers: { 'Content-Type': 'application/json' }
+            });
+          });
+          
+          // Return cached immediately, then update cache in background
+          return cachedResponse || fetchPromise;
+        });
+      })
+    );
+    return;
+  }
+  
+  // ⚡ Performance: Cache-first for app shell (fast load)
+  // Network-first for API data handled above
+  
   event.respondWith(
-    // Check if the request is in the cache
     caches.match(event.request)
       .then(response => {
-        // If a cached response is found, return it.
         if (response) {
           return response;
         }
-        // Otherwise, fetch the request from the network.
-        return fetch(event.request);
-      }
-    )
+        return fetch(event.request).then(networkResponse => {
+          // Cache successful responses for future offline use
+          if (networkResponse.ok && event.request.method === 'GET') {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseClone);
+            });
+          }
+          return networkResponse;
+        });
+      })
   );
 });
 
@@ -58,6 +92,6 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    }).then(() => self.clients.claim()) // Claim clients immediately so the new SW controls the page
+    }).then(() => self.clients.claim())
   );
 });
