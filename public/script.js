@@ -156,6 +156,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const hourlyContainer = document.getElementById("hourly-forecast-container");
   const forecastGrid = document.getElementById("forecast-grid");
   const highlightsGrid = document.getElementById("highlights-grid");
+  const minutelyBars = document.getElementById('minutely-bars');
+  const minutelySummary = document.getElementById('minutely-summary');
 
   let autocompleteTimeout;
 
@@ -501,8 +503,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 🔗 Phase 11.5: Render minutely precipitation if available
     if (data.minutely) {
-      const minutelyBars = document.getElementById('minutely-bars');
-      const minutelySummary = document.getElementById('minutely-summary');
       if (minutelyBars && data.minutely.length > 0) {
         const fragments = document.createDocumentFragment();
         const precipData = data.minutely.slice(0, 60);
