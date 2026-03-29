@@ -95,6 +95,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  document.addEventListener("focusin", (e) => {
+    if (!searchInput.contains(e.target) && !autocompleteDropdown.contains(e.target)) {
+      autocompleteDropdown.classList.add("hidden");
+    }
+  });
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "/" && document.activeElement !== searchInput) {
       e.preventDefault();
@@ -152,7 +158,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const fragment = document.createDocumentFragment();
     results.forEach(result => {
       const li = document.createElement("li");
-      li.className = "px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-800 dark:text-gray-200 border-b border-gray-100 dark:border-gray-700 last:border-0 truncate flex items-center";
+      li.className = "px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none cursor-pointer text-sm text-gray-800 dark:text-gray-200 border-b border-gray-100 dark:border-gray-700 last:border-0 truncate flex items-center";
+      li.tabIndex = 0;
+      li.setAttribute("role", "button");
       
       const icon = document.createElement("span");
       icon.className = "material-icons text-gray-400 mr-2 text-sm";
@@ -169,6 +177,12 @@ document.addEventListener("DOMContentLoaded", () => {
         searchInput.value = result.name;
         autocompleteDropdown.classList.add("hidden");
         startApp(locationText); 
+      });
+      li.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          li.click();
+        }
       });
       
       fragment.appendChild(li);
