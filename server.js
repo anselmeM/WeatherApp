@@ -37,6 +37,11 @@ function isValidLocation(location) {
 
 app.use(express.static('public'));
 
+// Serve landing.html as the default page (instead of index.html)
+app.get('/', (req, res) => {
+  res.sendFile('landing.html', { root: 'public' });
+});
+
 // ⚡ Bolt: Simple in-memory cache for weather data to reduce external API calls
 const weatherCache = new Map();
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
