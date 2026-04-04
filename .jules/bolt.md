@@ -14,3 +14,7 @@
 ## 2024-03-28 - [DOM Element Query Caching]
 **Learning:** Repeating `document.getElementById` and `querySelector` calls within frequently executed functions (like rendering loops or resize handlers) introduces redundant DOM traversal overhead, degrading rendering performance.
 **Action:** Cache DOM element references in the module initialization scope or within a higher-level context (e.g., `DOMContentLoaded` listener) to avoid repeatedly querying the DOM for the same elements.
+
+## $(date +%Y-%m-%d) - [In-Memory Promise Caching for Deduplication]
+**Learning:** Storing the resolved value of an API request in a client-side cache still leaves a race condition window: concurrent calls made before the first request resolves will trigger redundant network fetches.
+**Action:** When implementing in-memory caching for frequent operations (like autocomplete queries or UI image fetching), store the *Promise* of the network request rather than the resolved value. This ensures that any subsequent calls while the request is "in-flight" will await the same Promise, successfully deduplicating the network overhead.

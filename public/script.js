@@ -202,39 +202,51 @@ document.addEventListener("DOMContentLoaded", () => {
   const autocompleteCache = new Map();
   const MAX_AUTOCOMPLETE_CACHE_SIZE = 50;
 
-  async function fetchAutocomplete(query) {
+  function fetchAutocomplete(query) {
     const lowercaseQuery = query.toLowerCase();
 
     // Check cache first
     if (autocompleteCache.has(lowercaseQuery)) {
-      const cachedResults = autocompleteCache.get(lowercaseQuery);
+      const cachedPromise = autocompleteCache.get(lowercaseQuery);
       // Refresh item for LRU eviction policy by re-inserting it.
       autocompleteCache.delete(lowercaseQuery);
-      autocompleteCache.set(lowercaseQuery, cachedResults);
+      autocompleteCache.set(lowercaseQuery, cachedPromise);
 
-      if (searchInput.value.trim().toLowerCase() === lowercaseQuery) {
-        renderAutocomplete(cachedResults);
-      }
+      cachedPromise.then(results => {
+        if (searchInput.value.trim().toLowerCase() === lowercaseQuery) {
+          renderAutocomplete(results);
+        }
+      });
       return;
     }
 
-    try {
-      const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`);
-      if (!response.ok) return;
-      const data = await response.json();
-      const results = data.results || [];
-
-      // Enforce cache size limit
-      if (autocompleteCache.size >= MAX_AUTOCOMPLETE_CACHE_SIZE) {
-        const oldestKey = autocompleteCache.keys().next().value;
-        autocompleteCache.delete(oldestKey);
+    const fetchPromise = (async () => {
+      try {
+        const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`);
+        if (!response.ok) return [];
+        const data = await response.json();
+        const results = data.results || [];
+        return results;
+      } catch (error) {
+        console.error("Autocomplete fetch error: ", error);
+        return [];
       }
+    })();
 
-      autocompleteCache.set(lowercaseQuery, results);
-      renderAutocomplete(results);
-    } catch (error) {
-      console.error("Autocomplete fetch error: ", error);
+    // Enforce cache size limit
+    if (autocompleteCache.size >= MAX_AUTOCOMPLETE_CACHE_SIZE) {
+      const oldestKey = autocompleteCache.keys().next().value;
+      autocompleteCache.delete(oldestKey);
     }
+
+    // ⚡ Bolt: Store the *promise* to deduplicate concurrent "in-flight" requests
+    autocompleteCache.set(lowercaseQuery, fetchPromise);
+
+    fetchPromise.then(results => {
+      if (searchInput.value.trim().toLowerCase() === lowercaseQuery) {
+        renderAutocomplete(results);
+      }
+    });
   }
 
   function renderAutocomplete(results) {
@@ -540,36 +552,43 @@ document.addEventListener("DOMContentLoaded", () => {
   // ⚡ Bolt: Prevent memory exhaustion from unbounded image cache growth
   const MAX_IMAGE_CACHE_SIZE = 50;
 
-  async function getCityImage(cityName) {
+  function getCityImage(cityName) {
     if (imageCache.has(cityName)) {
-      return imageCache.get(cityName);
+      // ⚡ Bolt: LRU eviction logic - refresh item by moving it to the end of the Map
+      const cachedPromise = imageCache.get(cityName);
+      imageCache.delete(cityName);
+      imageCache.set(cityName, cachedPromise);
+      return cachedPromise;
     }
 
-    let imageUrl;
-    try {
-      const response = await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=pageimages&titles=${encodeURIComponent(cityName)}&pithumbsize=600&format=json&origin=*`);
-      const data = await response.json();
-      const pages = data.query.pages;
-      const pageId = Object.keys(pages)[0];
-      if (pageId !== "-1" && pages[pageId].thumbnail) {
-        imageUrl = pages[pageId].thumbnail.source;
+    const fetchPromise = (async () => {
+      let imageUrl;
+      try {
+        const response = await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=pageimages&titles=${encodeURIComponent(cityName)}&pithumbsize=600&format=json&origin=*`);
+        const data = await response.json();
+        const pages = data.query.pages;
+        const pageId = Object.keys(pages)[0];
+        if (pageId !== "-1" && pages[pageId].thumbnail) {
+          imageUrl = pages[pageId].thumbnail.source;
+        }
+      } catch (e) {
+        console.error("Failed to fetch city image:", e);
       }
-    } catch (e) {
-      console.error("Failed to fetch city image:", e);
-    }
 
-    if (!imageUrl) {
-      imageUrl = `https://placehold.co/400x150/1f2937/ffffff?text=${encodeURIComponent(cityName)}`;
-    }
+      if (!imageUrl) {
+        imageUrl = `https://placehold.co/400x150/1f2937/ffffff?text=${encodeURIComponent(cityName)}`;
+      }
+      return imageUrl;
+    })();
 
-    // ⚡ Bolt: Simple FIFO eviction policy
+    // ⚡ Bolt: Store the *promise* to deduplicate concurrent "in-flight" requests
     if (imageCache.size >= MAX_IMAGE_CACHE_SIZE) {
       const oldestKey = imageCache.keys().next().value;
       imageCache.delete(oldestKey);
     }
 
-    imageCache.set(cityName, imageUrl);
-    return imageUrl;
+    imageCache.set(cityName, fetchPromise);
+    return fetchPromise;
   }
 
   function updateCurrentWeather(current, today, tempUnit, data) {
