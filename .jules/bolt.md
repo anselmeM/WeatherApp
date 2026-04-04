@@ -3,7 +3,7 @@
  **Learning:** Client-side caches (e.g. Map objects) without size limits can cause memory exhaustion as users navigate. Also, LRU (Least Recently Used) is often a better eviction strategy than FIFO for data fetched often.
  **Action:** Enforce size constraints on client-side cache stores, using a constant like MAX_IMAGE_CACHE_SIZE and removing the oldest items with FIFO. For backend data caches, implement simple LRU logic by refreshing items on access (`map.delete(key)` then `map.set(key, item)`).
 
-## $(date +%Y-%m-%d) - [LRU Cache Eviction Policy]
+## 2024-03-14 - [LRU Cache Eviction Policy]
 **Learning:** For Map-based client-side caches, an LRU (Least Recently Used) eviction policy can be easily implemented by deleting and re-setting an entry on a cache hit. This pushes the entry to the end of the insertion order, preventing frequently used items from being evicted.
 **Action:** When implementing Map caches with maximum sizes, always consider if LRU is more appropriate than FIFO, and implement it by refreshing the entry order on hits.
 
