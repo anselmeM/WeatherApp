@@ -37,7 +37,7 @@
         <div class="container mx-auto flex justify-between items-center">
             <span class="material-icons mr-2">warning</span>
             <p id="weather-alert-text" class="flex-grow"></p>
-            <button id="close-alert-button" class="ml-4" aria-label="Close weather alert">&times;</button>
+            <button id="close-alert-button" class="ml-4" aria-label="Close weather alert" title="Close weather alert">&times;</button>
         </div>
     </div>
 
@@ -47,9 +47,9 @@
             <div class="relative flex items-center justify-between text-gray-500 dark:text-gray-400 bg-gray-100/50 dark:bg-gray-700/50 p-3 rounded-2xl mb-6 focus-within:ring-2 focus-within:ring-blue-500">
                 <span class="material-icons flex-shrink-0">search</span>
                 <input id="search-input" autocomplete="off" class="bg-transparent focus:outline-none mx-2 flex-grow min-w-0 w-full text-gray-800 dark:text-white placeholder-gray-400" placeholder="Search for places ..." type="text" aria-label="Search for a city or location" aria-keyshortcuts="/" />
-                <button type="button" id="clear-search-button" class="material-icons flex-shrink-0 cursor-pointer interactive-element rounded-full p-1 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 hidden" aria-label="Clear search">close</button>
+                <button type="button" id="clear-search-button" class="material-icons flex-shrink-0 cursor-pointer interactive-element rounded-full p-1 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 hidden" aria-label="Clear search" title="Clear search">close</button>
                 <kbd class="hidden sm:inline-block border border-gray-300 dark:border-gray-600 rounded px-1.5 py-0.5 text-xs font-mono text-gray-400 mr-2 bg-white/50 dark:bg-gray-800/50" aria-hidden="true">/</kbd>
-                <button type="button" id="geolocation-button" class="material-icons flex-shrink-0 cursor-pointer interactive-element rounded-full p-1 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500" aria-label="Get current location's weather">my_location</button>
+                <button type="button" id="geolocation-button" class="material-icons flex-shrink-0 cursor-pointer interactive-element rounded-full p-1 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500" aria-label="Get current location's weather" title="Get current location's weather">my_location</button>
                 
                 <!-- Autocomplete Dropdown -->
                 <ul id="search-autocomplete-dropdown" class="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-2xl z-50 hidden" role="listbox" aria-label="Location suggestions"></ul>
@@ -117,20 +117,20 @@
                     <button id="week-button" class="text-gray-500 dark:text-gray-400 font-bold text-lg interactive-element hover:text-gray-700 dark:hover:text-gray-200" aria-label="Show weekly forecast">Week</button>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button id="compare-button" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Compare locations">
+                    <button id="compare-button" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Compare locations" title="Compare locations">
                         <span class="material-icons text-gray-700 dark:text-gray-200">compare_arrows</span>
                     </button>
-                    <button id="share-button" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Share weather">
+                    <button id="share-button" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Share weather" title="Share weather">
                         <span class="material-icons text-gray-700 dark:text-gray-200">share</span>
                     </button>
-                    <button id="theme-toggle" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Toggle dark and light mode">
+                    <button id="theme-toggle" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Toggle dark and light mode" title="Toggle dark and light mode">
                         <span class="material-icons text-gray-700 dark:text-gray-200">light_mode</span>
                     </button>
                     <div class="flex items-center bg-gray-900/10 dark:bg-white/10 p-1 rounded-2xl">
-                        <button id="celsius-button" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-md rounded-xl px-3 py-1.5 flex items-center justify-center font-bold text-sm interactive-element" aria-label="Switch to Celsius">°C</button>
-                        <button id="fahrenheit-button" class="px-3 py-1.5 flex items-center justify-center font-bold text-sm text-gray-500 dark:text-gray-400 interactive-element" aria-label="Switch to Fahrenheit">°F</button>
+                        <button id="celsius-button" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-md rounded-xl px-3 py-1.5 flex items-center justify-center font-bold text-sm interactive-element" aria-label="Switch to Celsius" title="Switch to Celsius">°C</button>
+                        <button id="fahrenheit-button" class="px-3 py-1.5 flex items-center justify-center font-bold text-sm text-gray-500 dark:text-gray-400 interactive-element" aria-label="Switch to Fahrenheit" title="Switch to Fahrenheit">°F</button>
                     </div>
-                    <button id="logout-button" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Logout">
+                    <button id="logout-button" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Logout" title="Logout">
                         <span class="material-icons text-gray-700 dark:text-gray-200">logout</span>
                     </button>
                 </div>

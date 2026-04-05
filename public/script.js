@@ -630,6 +630,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const displayLocation = cleanAddress;
     locationNameEl.textContent = displayLocation;
     
+    // 🛡️ UX: Update page title with current context so users with multiple tabs can easily see the weather
+    document.title = `${Math.round(current.temp)}${tempUnit} in ${displayLocation} - Weather Dashboard`;
+
     // Set loading placeholder immediately
     locationImage.src = `https://placehold.co/400x150/1f2937/ffffff?text=Loading...`;
     // Show image card
