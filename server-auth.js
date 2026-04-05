@@ -383,9 +383,12 @@ async function handleWeatherRequest(req, res, tier) {
 
     const data = await response.json();
 
-    // Trim hourly data for free tier to reduce bandwidth
-    if (tier === 'free' && data.days) {
-      for (let i = 1; i < data.days.length; i++) {
+    // ⚡ Bolt: Aggressively trim unused hourly data to reduce bandwidth and memory footprint
+    // Free tier: only needs hourly data for today (index 0)
+    // Premium tier: frontend uses hourly data for current and next day (indices 0 and 1)
+    if (data.days) {
+      const startIndex = tier === 'free' ? 1 : 2;
+      for (let i = startIndex; i < data.days.length; i++) {
         if (data.days[i].hours) {
           delete data.days[i].hours;
         }
