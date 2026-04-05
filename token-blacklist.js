@@ -30,7 +30,7 @@ if (cleanupInterval.unref) {
  * @param {number} [expiresAt] - Optional absolute expiration time in ms
  */
 export function blacklistToken(token, expiresAt = null) {
-  const expiry = expiresAt ? expiresAt : Date.now() + BLACKLIST_TTL;
+  const expiry = expiresAt ?? (Date.now() + BLACKLIST_TTL);
   tokenBlacklist.set(token, expiry);
 }
 
