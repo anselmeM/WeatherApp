@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { blacklistToken, isTokenBlacklisted } from './token-blacklist.js';
 
 dotenv.config();
 
@@ -39,39 +40,6 @@ const TIER_LIMITS = {
 // In-memory user store (replace with database in production)
 const users = new Map();
 
-// ============================================
-// TOKEN BLACKLIST (for logout functionality)
-// ============================================
-const tokenBlacklist = new Map();
-// Tokens expire automatically after 24 hours to prevent unbounded growth
-const BLACKLIST_CLEANUP_INTERVAL = 60 * 60 * 1000; // 1 hour
-const BLACKLIST_TTL = 24 * 60 * 60 * 1000; // 24 hours
-
-// Cleanup expired tokens from blacklist periodically
-setInterval(() => {
-  const now = Date.now();
-  for (const [token, expiry] of tokenBlacklist.entries()) {
-    if (expiry < now) {
-      tokenBlacklist.delete(token);
-    }
-  }
-}, BLACKLIST_CLEANUP_INTERVAL);
-
-// Add token to blacklist
-function blacklistToken(token) {
-  tokenBlacklist.set(token, Date.now() + BLACKLIST_TTL);
-}
-
-// Check if token is blacklisted
-function isTokenBlacklisted(token) {
-  const expiry = tokenBlacklist.get(token);
-  if (!expiry) return false;
-  if (expiry < Date.now()) {
-    tokenBlacklist.delete(token);
-    return false;
-  }
-  return true;
-}
 
 // ============================================
 // MIDDLEWARE
