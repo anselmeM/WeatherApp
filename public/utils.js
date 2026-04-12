@@ -29,6 +29,13 @@ export function getWindDirection(deg) {
     return directions[index % 16];
 }
 
+// ⚡ Bolt: Cache Intl.DateTimeFormat instance to avoid high CPU cost of repeated instantiations
+const timeFormatter = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true,
+});
+
 export function formatTime(timeStr) {
     if (!timeStr) return "";
     const match = timeStr.match(/^(?<hour>\d{1,2}):(?<minute>\d{2})(?::(?<second>\d{2}))?$/);
@@ -43,13 +50,7 @@ export function formatTime(timeStr) {
         return "";
     }
     const date = new Date(2023, 0, 1, hour, minute);
-    return date
-       .toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      })
-      .replace(" ", "");
+    return timeFormatter.format(date).replace(" ", "");
 }
 
 export function showError(message, errorType = 'generic') {
