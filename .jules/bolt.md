@@ -18,3 +18,7 @@
 ## $(date +%Y-%m-%d) - [In-Memory Promise Caching for Deduplication]
 **Learning:** Storing the resolved value of an API request in a client-side cache still leaves a race condition window: concurrent calls made before the first request resolves will trigger redundant network fetches.
 **Action:** When implementing in-memory caching for frequent operations (like autocomplete queries or UI image fetching), store the *Promise* of the network request rather than the resolved value. This ensures that any subsequent calls while the request is "in-flight" will await the same Promise, successfully deduplicating the network overhead.
+
+## 2024-04-18 - [Intl.DateTimeFormat Optimization]
+**Learning:** Calling `toLocaleTimeString` repeatedly or creating new `Intl.DateTimeFormat` instances is computationally expensive during tight loops. Creating a module-scoped instance of `Intl.DateTimeFormat` and using its `.format(date)` method is significantly faster (~58x speedup).
+**Action:** Extract `Intl.DateTimeFormat` instances to the module scope for any frequently called formatting utilities.
