@@ -191,6 +191,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // 🛡️ Accessibility: Close autocomplete when keyboard focus moves outside
+  document.addEventListener("focusin", (e) => {
+    if (!searchInput.contains(e.target) && !autocompleteDropdown.contains(e.target)) {
+      autocompleteDropdown.classList.add("hidden");
+    }
+  });
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "/" && document.activeElement !== searchInput) {
       e.preventDefault();
