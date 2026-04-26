@@ -1,6 +1,16 @@
 import { getWeatherIcon, getWindDirection, formatTime, showError } from './utils.js';
 import { drawTempChart } from './chart.js';
 
+// ⚡ Bolt: Cache Intl.DateTimeFormat instances to avoid costly initialization on every render
+const currentDatetimeFormatter = new Intl.DateTimeFormat("en-US", {
+  weekday: "long",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+const weekdayFormatter = new Intl.DateTimeFormat("en-US", {
+  weekday: "short",
+});
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
@@ -608,12 +618,7 @@ document.addEventListener("DOMContentLoaded", () => {
       `${Math.round(current.temp)}${tempUnit}`;
     feelsLikeTempEl.textContent =
       `Feels like ${Math.round(current.feelslike)}${tempUnit}`;
-    currentDatetimeEl.textContent =
-      new Date().toLocaleDateString("en-US", {
-        weekday: "long",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
+    currentDatetimeEl.textContent = currentDatetimeFormatter.format(new Date());
     conditionIconEl.textContent = getWeatherIcon(
       current.icon,
     );
@@ -690,7 +695,7 @@ document.addEventListener("DOMContentLoaded", () => {
       card.style.animationDelay = `${index * 50}ms`;
       const date = new Date(day.datetime);
       card.innerHTML = `
-                <p class="font-bold text-gray-500 dark:text-gray-400 text-sm mb-2">${index === 0 ? "Today" : date.toLocaleDateString("en-US", { weekday: "short" })}</p>
+                <p class="font-bold text-gray-500 dark:text-gray-400 text-sm mb-2">${index === 0 ? "Today" : weekdayFormatter.format(date)}</p>
                 <span class="material-icons text-yellow-500 text-4xl my-2">${getWeatherIcon(day.icon)}</span>
                 <div class="flex justify-center space-x-2 mt-1">
                     <span class="text-lg font-bold text-gray-800 dark:text-white">${Math.round(day.tempmax)}°</span>
