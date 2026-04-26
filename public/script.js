@@ -642,6 +642,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Set loading placeholder immediately
     locationImage.src = `https://placehold.co/400x150/1f2937/ffffff?text=Loading...`;
+    locationImage.alt = `Cityscape or landmark of ${displayLocation}`;
     // Show image card
     locationImage.parentElement.classList.remove('hidden');
     
@@ -1130,7 +1131,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-auto p-6">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold text-gray-800 dark:text-white">Compare Weather</h2>
-        <button id="close-compare" class="material-icons text-gray-500 hover:text-gray-700">close</button>
+        <button id="close-compare" class="material-icons text-gray-500 hover:text-gray-700" aria-label="Close comparison" title="Close comparison">close</button>
       </div>
       <div class="grid grid-cols-2 gap-4" id="compare-content"></div>
     </div>
