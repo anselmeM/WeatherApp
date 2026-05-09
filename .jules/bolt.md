@@ -22,3 +22,6 @@
 ## 2026-04-11 - [Intl.DateTimeFormat Optimization]
 **Learning:** Instantiating new `Intl.DateTimeFormat` instances for formatting dates and times within a loop or repeatedly called function (e.g., in rendering loops) has a high CPU cost due to the initialization overhead.
 **Action:** Always cache `Intl.DateTimeFormat` instances at the module scope for frequently used date/time formatting utilities to eliminate the repeated constructor calls. This yields significant performance speedups.
+## 2024-05-09 - [Intl.DateTimeFormat Optimization in UI Components]
+**Learning:** Instantiating new `Intl.DateTimeFormat` instances on every render cycle (e.g., in `updateCurrentWeather` or inside a `.forEach` loop for `updateWeeklyForecast`) introduces significant, redundant CPU overhead because the initialization of `Intl` objects is computationally expensive in JavaScript engines.
+**Action:** Always extract and cache `Intl.DateTimeFormat` instances at the module scope so they are created once. This provides identical output with a fraction of the computational cost, dramatically improving frontend rendering performance, particularly on low-end devices or in tight loops.
