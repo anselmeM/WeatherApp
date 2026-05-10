@@ -9,3 +9,6 @@
 ## 2024-05-24 - Dropdown Focus Loss
 **Learning:** Floating UI elements (like autocomplete dropdowns) must close not just on external clicks, but also when keyboard focus moves away (e.g., via Tab key). Otherwise, keyboard users leave lingering elements that obscure the page.
 **Action:** When implementing custom floating UI elements, always pair document `click` handlers with document `focusin` handlers to ensure the element correctly closes when keyboard users tab away from it.
+## 2026-05-10 - Toggle Buttons ARIA States
+**Learning:** When using custom toggle buttons or tabs where visual selection is handled by CSS classes, screen readers remain unaware of the active state. Relying solely on visual cues breaks accessibility for non-sighted users.
+**Action:** Always pair visual active states with semantic ARIA states (`aria-selected` for tabs, `aria-pressed` for toggle buttons) and ensure these attributes are dynamically updated in JavaScript when the state changes.

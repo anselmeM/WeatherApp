@@ -830,6 +830,8 @@ document.addEventListener("DOMContentLoaded", () => {
         "text-gray-900 dark:text-white font-bold text-lg border-b-4 border-blue-500 pb-1 interactive-element";
       weekButton.className =
         "text-gray-500 dark:text-gray-400 font-bold text-lg interactive-element";
+      todayButton.setAttribute("aria-selected", "true");
+      weekButton.setAttribute("aria-selected", "false");
     } else {
       hourlySection.classList.add("view-hidden");
       weeklySection.classList.remove("view-hidden");
@@ -837,6 +839,8 @@ document.addEventListener("DOMContentLoaded", () => {
         "text-gray-900 dark:text-white font-bold text-lg border-b-4 border-blue-500 pb-1 interactive-element";
       todayButton.className =
         "text-gray-500 dark:text-gray-400 font-bold text-lg interactive-element";
+      todayButton.setAttribute("aria-selected", "false");
+      weekButton.setAttribute("aria-selected", "true");
     }
   }
 
@@ -863,11 +867,15 @@ document.addEventListener("DOMContentLoaded", () => {
         "bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-md rounded-xl px-3 py-1.5 flex items-center justify-center font-bold text-sm interactive-element";
       fahrenheitButton.className =
         "px-3 py-1.5 flex items-center justify-center font-bold text-sm text-gray-500 dark:text-gray-400 interactive-element";
+      celsiusButton.setAttribute("aria-pressed", "true");
+      fahrenheitButton.setAttribute("aria-pressed", "false");
     } else {
       fahrenheitButton.className =
         "bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-md rounded-xl px-3 py-1.5 flex items-center justify-center font-bold text-sm interactive-element";
       celsiusButton.className =
         "px-3 py-1.5 flex items-center justify-center font-bold text-sm text-gray-500 dark:text-gray-400 interactive-element";
+      celsiusButton.setAttribute("aria-pressed", "false");
+      fahrenheitButton.setAttribute("aria-pressed", "true");
     }
     
     // ⚡ Performance: Convert temperatures in-place without API refetch
@@ -1424,6 +1432,8 @@ document.addEventListener("DOMContentLoaded", () => {
         "bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-md rounded-xl px-3 py-1.5 flex items-center justify-center font-bold text-sm interactive-element";
       celsiusButton.className =
         "px-3 py-1.5 flex items-center justify-center font-bold text-sm text-gray-500 dark:text-gray-400 interactive-element";
+      celsiusButton.setAttribute("aria-pressed", "false");
+      fahrenheitButton.setAttribute("aria-pressed", "true");
     }
   }
 

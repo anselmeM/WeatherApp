@@ -112,9 +112,9 @@
         <!-- Right Panel -->
         <main class="w-full lg:w-2/3 flex flex-col">
             <div class="flex justify-between items-center mb-8 bg-white/30 dark:bg-gray-800/30 p-4 rounded-3xl backdrop-blur-md border border-white/20">
-                <div class="flex space-x-8 items-center">
-                    <button id="today-button" class="text-gray-900 dark:text-white font-bold text-lg border-b-4 border-blue-500 pb-1 interactive-element" aria-label="Show today's forecast">Today</button>
-                    <button id="week-button" class="text-gray-500 dark:text-gray-400 font-bold text-lg interactive-element hover:text-gray-700 dark:hover:text-gray-200" aria-label="Show weekly forecast">Week</button>
+                <div class="flex space-x-8 items-center" role="tablist">
+                    <button id="today-button" class="text-gray-900 dark:text-white font-bold text-lg border-b-4 border-blue-500 pb-1 interactive-element" aria-label="Show today's forecast" role="tab" aria-selected="true" aria-controls="hourly-forecast-section">Today</button>
+                    <button id="week-button" class="text-gray-500 dark:text-gray-400 font-bold text-lg interactive-element hover:text-gray-700 dark:hover:text-gray-200" aria-label="Show weekly forecast" role="tab" aria-selected="false" aria-controls="weekly-forecast-section">Week</button>
                 </div>
                 <div class="flex items-center space-x-4">
                     <button id="compare-button" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Compare locations" title="Compare locations">
@@ -126,9 +126,9 @@
                     <button id="theme-toggle" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Toggle dark and light mode" title="Toggle dark and light mode">
                         <span class="material-icons text-gray-700 dark:text-gray-200">light_mode</span>
                     </button>
-                    <div class="flex items-center bg-gray-900/10 dark:bg-white/10 p-1 rounded-2xl">
-                        <button id="celsius-button" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-md rounded-xl px-3 py-1.5 flex items-center justify-center font-bold text-sm interactive-element" aria-label="Switch to Celsius" title="Switch to Celsius">°C</button>
-                        <button id="fahrenheit-button" class="px-3 py-1.5 flex items-center justify-center font-bold text-sm text-gray-500 dark:text-gray-400 interactive-element" aria-label="Switch to Fahrenheit" title="Switch to Fahrenheit">°F</button>
+                    <div class="flex items-center bg-gray-900/10 dark:bg-white/10 p-1 rounded-2xl" role="group" aria-label="Temperature units">
+                        <button id="celsius-button" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-md rounded-xl px-3 py-1.5 flex items-center justify-center font-bold text-sm interactive-element" aria-label="Switch to Celsius" title="Switch to Celsius" aria-pressed="true">°C</button>
+                        <button id="fahrenheit-button" class="px-3 py-1.5 flex items-center justify-center font-bold text-sm text-gray-500 dark:text-gray-400 interactive-element" aria-label="Switch to Fahrenheit" title="Switch to Fahrenheit" aria-pressed="false">°F</button>
                     </div>
                     <button id="logout-button" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Logout" title="Logout">
                         <span class="material-icons text-gray-700 dark:text-gray-200">logout</span>
