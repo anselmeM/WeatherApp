@@ -22,3 +22,7 @@
 ## 2026-04-11 - [Intl.DateTimeFormat Optimization]
 **Learning:** Instantiating new `Intl.DateTimeFormat` instances for formatting dates and times within a loop or repeatedly called function (e.g., in rendering loops) has a high CPU cost due to the initialization overhead.
 **Action:** Always cache `Intl.DateTimeFormat` instances at the module scope for frequently used date/time formatting utilities to eliminate the repeated constructor calls. This yields significant performance speedups.
+
+## $(date +%Y-%m-%d) - [Intl.DateTimeFormat Optimization in UI Rendering Loops]
+**Learning:** `new Date().toLocaleDateString()` internally instantiates a new `Intl.DateTimeFormat` object on every call. Using this inside rendering loops for things like displaying daily forecasts causes severe performance degradation due to the high CPU overhead of the initialization.
+**Action:** Always instantiate and cache `Intl.DateTimeFormat` objects at the module or class scope when frequently formatting dates or times, and use the cached instance's `.format(date)` method instead.
