@@ -29,9 +29,7 @@ export function getWindDirection(deg) {
     return directions[index % 16];
 }
 
-// ⚡ Bolt: Cache Intl.DateTimeFormat at module scope
-// Calling toLocaleTimeString or creating new Intl.DateTimeFormat instances is computationally expensive.
-// Caching it here yields a ~58x speedup for formatting times during render loops.
+// ⚡ Bolt: Cache Intl.DateTimeFormat instance to avoid costly initialization on every formatTime call
 const timeFormatter = new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
     minute: "2-digit",
@@ -52,7 +50,9 @@ export function formatTime(timeStr) {
         return "";
     }
     const date = new Date(2023, 0, 1, hour, minute);
-    return timeFormatter.format(date).replace(" ", "");
+    return timeFormatter
+      .format(date)
+      .replace(" ", "");
 }
 
 export function showError(message, errorType = 'generic') {
