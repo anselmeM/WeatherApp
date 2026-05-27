@@ -19,6 +19,6 @@
 **Learning:** Storing the resolved value of an API request in a client-side cache still leaves a race condition window: concurrent calls made before the first request resolves will trigger redundant network fetches.
 **Action:** When implementing in-memory caching for frequent operations (like autocomplete queries or UI image fetching), store the *Promise* of the network request rather than the resolved value. This ensures that any subsequent calls while the request is "in-flight" will await the same Promise, successfully deduplicating the network overhead.
 
-## 2024-05-19 - [Repeated Intl Object Instantiation Overhead]
-**Learning:** `toLocaleTimeString` and `toLocaleDateString` inherently create new `Intl.DateTimeFormat` instances on every call, which is very slow.
-**Action:** When using `toLocaleTimeString` inside frequently called code, like utilities or rendering loops, cache the `Intl.DateTimeFormat` instance at the module scope and use `.format()` instead to dramatically decrease execution time overhead.
+## 2026-04-11 - [Intl.DateTimeFormat Optimization]
+**Learning:** Instantiating new `Intl.DateTimeFormat` instances for formatting dates and times within a loop or repeatedly called function (e.g., in rendering loops) has a high CPU cost due to the initialization overhead.
+**Action:** Always cache `Intl.DateTimeFormat` instances at the module scope for frequently used date/time formatting utilities to eliminate the repeated constructor calls. This yields significant performance speedups.

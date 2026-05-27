@@ -5,3 +5,7 @@
 ## 2024-05-24 - Icon Button Context & Dynamic Page Titles
 **Learning:** `aria-label` makes icon-only buttons accessible to screen readers, but sighted users still need context for what the button does. Additionally, static page titles reduce usability for users with multiple tabs open.
 **Action:** Always pair `aria-label` with a native `title` attribute on icon-only interactive elements to provide hover tooltips for sighted users. Ensure the `document.title` is updated dynamically with critical context to improve tab glanceability.
+
+## 2024-05-24 - Dropdown Focus Loss
+**Learning:** Floating UI elements (like autocomplete dropdowns) must close not just on external clicks, but also when keyboard focus moves away (e.g., via Tab key). Otherwise, keyboard users leave lingering elements that obscure the page.
+**Action:** When implementing custom floating UI elements, always pair document `click` handlers with document `focusin` handlers to ensure the element correctly closes when keyboard users tab away from it.
