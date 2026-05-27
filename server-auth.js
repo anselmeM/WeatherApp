@@ -215,7 +215,9 @@ app.post('/api/auth/logout', authenticateToken, (req, res) => {
   
   if (token) {
     // Add token to blacklist to invalidate it
-    blacklistToken(token);
+    // Pass JWT expiration (in ms) to ensure the token remains blacklisted for its entire lifetime
+    const expiresAt = req.user && req.user.exp ? req.user.exp * 1000 : null;
+    blacklistToken(token, expiresAt);
   }
   
   res.json({ message: 'Logout successful' });
