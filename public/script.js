@@ -40,6 +40,16 @@ const currentDatetimeFormatter = new Intl.DateTimeFormat("en-US", {
 const shortWeekdayFormatter = new Intl.DateTimeFormat("en-US", { weekday: "short" });
 
 document.addEventListener("DOMContentLoaded", () => {
+  // ⚡ Bolt: Cache Intl.DateTimeFormat instances to avoid costly initialization on every format call
+  const currentDatetimeFormatter = new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const shortWeekdayFormatter = new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+  });
+
   // 🛡️ Privacy: GDPR consent - Check for prior consent before using localStorage
   const CONSENT_KEY = 'weather_privacy_consent';
   const DATA_RETENTION_DAYS = 90;
