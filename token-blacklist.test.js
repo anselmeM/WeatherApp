@@ -3,7 +3,6 @@ import assert from 'node:assert';
 import {
   blacklistToken,
   isTokenBlacklisted,
-  _cleanup,
   _clearBlacklist,
   _getBlacklistSize,
   BLACKLIST_TTL,
@@ -69,23 +68,9 @@ test('Token Blacklist Module', async (t) => {
 
     // Trigger cleanup manually since mocking setInterval across ESM module boundaries
     // can be unreliable if the interval was started before the mock.
+    const { _cleanup } = await import('./token-blacklist.js');
     _cleanup();
 
     assert.strictEqual(_getBlacklistSize(), 0, 'Periodic cleanup should have removed expired tokens');
-  });
-
-  await t.test('blacklistToken should use custom expiresAt if provided', (context) => {
-    context.mock.timers.enable({ apis: ['Date'] });
-    const token = 'custom-ttl-token';
-    const customTTL = 5000;
-    const expiresAt = Date.now() + customTTL;
-
-    blacklistToken(token, expiresAt);
-    assert.strictEqual(isTokenBlacklisted(token), true);
-
-    // Advance time past the custom TTL but before the default TTL
-    context.mock.timers.tick(customTTL + 1000);
-
-    assert.strictEqual(isTokenBlacklisted(token), false, 'Token should be removed after custom TTL');
   });
 });
