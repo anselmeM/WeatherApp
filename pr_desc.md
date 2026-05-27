@@ -1,10 +1,8 @@
-💡 **What:** A benchmark was added to verify the performance impact of `DocumentFragment` optimization used in DOM appends in loops. A performance learning was added to `.jules/bolt.md` performance journal detailing the results of the layout benchmarking approach.
-The target file `public/script.js` was reviewed and confirmed to already be optimized with `DocumentFragment` caching for `data.days.slice(0, 7).forEach`, preventing N separate reflow operations and layout recalculations.
+🎯 **What:**
+Fixed a Cross-Site Scripting (XSS) vulnerability in the frontend weather alert banner (`public/script.js`). The application previously injected dynamic event headlines into the DOM using `alertText.innerHTML`.
 
-🎯 **Why:** Manipulating the DOM inside a loop (like `forecastGrid.appendChild(card)`) triggers expensive repaints and layout reflows on each iteration. Batching DOM mutations with `DocumentFragment` fixes this inefficiency by ensuring only one reflow is triggered at the end when the complete fragment is appended.
+⚠️ **Risk:**
+High. Weather alerts fetched from external sources are inherently untrusted. If an attacker managed to manipulate an alert response (e.g., through a Man-in-The-Middle attack on an insecure upstream API or by tampering with API responses), they could inject malicious HTML or JavaScript. This payload would execute in the user's browser, potentially allowing attackers to steal session tokens, manipulate the UI, or perform unauthorized actions on behalf of the user.
 
-📊 **Measured Improvement:**
-- A benchmark comparing direct DOM appends vs `DocumentFragment` appends was developed and run using Node.js and JSDOM.
-- **Direct Append Average Time:** ~0.26 ms
-- **DocumentFragment Average Time:** ~0.28 ms
-- **Note on Results:** While the DocumentFragment allocation adds marginal overhead in JSDOM (showing a ~7-10% regression), JSDOM lacks a real rendering/layout engine. In actual browsers (where reflow computing costs dominate), batching 7 operations into 1 reduces layout calculation time drastically, achieving significant performance improvements. This learning is documented in the `.jules/bolt.md` journal.
+🛡️ **Solution:**
+Replaced the vulnerable `innerHTML` assignment with safe DOM manipulation methods. The multi-alert UI is now constructed using `document.createElement`, with data safely injected via `textContent` and `document.createTextNode`. A `DocumentFragment` is used to batch append the elements efficiently. This ensures that any HTML entities within the alert event or headline are treated strictly as text, preventing arbitrary code execution while preserving the original styling and structure.

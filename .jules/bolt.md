@@ -18,6 +18,7 @@
 ## $(date +%Y-%m-%d) - [In-Memory Promise Caching for Deduplication]
 **Learning:** Storing the resolved value of an API request in a client-side cache still leaves a race condition window: concurrent calls made before the first request resolves will trigger redundant network fetches.
 **Action:** When implementing in-memory caching for frequent operations (like autocomplete queries or UI image fetching), store the *Promise* of the network request rather than the resolved value. This ensures that any subsequent calls while the request is "in-flight" will await the same Promise, successfully deduplicating the network overhead.
-## 2024-04-19 - Cache Intl.DateTimeFormat in Utility Functions
-**Learning:** Initializing `Intl.DateTimeFormat` within frequently called functions like `formatTime` has a high CPU cost due to repeated constructor calls, which can cause significant latency in loops.
-**Action:** Always instantiate `Intl.DateTimeFormat` objects once at the module scope and reuse them across function calls for a massive performance boost.
+
+## 2026-04-11 - [Intl.DateTimeFormat Optimization]
+**Learning:** Instantiating new `Intl.DateTimeFormat` instances for formatting dates and times within a loop or repeatedly called function (e.g., in rendering loops) has a high CPU cost due to the initialization overhead.
+**Action:** Always cache `Intl.DateTimeFormat` instances at the module scope for frequently used date/time formatting utilities to eliminate the repeated constructor calls. This yields significant performance speedups.
