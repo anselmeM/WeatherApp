@@ -1,6 +1,17 @@
 import { getWeatherIcon, getWindDirection, formatTime, showError } from './utils.js';
 import { drawTempChart } from './chart.js';
 
+// ⚡ Bolt: Cache Intl.DateTimeFormat instances to avoid costly initialization on every format call
+const currentDatetimeFormatter = new Intl.DateTimeFormat("en-US", {
+  weekday: "long",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+const shortWeekdayFormatter = new Intl.DateTimeFormat("en-US", {
+  weekday: "short",
+});
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
