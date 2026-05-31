@@ -62,9 +62,16 @@ export function drawTempChart(hours, unit) {
         circle.setAttribute('r', 6);
         circle.setAttribute('class', 'temp-point interactive-element');
         
+        // 🛡️ Accessibility: Add ARIA attributes and keyboard focus
+        const timeStr = displayHours[i].datetime.substring(0, 5);
+        const tempStr = `${displayHours[i].temp}${unit}`;
+        circle.setAttribute('role', 'img');
+        circle.setAttribute('aria-label', `Temperature at ${timeStr} is ${tempStr}`);
+        circle.setAttribute('tabindex', '0');
+
         // Add title for hover tooltip
         const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
-        title.textContent = `${displayHours[i].datetime.substring(0, 5)}: ${displayHours[i].temp}${unit}`;
+        title.textContent = `${timeStr}: ${tempStr}`;
         circle.appendChild(title);
         
         fragment.appendChild(circle);

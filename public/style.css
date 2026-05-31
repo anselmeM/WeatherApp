@@ -210,6 +210,15 @@ button:focus-visible {
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
 }
 
+/* 🛡️ Accessibility: Focus styles for SVG coordinate shapes */
+.temp-point:focus-visible {
+  outline: none; /* Hide default outline since box-shadow/outline don't work well on SVG shapes */
+  transform: scale(2);
+  transform-box: fill-box;
+  transform-origin: center;
+  fill: #1d4ed8; /* Darker blue to indicate focus */
+}
+
 /* Input focus visible */
 input:focus-visible {
   outline: none;

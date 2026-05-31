@@ -9,3 +9,6 @@
 ## 2024-05-24 - Dropdown Focus Loss
 **Learning:** Floating UI elements (like autocomplete dropdowns) must close not just on external clicks, but also when keyboard focus moves away (e.g., via Tab key). Otherwise, keyboard users leave lingering elements that obscure the page.
 **Action:** When implementing custom floating UI elements, always pair document `click` handlers with document `focusin` handlers to ensure the element correctly closes when keyboard users tab away from it.
+## 2026-03-29 - SVG Chart Accessibility
+**Learning:** SVG elements like `<circle>` used in data visualizations are not naturally keyboard-accessible or visible to screen readers. Furthermore, standard CSS `box-shadow` or `outline` (like Tailwind's `ring` utilities) do not render predictably on SVG coordinate shapes.
+**Action:** To make them accessible, apply `tabindex="0"`, `role="img"`, and descriptive `aria-label`s. Use CSS `transform` (e.g., `transform: scale(2); transform-box: fill-box; transform-origin: center;`) for `:focus-visible` indicators instead of box-shadows.
