@@ -36,9 +36,12 @@ const timeFormatter = new Intl.DateTimeFormat("en-US", {
     hour12: true,
 });
 
+// ⚡ Bolt: Extract regex to module scope to prevent instantiation on every formatTime call
+const timeRegex = /^(?<hour>\d{1,2}):(?<minute>\d{2})(?::(?<second>\d{2}))?$/;
+
 export function formatTime(timeStr) {
     if (!timeStr) return "";
-    const match = timeStr.match(/^(?<hour>\d{1,2}):(?<minute>\d{2})(?::(?<second>\d{2}))?$/);
+    const match = timeRegex.exec(timeStr);
     if (!match) {
         return "";
     }

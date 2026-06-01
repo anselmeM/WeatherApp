@@ -585,12 +585,14 @@ async function handleWeatherRequest(req, res, tier) {
 // UTILITY FUNCTIONS
 // ============================================
 
+// ⚡ Bolt: Extract regex patterns to module scope to avoid instantiation on every validation check
+const coordinatePattern = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
+const cityNamePattern = /^[\p{L}\p{N}\s\-.,']+$/u;
+
 function isValidLocation(location) {
   if (!location || typeof location !== 'string') return false;
   if (location.length > 200) return false;
   if (location.includes('..')) return false;
-  const coordinatePattern = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
-  const cityNamePattern = /^[\p{L}\p{N}\s\-.,']+$/u;
   return coordinatePattern.test(location.trim()) || cityNamePattern.test(location.trim());
 }
 
