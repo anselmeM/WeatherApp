@@ -410,6 +410,50 @@ app.delete('/api/user/locations', authenticateToken, (req, res) => {
   });
 });
 
+// POST /api/user/locations - Pin/save a location
+app.post('/api/user/locations', authenticateToken, (req, res) => {
+  const { email } = req.user;
+  const { location } = req.body;
+  
+  if (!location) {
+    return res.status(400).json({ error: 'Location is required' });
+  }
+  
+  const user = users.get(email);
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  
+  const newLoc = location.trim();
+  const normalizedLoc = newLoc.toLowerCase();
+  
+  // Check if already saved
+  const isAlreadySaved = user.locations.some(loc => loc.toLowerCase() === normalizedLoc);
+  if (isAlreadySaved) {
+    return res.json({
+      message: 'Location already saved',
+      locations: user.locations
+    });
+  }
+  
+  // Check limit for free tier
+  if (user.tier === 'free' && user.locations.length >= TIER_LIMITS.free.maxLocations) {
+    return res.status(403).json({
+      error: 'Location limit reached',
+      upgradeRequired: true,
+      message: 'Free tier limited to 3 saved locations. Upgrade to premium for unlimited.'
+    });
+  }
+  
+  user.locations.push(newLoc);
+  saveUsers();
+  
+  res.json({
+    message: 'Location saved successfully',
+    locations: user.locations
+  });
+});
+
 // GET /api/auth/profile - Get User Profile
 app.get('/api/auth/profile', authenticateToken, (req, res) => {
   const { email } = req.user;
@@ -443,23 +487,6 @@ app.get('/api/weather/premium', authenticateToken, checkTier('premium'), async (
   await handleWeatherRequest(req, res, req.user.tier);
 });
 
-// Helper to save a successfully resolved location for authenticated users
-function saveResolvedLocation(req, resolvedAddress) {
-  if (req.user) {
-    const user = users.get(req.user.email);
-    if (user) {
-      const resolvedLoc = resolvedAddress.split(',')[0].trim();
-      if (!user.locations.includes(resolvedLoc)) {
-        if (user.tier === 'free' && user.locations.length >= TIER_LIMITS.free.maxLocations) {
-          return;
-        }
-        user.locations.push(resolvedLoc);
-        saveUsers();
-      }
-    }
-  }
-}
-
 // Weather data fetcher with tier enforcement
 async function handleWeatherRequest(req, res, tier) {
   const { location, unitGroup = 'metric' } = req.query;
@@ -474,22 +501,6 @@ async function handleWeatherRequest(req, res, tier) {
     return res.status(400).json({ error: 'Invalid location format' });
   }
 
-  // Check location limit for free tier
-  if (tier === 'free') {
-    const user = req.user ? users.get(req.user.email) : null;
-    if (user && user.locations) {
-      const queriedCity = location.split(',')[0].trim().toLowerCase();
-      const isAlreadySaved = user.locations.some(loc => loc.toLowerCase() === queriedCity);
-      if (!isAlreadySaved && user.locations.length >= TIER_LIMITS.free.maxLocations) {
-        return res.status(403).json({
-          error: 'Location limit reached',
-          upgradeRequired: true,
-          message: 'Free tier limited to 3 saved locations. Upgrade to premium for unlimited.'
-        });
-      }
-    }
-  }
-
   const locString = String(location);
   const cacheKey = `${locString.toLowerCase()}-${unitGroup}-${tier}`;
   const cachedItem = weatherCache.get(cacheKey);
@@ -497,10 +508,6 @@ async function handleWeatherRequest(req, res, tier) {
   if (cachedItem && (Date.now() - cachedItem.timestamp < CACHE_TTL)) {
     weatherCache.delete(cacheKey);
     weatherCache.set(cacheKey, cachedItem);
-    
-    // Save location to user's profile if authenticated
-    saveResolvedLocation(req, cachedItem.data.resolvedAddress);
-    
     return res.json(cachedItem.data);
   }
 
@@ -516,7 +523,7 @@ async function handleWeatherRequest(req, res, tier) {
     
     if (!response.ok) {
       const errorText = await response.text();
-      return res.status(502).json({ error: 'Weather service unavailable' });
+      return res.status(520).json({ error: 'Weather service unavailable' });
     }
 
     const data = await response.json();
@@ -560,9 +567,6 @@ async function handleWeatherRequest(req, res, tier) {
     data.tier = tier;
     data.isLimited = isForecastLimited;
     data.upgradeMessage = isForecastLimited ? 'Upgrade to Premium to see full 7-day forecast' : null;
-
-    // Save location to user's profile if authenticated
-    saveResolvedLocation(req, data.resolvedAddress);
 
     // Cache the response
     if (weatherCache.size >= MAX_CACHE_SIZE) {

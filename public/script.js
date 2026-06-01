@@ -165,8 +165,9 @@ document.addEventListener("DOMContentLoaded", () => {
     "recent-searches-container",
   );
   const recentSearchesList = document.getElementById("recent-searches-list");
-  const autocompleteDropdown = document.getElementById("search-autocomplete-dropdown");
-  const clearSearchButton = document.getElementById("clear-search-button");
+  const locationNameEl = document.getElementById("location-name");
+  const locationImage = document.getElementById("location-image");
+  const pinLocationBtn = document.getElementById("pin-location-btn");
 
   // ⚡ Bolt: Cache DOM elements at initialization to avoid redundant querying during rendering
   const mainWeatherIcon = document.getElementById("main-weather-icon");
@@ -422,7 +423,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                if (response.status === 401 || response.status === 403) {
+                if (response.status === 401 || (response.status === 403 && errorData.upgradeRequired !== true)) {
                     clearAuth();
                     updateAuthUI();
                 }
@@ -431,7 +432,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             state.currentWeatherData = await response.json();
             state.fetchedUnitGroup = state.unitGroup; // Record unit group of fetched data
-            addToRecentSearches(state.currentWeatherData.resolvedAddress);
             updateUI();
         } catch (error) {
             console.error("Error fetching weather data:", error);
@@ -463,17 +463,96 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-  function addToRecentSearches(address) {
-    const city = address.split(",")[0].trim();
-    if (!state.recentSearches.includes(city)) {
-      state.recentSearches.unshift(city);
-      if (state.recentSearches.length > 5) state.recentSearches.pop();
-      localStorage.setItem(
-        "recentSearches",
-        JSON.stringify(state.recentSearches),
-      );
-      updateRecentSearchesUI();
+  async function pinLocation(city) {
+    const { user } = getAuth();
+    
+    // Check limit
+    const isPremium = user && user.tier === 'premium';
+    if (!isPremium && state.recentSearches.length >= 3) {
+      if (user) {
+        showUpgradePrompt("Saving locations");
+      } else {
+        showRegisterPrompt("Saving locations");
+      }
+      return;
     }
+    
+    // Check if already in the list to avoid duplicate
+    if (!state.recentSearches.some(c => c.toLowerCase() === city.toLowerCase())) {
+      state.recentSearches.push(city);
+      localStorage.setItem('recentSearches', JSON.stringify(state.recentSearches));
+      updateRecentSearchesUI();
+      updatePinButtonUI();
+    }
+    
+    if (user) {
+      try {
+        const response = await fetch('/api/user/locations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ location: city })
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          if (errorData.upgradeRequired) {
+            // Rollback local change if server rejected it due to limits
+            state.recentSearches = state.recentSearches.filter(c => c.toLowerCase() !== city.toLowerCase());
+            localStorage.setItem('recentSearches', JSON.stringify(state.recentSearches));
+            updateRecentSearchesUI();
+            updatePinButtonUI();
+            showUpgradePrompt("Saving locations");
+          } else {
+            showError(errorData.error || "Failed to pin location");
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to save pinned location to server:', e);
+      }
+    }
+  }
+
+  function updatePinButtonUI() {
+    if (!pinLocationBtn || !state.currentWeatherData) return;
+    const resolvedCity = state.currentWeatherData.resolvedAddress.split(",")[0].trim();
+    const isPinned = state.recentSearches.some(c => c.toLowerCase() === resolvedCity.toLowerCase());
+    const icon = pinLocationBtn.querySelector('.material-icons');
+    if (icon) {
+      if (isPinned) {
+        icon.textContent = 'bookmark';
+        pinLocationBtn.title = 'Unpin Location';
+        pinLocationBtn.setAttribute('aria-label', 'Unpin Location');
+      } else {
+        icon.textContent = 'bookmark_border';
+        pinLocationBtn.title = 'Pin Location';
+        pinLocationBtn.setAttribute('aria-label', 'Pin Location');
+      }
+    }
+  }
+
+  // Show registration prompt for anonymous users
+  function showRegisterPrompt(feature) {
+    const prompt = document.createElement('div');
+    prompt.className = 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4';
+    prompt.innerHTML = `
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-sm text-center border border-gray-200/10">
+        <span class="material-icons text-4xl text-blue-500 animate-bounce">account_circle</span>
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white mt-2">Account Required</h3>
+        <p class="text-gray-500 dark:text-gray-400 mt-2">${feature} requires a free account. Register now to save locations and sync them across devices!</p>
+        <div class="flex justify-center space-x-3 mt-5">
+          <button id="register-cancel" class="px-4 py-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 font-medium cursor-pointer">Maybe Later</button>
+          <button id="register-btn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg cursor-pointer transition">Register / Login</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(prompt);
+    
+    prompt.querySelector('#register-cancel')?.addEventListener('click', () => prompt.remove());
+    prompt.querySelector('#register-btn')?.addEventListener('click', () => {
+      prompt.remove();
+      window.location.href = '/landing.html';
+    });
   }
 
   async function deleteSavedLocation(city) {
@@ -483,6 +562,7 @@ document.addEventListener("DOMContentLoaded", () => {
     state.recentSearches = state.recentSearches.filter(c => c.toLowerCase() !== city.toLowerCase());
     localStorage.setItem('recentSearches', JSON.stringify(state.recentSearches));
     updateRecentSearchesUI();
+    updatePinButtonUI();
     
     if (user) {
       try {
@@ -593,6 +673,7 @@ document.addEventListener("DOMContentLoaded", () => {
     drawTempChart(convertedHours, tempUnit);
     
     updateRecentSearchesUI();
+    updatePinButtonUI();
     showAlertBanner(data.alerts);
 
     // 🔗 Phase 11.5: Render minutely precipitation if available
@@ -1045,6 +1126,20 @@ document.addEventListener("DOMContentLoaded", () => {
     alertBanner.classList.add("-translate-y-full");
   });
 
+  if (pinLocationBtn) {
+    pinLocationBtn.addEventListener("click", () => {
+      if (!state.currentWeatherData) return;
+      const resolvedCity = state.currentWeatherData.resolvedAddress.split(",")[0].trim();
+      const isPinned = state.recentSearches.some(c => c.toLowerCase() === resolvedCity.toLowerCase());
+      
+      if (isPinned) {
+        deleteSavedLocation(resolvedCity);
+      } else {
+        pinLocation(resolvedCity);
+      }
+    });
+  }
+
   // 🔗 Phase 11.8: Freemium API Service Integration
   const USER_KEY = 'weather_user';
   
@@ -1156,6 +1251,7 @@ document.addEventListener("DOMContentLoaded", () => {
           state.recentSearches = profileData.locations;
           localStorage.setItem('recentSearches', JSON.stringify(state.recentSearches));
           updateRecentSearchesUI();
+          updatePinButtonUI();
         }
       } else if (response.status === 401 || response.status === 403) {
         clearAuth();
@@ -1251,6 +1347,7 @@ document.addEventListener("DOMContentLoaded", () => {
           state.recentSearches = data.locations;
           localStorage.setItem('recentSearches', JSON.stringify(state.recentSearches));
           updateRecentSearchesUI();
+          updatePinButtonUI();
         }
         
         // Update user state tier in current weather data if loaded
