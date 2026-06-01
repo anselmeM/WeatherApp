@@ -718,6 +718,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fetch city image from Wikipedia
     getCityImage(cityName).then(url => {
       locationImage.src = url;
+      locationImage.alt = displayLocation;
     });
   }
 
