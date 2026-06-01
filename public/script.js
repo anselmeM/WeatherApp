@@ -120,10 +120,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const state = {
     unitGroup: localStorage.getItem("unitGroup") || "metric",
+    fetchedUnitGroup: null, // Tracks the unit weather data was originally fetched in
     currentWeatherData: null,
     isInitialLoad: true,
     recentSearches: JSON.parse(localStorage.getItem("recentSearches") || "[]").filter(c => !c.match(/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/)),
   };
+
+  function getDisplayTemp(tempVal) {
+    if (tempVal === undefined || tempVal === null) return '--';
+    if (state.unitGroup === state.fetchedUnitGroup) {
+      return Math.round(tempVal);
+    }
+    if (state.unitGroup === 'metric') {
+      // Data was fetched in Fahrenheit (US), convert to Celsius (metric)
+      return Math.round((tempVal - 32) * 5 / 9);
+    } else {
+      // Data was fetched in Celsius (metric), convert to Fahrenheit (US)
+      return Math.round(tempVal * 9 / 5 + 32);
+    }
+  }
 
   const loadingOverlay = document.getElementById("loading-overlay");
   const weatherDashboard = document.getElementById("weather-dashboard");
@@ -402,15 +417,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const apiUrl = `/api/weather?location=${encodeURIComponent(location)}&unitGroup=${state.unitGroup}`;
         try {
-            const response = await fetch(apiUrl, { signal: controller.signal });
+            const response = await authFetch(apiUrl, { signal: controller.signal });
             clearTimeout(timeoutId);
 
             if (!response.ok) {
                 const errorData = await response.json();
+                if (response.status === 401 || response.status === 403) {
+                    clearAuth();
+                    updateAuthUI();
+                }
                 throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
             }
 
             state.currentWeatherData = await response.json();
+            state.fetchedUnitGroup = state.unitGroup; // Record unit group of fetched data
             addToRecentSearches(state.currentWeatherData.resolvedAddress);
             updateUI();
         } catch (error) {
@@ -526,7 +546,14 @@ document.addEventListener("DOMContentLoaded", () => {
     updateHourlyForecast(today, tempUnit);
     updateWeeklyForecast(data, tempUnit);
     updateHighlights(today, current, speedUnit, distUnit);
-    drawTempChart(today.hours, tempUnit);
+    
+    // Convert temperature points for chart to match display unit group
+    const convertedHours = today.hours.map(h => ({
+      ...h,
+      temp: typeof h.temp === 'number' ? getDisplayTemp(h.temp) : h.temp
+    }));
+    drawTempChart(convertedHours, tempUnit);
+    
     updateRecentSearchesUI();
     showAlertBanner(data.alerts);
 
@@ -615,9 +642,9 @@ document.addEventListener("DOMContentLoaded", () => {
     mainWeatherIcon.classList.add("icon-pop");
 
     currentTempEl.textContent =
-      `${Math.round(current.temp)}${tempUnit}`;
+      `${getDisplayTemp(current.temp)}${tempUnit}`;
     feelsLikeTempEl.textContent =
-      `Feels like ${Math.round(current.feelslike)}${tempUnit}`;
+      `Feels like ${getDisplayTemp(current.feelslike)}${tempUnit}`;
     currentDatetimeEl.textContent = currentDatetimeFormatter.format(new Date());
     conditionIconEl.textContent = getWeatherIcon(
       current.icon,
@@ -672,7 +699,7 @@ document.addEventListener("DOMContentLoaded", () => {
         card.innerHTML = `
                 <p class="font-bold text-gray-500 dark:text-gray-400 text-sm mb-2">${index === 0 ? "Now" : formatTime(h.datetime)}</p>
                 <span class="material-icons text-blue-500 dark:text-blue-400 text-4xl my-2">${getWeatherIcon(h.icon)}</span>
-                <p class="text-xl font-bold text-gray-800 dark:text-white mt-1">${Math.round(h.temp)}°</p>
+                <p class="text-xl font-bold text-gray-800 dark:text-white mt-1">${getDisplayTemp(h.temp)}°</p>
             `;
         fragment.appendChild(card);
       });
@@ -698,8 +725,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p class="font-bold text-gray-500 dark:text-gray-400 text-sm mb-2">${index === 0 ? "Today" : shortWeekdayFormatter.format(date)}</p>
                 <span class="material-icons text-yellow-500 text-4xl my-2">${getWeatherIcon(day.icon)}</span>
                 <div class="flex justify-center space-x-2 mt-1">
-                    <span class="text-lg font-bold text-gray-800 dark:text-white">${Math.round(day.tempmax)}°</span>
-                    <span class="text-lg font-medium text-gray-400">${Math.round(day.tempmin)}°</span>
+                    <span class="text-lg font-bold text-gray-800 dark:text-white">${getDisplayTemp(day.tempmax)}°</span>
+                    <span class="text-lg font-medium text-gray-400">${getDisplayTemp(day.tempmin)}°</span>
                 </div>
             `;
       fragment.appendChild(card);
@@ -736,12 +763,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateHighlights(today, current, speedUnit, distUnit) {
-    // Air Quality: Using a placeholder since Visual Crossing doesn't provide real-time AQ data
-    // Future: Integrate with WAQI or OpenWeatherMap Pollution API
-    const airQuality = null; // Real AQ data requires additional API integration
-    const airQualityLabel = 'Coming Soon';
+    const aqi = state.currentWeatherData?.aqi;
+    let airQualityLabel = 'Coming Soon';
+    let aqiColorClass = 'bg-gray-400';
+    if (aqi !== null && aqi !== undefined) {
+      if (aqi <= 50) {
+        airQualityLabel = 'Good';
+        aqiColorClass = 'bg-green-500';
+      } else if (aqi <= 100) {
+        airQualityLabel = 'Moderate';
+        aqiColorClass = 'bg-yellow-500';
+      } else if (aqi <= 150) {
+        airQualityLabel = 'Unhealthy for Sensitive';
+        aqiColorClass = 'bg-orange-500';
+      } else if (aqi <= 200) {
+        airQualityLabel = 'Unhealthy';
+        aqiColorClass = 'bg-red-500';
+      } else if (aqi <= 300) {
+        airQualityLabel = 'Very Unhealthy';
+        aqiColorClass = 'bg-purple-500';
+      } else {
+        airQualityLabel = 'Hazardous';
+        aqiColorClass = 'bg-red-950';
+      }
+    }
     const pressure = current.pressure || 1013;
-    const dewPoint = current.dew || 0;
+    const dewPoint = getDisplayTemp(current.dew);
 
     highlightsGrid.innerHTML = `
             <div class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 interactive-element">
@@ -806,10 +853,10 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
             <div class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md rounded-3xl p-6 border border-white/20 interactive-element">
                 <p class="text-gray-500 dark:text-gray-400 font-bold text-sm flex items-center mb-4"><span class="material-icons text-xs mr-2">waves</span>Air Quality</p>
-                <p class="text-4xl font-black my-4 text-gray-800 dark:text-white tracking-tighter">--</p>
+                <p class="text-4xl font-black my-4 text-gray-800 dark:text-white tracking-tighter">${aqi !== null && aqi !== undefined ? aqi : '--'}</p>
                 <p class="text-gray-500 dark:text-gray-400 font-medium mb-2">${airQualityLabel}</p>
                 <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mt-4 overflow-hidden">
-                    <div id="air-quality-bar" class="bg-gray-400 h-2.5 rounded-full progress-bar-animated shadow-sm" style="width: 0%"></div>
+                    <div id="air-quality-bar" class="${aqiColorClass} h-2.5 rounded-full progress-bar-animated shadow-sm" style="width: 0%"></div>
                 </div>
             </div>
         `;
@@ -822,8 +869,9 @@ document.addEventListener("DOMContentLoaded", () => {
         `${current.humidity}%`;
       document.getElementById("visibility-bar").style.width =
         `${Math.min(100, (current.visibility / 16) * 100)}%`;
-      // Air quality placeholder - no bar animation since no real data
-      document.getElementById("air-quality-bar").style.width = '0%';
+      
+      const aqiProgress = aqi !== null && aqi !== undefined ? Math.min(100, (aqi / 300) * 100) : 0;
+      document.getElementById("air-quality-bar").style.width = `${aqiProgress}%`;
     }, 100);
   }
 
@@ -858,7 +906,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setUnit(unit) {
     if (state.unitGroup === unit) return;
-    const oldUnit = state.unitGroup;
     state.unitGroup = unit;
     // 🛡️ Persistence: Save unit preference to localStorage
     localStorage.setItem('unitGroup', unit);
@@ -875,24 +922,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "px-3 py-1.5 flex items-center justify-center font-bold text-sm text-gray-500 dark:text-gray-400 interactive-element";
     }
     
-    // ⚡ Performance: Convert temperatures in-place without API refetch
     if (state.currentWeatherData) {
-      const current = state.currentWeatherData.currentConditions;
-      const today = state.currentWeatherData.days[0];
-      const tempUnit = unit === "metric" ? "°C" : "°F";
-      
-      // Convert current temperature display
-      if (currentTempEl.textContent) {
-        const oldTemp = parseInt(currentTempEl.textContent);
-        currentTempEl.textContent = `${convertTemperature(oldTemp, unit)}${tempUnit}`;
-      }
-      // Convert feels like
-      if (feelsLikeTempEl.textContent && current) {
-        const oldFeels = Math.round(oldUnit === 'metric' ? (current.feelslike * 9/5 + 32) : (current.feelslike - 32) * 5/9);
-        feelsLikeTempEl.textContent = `Feels like ${oldFeels}${tempUnit}`;
-      }
-      
-      // Update all temperature displays in the UI
       updateUI();
     }
   }
@@ -978,38 +1008,27 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // 🔗 Phase 11.8: Freemium API Service Integration
-  const AUTH_KEY = 'weather_auth_token';
-  const USER_KEY = 'weather_user_data';
+  const USER_KEY = 'weather_user';
   
-  // Store auth token
-  function storeAuth(token, user) {
-    localStorage.setItem(AUTH_KEY, token);
+  // Store user metadata
+  function storeAuth(user) {
     localStorage.setItem(USER_KEY, JSON.stringify(user));
   }
   
-  // Get stored auth
+  // Get stored auth (only non-sensitive profile info is client-accessible)
   function getAuth() {
     return {
-      token: localStorage.getItem(AUTH_KEY),
       user: JSON.parse(localStorage.getItem(USER_KEY) || 'null')
     };
   }
   
   // Clear auth (logout)
   function clearAuth() {
-    localStorage.removeItem(AUTH_KEY);
     localStorage.removeItem(USER_KEY);
   }
   
-  // Frontend API call wrapper with auth
+  // Frontend API call wrapper (browser handles HTTP-Only cookies automatically)
   async function authFetch(url, options = {}) {
-    const { token } = getAuth();
-    if (token) {
-      options.headers = {
-        ...options.headers,
-        'Authorization': `Bearer ${token}`
-      };
-    }
     return fetch(url, options);
   }
   
@@ -1032,53 +1051,129 @@ document.addEventListener("DOMContentLoaded", () => {
     
     prompt.querySelector('#upgrade-cancel')?.addEventListener('click', () => prompt.remove());
     prompt.querySelector('#upgrade-btn')?.addEventListener('click', () => {
-      // Would open upgrade flow
       prompt.remove();
-      showError('Premium upgrade coming soon!', 'generic');
+      upgradeCurrentUser();
     });
   }
-  
-  // Register/Login UI handlers (simplified for this implementation)
-  async function registerUser(email, password, isPremium = false) {
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, tier: isPremium ? 'premium' : 'free' })
-      });
-      const data = await response.json();
-      if (response.ok && data.token) {
-        storeAuth(data.token, data.user);
-        return { success: true, user: data.user };
+
+  function updateAuthUI() {
+    const { user } = getAuth();
+    const userProfileBadge = document.getElementById('user-profile-badge');
+    const userEmailEl = document.getElementById('user-email');
+    const userTierBadge = document.getElementById('user-tier-badge');
+    const inlineUpgradeBtn = document.getElementById('inline-upgrade-btn');
+    const signinButton = document.getElementById('signin-button');
+    const logoutButton = document.getElementById('logout-button');
+    
+    if (user) {
+      // User is logged in
+      userProfileBadge?.classList.remove('hidden');
+      logoutButton?.classList.remove('hidden');
+      signinButton?.classList.add('hidden');
+      
+      if (userEmailEl) userEmailEl.textContent = user.email;
+      
+      if (user.tier === 'premium') {
+        if (userTierBadge) {
+          userTierBadge.textContent = 'Premium';
+          userTierBadge.className = 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold px-2 py-0.5 rounded-full text-[10px] shadow-sm';
+        }
+        inlineUpgradeBtn?.classList.add('hidden');
+      } else {
+        if (userTierBadge) {
+          userTierBadge.textContent = 'Free';
+          userTierBadge.className = 'bg-blue-500 text-white font-bold px-2 py-0.5 rounded-full text-[10px]';
+        }
+        inlineUpgradeBtn?.classList.remove('hidden');
       }
-      return { success: false, error: data.error };
-    } catch (e) {
-      return { success: false, error: 'Registration failed' };
+    } else {
+      // Anonymous user
+      userProfileBadge?.classList.add('hidden');
+      logoutButton?.classList.add('hidden');
+      signinButton?.classList.remove('hidden');
     }
   }
-  
-  async function loginUser(email, password) {
+
+  async function validateSession() {
+    const { user } = getAuth();
+    if (!user) {
+      updateAuthUI();
+      return;
+    }
+    
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/auth/profile');
+      if (response.ok) {
+        const profileData = await response.json();
+        const updatedUser = { email: profileData.email, tier: profileData.tier };
+        storeAuth(updatedUser);
+        updateAuthUI();
+      } else if (response.status === 401 || response.status === 403) {
+        clearAuth();
+        updateAuthUI();
+        showError('Session expired. Please log in again.', 'generic');
+      }
+    } catch (e) {
+      console.warn('Session verification failed:', e);
+      updateAuthUI();
+    }
+  }
+
+  async function upgradeCurrentUser() {
+    const inlineUpgradeBtn = document.getElementById('inline-upgrade-btn');
+    const originalText = inlineUpgradeBtn ? inlineUpgradeBtn.innerHTML : '';
+    if (inlineUpgradeBtn) {
+      inlineUpgradeBtn.disabled = true;
+      inlineUpgradeBtn.innerHTML = '<span class="material-icons text-[10px] mr-0.5 animate-spin">sync</span>Upgrading...';
+    }
+    
+    try {
+      const response = await fetch('/api/auth/upgrade', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        headers: { 
+          'Content-Type': 'application/json'
+        }
       });
       const data = await response.json();
-      if (response.ok && data.token) {
-        storeAuth(data.token, data.user);
-        return { success: true, user: data.user };
+      
+      if (response.ok) {
+        storeAuth(data.user);
+        showError('Welcome to Premium! 🎉', 'generic');
+        
+        // Update user state tier in current weather data if loaded
+        if (state.currentWeatherData) {
+          state.currentWeatherData.tier = 'premium';
+          state.currentWeatherData.isLimited = false;
+        }
+        
+        updateAuthUI();
+        // Dynamically trigger UI update to show full forecast and updated widgets
+        if (state.currentWeatherData) {
+          const currentLoc = locationNameEl?.textContent;
+          if (currentLoc && currentLoc !== '--') {
+            fetchWeatherData(currentLoc);
+          } else {
+            updateUI();
+          }
+        }
+      } else {
+        showError(data.error || 'Upgrade failed', 'generic');
+        if (inlineUpgradeBtn) {
+          inlineUpgradeBtn.disabled = false;
+          inlineUpgradeBtn.innerHTML = originalText;
+        }
       }
-      return { success: false, error: data.error };
-    } catch (e) {
-      return { success: false, error: 'Login failed' };
+    } catch (error) {
+      showError('Upgrade failed. Please try again.', 'generic');
+      if (inlineUpgradeBtn) {
+        inlineUpgradeBtn.disabled = false;
+        inlineUpgradeBtn.innerHTML = originalText;
+      }
     }
   }
 
   // Logout user - clears all storage and redirects
   async function logoutUser() {
-    const { token } = getAuth();
-    
     // Show loading state
     if (logoutButton) {
       logoutButton.disabled = true;
@@ -1087,20 +1182,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     try {
-      if (token) {
-        await fetch('/api/auth/logout', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-      }
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
     } catch (error) {
       console.warn('Server logout failed:', error);
     } finally {
       // Clear localStorage
-      localStorage.removeItem(AUTH_KEY);
       localStorage.removeItem(USER_KEY);
       localStorage.removeItem('recentSearches');
       localStorage.removeItem('unitGroup');
@@ -1316,10 +1407,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!state.currentWeatherData) return;
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      drawTempChart(
-        state.currentWeatherData.days[0].hours,
-        state.unitGroup === "metric" ? "°C" : "°F",
-      );
+      const today = state.currentWeatherData.days[0];
+      const tempUnit = state.unitGroup === "metric" ? "°C" : "°F";
+      const convertedHours = today.hours.map(h => ({
+        ...h,
+        temp: typeof h.temp === 'number' ? getDisplayTemp(h.temp) : h.temp
+      }));
+      drawTempChart(convertedHours, tempUnit);
     }, 200);
   });
 
@@ -1445,14 +1539,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const locationParam = params.get('location');
     if (locationParam) {
-      fetchWeatherData(decodeURIComponent(locationParam));
+      fetchWeatherData(locationParam);
     }
   }
 
   // Update URL with current location for shareable links
   function updateLocationUrl(location) {
     const url = new URL(window.location.href);
-    url.searchParams.set('location', encodeURIComponent(location));
+    url.searchParams.set('location', location);
     window.history.pushState({}, '', url);
   }
 
@@ -1461,7 +1555,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const locationParam = params.get('location');
     if (locationParam) {
-      fetchWeatherData(decodeURIComponent(locationParam));
+      fetchWeatherData(locationParam);
     }
   });
 
@@ -1469,4 +1563,14 @@ document.addEventListener("DOMContentLoaded", () => {
   handleDeepLink();
 
   updateRecentSearchesUI();
+  
+  // Validate session on load
+  validateSession();
+  
+  // Bind Auth UI event listeners
+  document.getElementById('signin-button')?.addEventListener('click', () => {
+    window.location.href = '/landing.html';
+  });
+  
+  document.getElementById('inline-upgrade-btn')?.addEventListener('click', upgradeCurrentUser);
 });

@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import fs from 'fs';
 import { blacklistToken, isTokenBlacklisted } from './token-blacklist.js';
 
 dotenv.config();
@@ -17,9 +18,22 @@ const port = process.env.PORT || 3000;
 // ============================================
 // AUTHENTICATION CONFIGURATION
 // ============================================
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
+const JWT_SECRET_ENV = process.env.JWT_SECRET;
+if (!JWT_SECRET_ENV && process.env.NODE_ENV === 'production') {
+  throw new Error('FATAL: JWT_SECRET environment variable is missing in production!');
+}
+const JWT_SECRET = JWT_SECRET_ENV || 'dev-secret-change-in-production';
 const JWT_EXPIRY = process.env.JWT_EXPIRY || '24h';
 const SALT_ROUNDS = 10;
+
+// Cookie flags configured for production (Secure) and local dev (no Secure flag over HTTP)
+const COOKIE_MAX_AGE_FLAGS = process.env.NODE_ENV === 'production'
+  ? 'HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=86400'
+  : 'HttpOnly; SameSite=Strict; Path=/; Max-Age=86400';
+
+const COOKIE_CLEAR_FLAGS = process.env.NODE_ENV === 'production'
+  ? 'HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0'
+  : 'HttpOnly; SameSite=Strict; Path=/; Max-Age=0';
 
 // User tiers configuration
 const TIER_LIMITS = {
@@ -37,13 +51,58 @@ const TIER_LIMITS = {
   }
 };
 
-// In-memory user store (replace with database in production)
-const users = new Map();
+// Simple file-based persistence for users
+const DB_FILE = './users.json';
+
+function loadUsers() {
+  try {
+    if (fs.existsSync(DB_FILE)) {
+      const data = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+      return new Map(Object.entries(data));
+    }
+  } catch (e) {
+    console.error('Failed to load users database:', e);
+  }
+  return new Map();
+}
+
+const users = loadUsers();
+
+function saveUsers() {
+  try {
+    const obj = Object.fromEntries(users);
+    fs.writeFileSync(DB_FILE, JSON.stringify(obj, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Failed to save users database:', e);
+  }
+}
 
 
 // ============================================
 // MIDDLEWARE
 // ============================================
+// HTTPS Redirection (Production only)
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect(`https://${req.headers.host}${req.url}`);
+    }
+    next();
+  });
+}
+
+// Basic Security Headers (Mime-sniffing, Clickjacking, and HSTS)
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  if (process.env.NODE_ENV === 'production') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
+  next();
+});
+
 app.use(express.json());
 
 // Serve landing.html as the default page (instead of index.html)
@@ -52,12 +111,30 @@ app.get('/', (req, res) => {
   res.sendFile('landing.html', { root: 'public' });
 });
 
+// Serve dummy favicon to prevent 404 logs in browser console
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end();
+});
+
 app.use(express.static('public', { index: 'landing.html' }));
+
+// Helper to parse JWT token from browser cookies
+function getCookieToken(req) {
+  const cookieHeader = req.headers.cookie;
+  if (!cookieHeader) return null;
+  
+  const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
+    const [key, value] = cookie.split('=').map(c => c.trim());
+    if (key) acc[key] = value;
+    return acc;
+  }, {});
+  
+  return cookies['weather_auth_token'] || null;
+}
 
 // 🔐 JWT Authentication Middleware
 function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = getCookieToken(req);
   
   if (!token) {
     return res.status(401).json({ error: 'Authentication required' });
@@ -95,17 +172,38 @@ function checkTier(requiredTier = 'free') {
   };
 }
 
-// 🔐 Rate Limit Middleware with Tier Support
-function createRateLimiter(tier) {
-  const limits = TIER_LIMITS[tier] || TIER_LIMITS.free;
-  return rateLimit({
-    windowMs: 24 * 60 * 60 * 1000, // Daily limit
-    max: limits.maxApiCallsPerDay,
-    message: { error: 'Daily API limit reached. Upgrade to premium for unlimited access.' },
-    standardHeaders: true,
-    legacyHeaders: false,
+// 🔐 JWT Pre-Authentication Middleware (Does not block on failure, just extracts user info if present)
+function tryAuthenticate(req, res, next) {
+  const token = getCookieToken(req);
+  
+  if (!token || isTokenBlacklisted(token)) {
+    return next();
+  }
+  
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (!err) {
+      req.user = user;
+    }
+    next();
   });
 }
+
+// 🔐 Dynamic Rate Limit Middleware with Tier Support
+const weatherRateLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  max: (req) => {
+    const tier = req.user?.tier || 'free';
+    const limit = TIER_LIMITS[tier]?.maxApiCallsPerDay || 100;
+    return limit === Infinity ? 10000 : limit;
+  },
+  message: { error: 'Daily API limit reached. Upgrade to premium for unlimited access.' },
+  keyGenerator: (req) => {
+    return req.user ? req.user.email : req.ip;
+  },
+  validate: false,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // ============================================
 // AUTHENTICATION ROUTES
@@ -148,6 +246,7 @@ app.post('/api/auth/register', rateLimit({
     };
     
     users.set(email.toLowerCase(), user);
+    saveUsers(); // Persist users database
     
     // Generate token
     const token = jwt.sign(
@@ -156,9 +255,9 @@ app.post('/api/auth/register', rateLimit({
       { expiresIn: JWT_EXPIRY }
     );
     
+    res.setHeader('Set-Cookie', `weather_auth_token=${token}; ${COOKIE_MAX_AGE_FLAGS}`);
     res.status(201).json({
       message: 'Registration successful',
-      token,
       user: { email: user.email, tier: user.tier }
     });
     
@@ -196,9 +295,9 @@ app.post('/api/auth/login', async (req, res) => {
       { expiresIn: JWT_EXPIRY }
     );
     
+    res.setHeader('Set-Cookie', `weather_auth_token=${token}; ${COOKIE_MAX_AGE_FLAGS}`);
     res.json({
       message: 'Login successful',
-      token,
       user: { email: user.email, tier: user.tier }
     });
     
@@ -210,8 +309,7 @@ app.post('/api/auth/login', async (req, res) => {
 
 // POST /api/auth/logout - User Logout (invalidate token)
 app.post('/api/auth/logout', authenticateToken, (req, res) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = getCookieToken(req);
   
   if (token) {
     // Add token to blacklist to invalidate it
@@ -220,6 +318,7 @@ app.post('/api/auth/logout', authenticateToken, (req, res) => {
     blacklistToken(token, expiresAt);
   }
   
+  res.setHeader('Set-Cookie', `weather_auth_token=; ${COOKIE_CLEAR_FLAGS}`);
   res.json({ message: 'Logout successful' });
 });
 
@@ -235,6 +334,7 @@ app.post('/api/auth/upgrade', authenticateToken, async (req, res) => {
   // Update tier (in production, verify payment here)
   user.tier = 'premium';
   users.set(email, user);
+  saveUsers(); // Persist users database
   
   // Generate new token with premium tier
   const token = jwt.sign(
@@ -243,9 +343,9 @@ app.post('/api/auth/upgrade', authenticateToken, async (req, res) => {
     { expiresIn: JWT_EXPIRY }
   );
   
+  res.setHeader('Set-Cookie', `weather_auth_token=${token}; ${COOKIE_MAX_AGE_FLAGS}`);
   res.json({
     message: 'Upgrade successful!',
-    token,
     user: { email: user.email, tier: user.tier }
   });
 });
@@ -273,25 +373,8 @@ app.get('/api/auth/profile', authenticateToken, (req, res) => {
 // ============================================
 
 // Free tier weather endpoint (supports authenticated users with tier from JWT)
-app.get('/api/weather', rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: { error: 'Daily limit reached. Upgrade to premium for unlimited access.' }
-}), async (req, res) => {
-  // Check if user is authenticated via JWT, get their tier
-  let tier = 'free';
-  const authHeader = req.headers['authorization'];
-  if (authHeader) {
-    const token = authHeader.split(' ')[1];
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        tier = decoded.tier || 'free';
-      } catch (e) {
-        // Invalid token - keep default 'free' tier
-      }
-    }
-  }
+app.get('/api/weather', tryAuthenticate, weatherRateLimiter, async (req, res) => {
+  const tier = req.user?.tier || 'free';
   await handleWeatherRequest(req, res, tier);
 });
 
@@ -352,6 +435,22 @@ async function handleWeatherRequest(req, res, tier) {
     }
 
     const data = await response.json();
+
+    // Fetch Air Quality Index (AQI) from Open-Meteo
+    let aqi = null;
+    if (data.latitude && data.longitude) {
+      try {
+        const aqiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${data.latitude}&longitude=${data.longitude}&current=us_aqi`;
+        const aqiResponse = await fetch(aqiUrl);
+        if (aqiResponse.ok) {
+          const aqiData = await aqiResponse.json();
+          aqi = aqiData?.current?.us_aqi ?? null;
+        }
+      } catch (err) {
+        console.warn('AQI fetch failed:', err);
+      }
+    }
+    data.aqi = aqi;
 
     // ⚡ Bolt: Aggressively trim unused hourly data to reduce bandwidth and memory footprint
     // Free tier: only needs hourly data for today (index 0)

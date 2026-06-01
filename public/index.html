@@ -130,6 +130,18 @@
                         <button id="celsius-button" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-md rounded-xl px-3 py-1.5 flex items-center justify-center font-bold text-sm interactive-element" aria-label="Switch to Celsius" title="Switch to Celsius">°C</button>
                         <button id="fahrenheit-button" class="px-3 py-1.5 flex items-center justify-center font-bold text-sm text-gray-500 dark:text-gray-400 interactive-element" aria-label="Switch to Fahrenheit" title="Switch to Fahrenheit">°F</button>
                     </div>
+                    <!-- User Profile Badge -->
+                    <div id="user-profile-badge" class="hidden flex items-center bg-white/50 dark:bg-gray-700/50 px-3 py-1.5 rounded-2xl shadow-sm border border-white/20 text-xs text-gray-700 dark:text-gray-200 font-medium">
+                        <span class="material-icons text-sm mr-1">person</span>
+                        <span id="user-email" class="max-w-[100px] truncate mr-2"></span>
+                        <span id="user-tier-badge" class="bg-blue-500 text-white font-bold px-2 py-0.5 rounded-full text-[10px]">Free</span>
+                        <button id="inline-upgrade-btn" class="ml-2 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold px-2.5 py-1 rounded-xl flex items-center transition shadow-sm text-[10px]">
+                            <span class="material-icons text-[10px] mr-0.5">star</span>Upgrade
+                        </button>
+                    </div>
+                    <button id="signin-button" class="hidden flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-2xl font-bold text-sm shadow-md transition" aria-label="Sign In">
+                        Sign In
+                    </button>
                     <button id="logout-button" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Logout" title="Logout">
                         <span class="material-icons text-gray-700 dark:text-gray-200">logout</span>
                     </button>

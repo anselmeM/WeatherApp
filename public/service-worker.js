@@ -30,10 +30,26 @@ self.addEventListener('install', event => {
 
 // Fetch event: triggered for every network request made by the page.
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
+  let url;
+  try {
+    url = new URL(event.request.url);
+  } catch (e) {
+    return;
+  }
+  
+  // Ignore non-http/https protocols (like chrome-extension://, data:, etc.)
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    return;
+  }
   
   // ⚡ Performance: Use stale-while-revalidate for API calls (get fresh data in background)
   if (url.pathname.startsWith('/api/')) {
+    if (event.request.method !== 'GET') {
+      // Direct pass-through for non-GET API requests (POST, Register, Login, etc.)
+      event.respondWith(fetch(event.request));
+      return;
+    }
+
     event.respondWith(
       caches.open(CACHE_NAME).then(cache => {
         return cache.match(event.request).then(cachedResponse => {
@@ -77,6 +93,12 @@ self.addEventListener('fetch', event => {
           }
           return networkResponse;
         });
+      }).catch(err => {
+        console.warn('Fetch failed in service worker:', err);
+        if (event.request.mode === 'navigate') {
+          return caches.match('/index.html');
+        }
+        return new Response('Network error occurred', { status: 480, statusText: 'Network Error' });
       })
   );
 });

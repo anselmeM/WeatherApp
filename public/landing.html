@@ -484,7 +484,6 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    localStorage.setItem('weather_auth_token', data.token);
                     localStorage.setItem('weather_user', JSON.stringify(data.user));
                     showToast('Login successful!');
                     closeModals();
@@ -514,7 +513,6 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    localStorage.setItem('weather_auth_token', data.token);
                     localStorage.setItem('weather_user', JSON.stringify(data.user));
                     showToast(tier === 'premium' ? 'Welcome to Premium!' : 'Account created!');
                     closeModals();
@@ -529,8 +527,8 @@
         
         // Upgrade handler
         async function confirmUpgrade() {
-            const token = localStorage.getItem('weather_auth_token');
-            if (!token) {
+            const user = localStorage.getItem('weather_user');
+            if (!user) {
                 showToast('Please login first', true);
                 closeModals();
                 showLoginModal();
@@ -541,14 +539,12 @@
                 const response = await fetch('/api/auth/upgrade', {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'Content-Type': 'application/json'
                     }
                 });
                 const data = await response.json();
                 
                 if (response.ok) {
-                    localStorage.setItem('weather_auth_token', data.token);
                     localStorage.setItem('weather_user', JSON.stringify(data.user));
                     showToast('Welcome to Premium! 🎉');
                     closeModals();
@@ -561,8 +557,8 @@
         }
         
         // Check if already logged in
-        const token = localStorage.getItem('weather_auth_token');
-        if (token) {
+        const user = localStorage.getItem('weather_user');
+        if (user) {
             // Already logged in, could redirect to app
             console.log('User is logged in');
         }

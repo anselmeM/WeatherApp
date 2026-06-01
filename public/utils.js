@@ -75,14 +75,29 @@ export function showError(message, errorType = 'generic') {
       displayMessage = `Location not found: ${message}`;
     }
     
-    // Build error toast HTML with optional retry button
-    errorBox.innerHTML = `
-      <div class="flex items-start">
-        <span class="material-icons mr-2">error_outline</span>
-        <span class="flex-grow">${displayMessage}</span>
-        ${showRetry ? '<button class="retry-btn ml-2 bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm font-bold">Retry</button>' : ''}
-      </div>
-    `;
+    // Build error toast using safe DOM methods
+    const container = document.createElement("div");
+    container.className = "flex items-start";
+
+    const iconSpan = document.createElement("span");
+    iconSpan.className = "material-icons mr-2";
+    iconSpan.textContent = "error_outline";
+    container.appendChild(iconSpan);
+
+    const messageSpan = document.createElement("span");
+    messageSpan.className = "flex-grow";
+    messageSpan.textContent = displayMessage;
+    container.appendChild(messageSpan);
+
+    let retryBtn = null;
+    if (showRetry) {
+      retryBtn = document.createElement("button");
+      retryBtn.className = "retry-btn ml-2 bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm font-bold";
+      retryBtn.textContent = "Retry";
+      container.appendChild(retryBtn);
+    }
+    
+    errorBox.appendChild(container);
     
     errorBox.className =
       "fixed top-5 right-5 bg-red-600/90 backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl z-50 transition-all duration-500 transform translate-x-[120%] max-w-sm";
@@ -99,17 +114,14 @@ export function showError(message, errorType = 'generic') {
     }, 5000);
     
     // Attach retry handler if button exists
-    if (showRetry) {
-      const retryBtn = errorBox.querySelector('.retry-btn');
-      if (retryBtn) {
-        retryBtn.addEventListener('click', () => {
-          errorBox.classList.add("translate-x-[120%]");
-          // Trigger a fresh weather fetch - location will come from current UI state
-          if (typeof window.triggerWeatherRefresh === 'function') {
-            window.triggerWeatherRefresh();
-          }
-        });
-      }
+    if (showRetry && retryBtn) {
+      retryBtn.addEventListener('click', () => {
+        errorBox.classList.add("translate-x-[120%]");
+        // Trigger a fresh weather fetch - location will come from current UI state
+        if (typeof window.triggerWeatherRefresh === 'function') {
+          window.triggerWeatherRefresh();
+        }
+      });
     }
     
     return errorBox;
