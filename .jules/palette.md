@@ -9,3 +9,6 @@
 ## 2024-05-24 - Dropdown Focus Loss
 **Learning:** Floating UI elements (like autocomplete dropdowns) must close not just on external clicks, but also when keyboard focus moves away (e.g., via Tab key). Otherwise, keyboard users leave lingering elements that obscure the page.
 **Action:** When implementing custom floating UI elements, always pair document `click` handlers with document `focusin` handlers to ensure the element correctly closes when keyboard users tab away from it.
+## 2024-05-24 - Dynamic Image Alt Text Context
+**Learning:** Using a static `alt` text (like "City skyline") for dynamically loaded images (like a city location image) creates a poor screen reader experience when the context changes.
+**Action:** When element attributes like images depend on dynamically loaded state or context (e.g., location changes), ensure properties like `alt` text are dynamically updated to reflect the new context rather than relying on a static placeholder.
