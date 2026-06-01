@@ -476,6 +476,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  async function deleteSavedLocation(city) {
+    const { user } = getAuth();
+    
+    // Sync client state immediately
+    state.recentSearches = state.recentSearches.filter(c => c.toLowerCase() !== city.toLowerCase());
+    localStorage.setItem('recentSearches', JSON.stringify(state.recentSearches));
+    updateRecentSearchesUI();
+    
+    if (user) {
+      try {
+        await fetch('/api/user/locations', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ location: city })
+        });
+      } catch (e) {
+        console.warn('Failed to delete saved location from server:', e);
+      }
+    }
+  }
+
   function updateRecentSearchesUI() {
     if (state.recentSearches.length === 0) {
       // 🛡️ UX: Show empty state message instead of hiding
@@ -488,12 +511,27 @@ document.addEventListener("DOMContentLoaded", () => {
     // ⚡ Bolt: Use DocumentFragment to batch DOM appends
     const fragment = document.createDocumentFragment();
     state.recentSearches.forEach((city) => {
-      const btn = document.createElement("button");
-      btn.className =
-        "bg-white/30 dark:bg-gray-700/50 hover:bg-white/50 dark:hover:bg-gray-600/50 text-gray-800 dark:text-white text-xs font-bold px-3 py-1.5 rounded-full transition-all interactive-element";
-      btn.textContent = city;
-      btn.onclick = () => fetchWeatherData(city);
-      fragment.appendChild(btn);
+      const container = document.createElement("div");
+      container.className =
+        "inline-flex items-center bg-white/30 dark:bg-gray-700/50 text-gray-800 dark:text-white text-xs font-bold pl-3 pr-2 py-1 rounded-full transition-all interactive-element";
+      
+      const label = document.createElement("span");
+      label.className = "cursor-pointer";
+      label.textContent = city;
+      label.onclick = () => fetchWeatherData(city);
+      container.appendChild(label);
+      
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "ml-1.5 hover:text-red-500 font-bold text-sm focus-visible:outline-none flex items-center justify-center w-4 h-4 rounded-full hover:bg-white/20";
+      deleteBtn.innerHTML = "&times;";
+      deleteBtn.title = `Remove ${city}`;
+      deleteBtn.onclick = (e) => {
+        e.stopPropagation();
+        deleteSavedLocation(city);
+      };
+      container.appendChild(deleteBtn);
+      
+      fragment.appendChild(container);
     });
     recentSearchesList.appendChild(fragment);
   }
@@ -1052,7 +1090,7 @@ document.addEventListener("DOMContentLoaded", () => {
     prompt.querySelector('#upgrade-cancel')?.addEventListener('click', () => prompt.remove());
     prompt.querySelector('#upgrade-btn')?.addEventListener('click', () => {
       prompt.remove();
-      upgradeCurrentUser();
+      showPaymentModal();
     });
   }
 
@@ -1062,6 +1100,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const userEmailEl = document.getElementById('user-email');
     const userTierBadge = document.getElementById('user-tier-badge');
     const inlineUpgradeBtn = document.getElementById('inline-upgrade-btn');
+    const inlineDowngradeBtn = document.getElementById('inline-downgrade-btn');
     const signinButton = document.getElementById('signin-button');
     const logoutButton = document.getElementById('logout-button');
     
@@ -1079,18 +1118,21 @@ document.addEventListener("DOMContentLoaded", () => {
           userTierBadge.className = 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold px-2 py-0.5 rounded-full text-[10px] shadow-sm';
         }
         inlineUpgradeBtn?.classList.add('hidden');
+        inlineDowngradeBtn?.classList.remove('hidden');
       } else {
         if (userTierBadge) {
           userTierBadge.textContent = 'Free';
           userTierBadge.className = 'bg-blue-500 text-white font-bold px-2 py-0.5 rounded-full text-[10px]';
         }
         inlineUpgradeBtn?.classList.remove('hidden');
+        inlineDowngradeBtn?.classList.add('hidden');
       }
     } else {
       // Anonymous user
       userProfileBadge?.classList.add('hidden');
       logoutButton?.classList.add('hidden');
       signinButton?.classList.remove('hidden');
+      inlineDowngradeBtn?.classList.add('hidden');
     }
   }
 
@@ -1108,6 +1150,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const updatedUser = { email: profileData.email, tier: profileData.tier };
         storeAuth(updatedUser);
         updateAuthUI();
+        
+        // Sync saved locations from backend profile
+        if (profileData.locations) {
+          state.recentSearches = profileData.locations;
+          localStorage.setItem('recentSearches', JSON.stringify(state.recentSearches));
+          updateRecentSearchesUI();
+        }
       } else if (response.status === 401 || response.status === 403) {
         clearAuth();
         updateAuthUI();
@@ -1171,6 +1220,145 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
+
+  async function downgradeCurrentUser() {
+    if (!confirm('Are you sure you want to cancel your Premium subscription? Your saved locations will be truncated to 3.')) {
+      return;
+    }
+    
+    const inlineDowngradeBtn = document.getElementById('inline-downgrade-btn');
+    const originalText = inlineDowngradeBtn ? inlineDowngradeBtn.innerHTML : '';
+    if (inlineDowngradeBtn) {
+      inlineDowngradeBtn.disabled = true;
+      inlineDowngradeBtn.innerHTML = 'Cancelling...';
+    }
+    
+    try {
+      const response = await fetch('/api/auth/downgrade', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        storeAuth(data.user);
+        showError('Premium subscription cancelled.', 'generic');
+        
+        // Sync saved locations from response
+        if (data.locations) {
+          state.recentSearches = data.locations;
+          localStorage.setItem('recentSearches', JSON.stringify(state.recentSearches));
+          updateRecentSearchesUI();
+        }
+        
+        // Update user state tier in current weather data if loaded
+        if (state.currentWeatherData) {
+          state.currentWeatherData.tier = 'free';
+          state.currentWeatherData.isLimited = true;
+        }
+        
+        updateAuthUI();
+        // Dynamically trigger UI update to reflect downgrade limitations
+        if (state.currentWeatherData) {
+          const currentLoc = locationNameEl?.textContent;
+          if (currentLoc && currentLoc !== '--') {
+            fetchWeatherData(currentLoc);
+          } else {
+            updateUI();
+          }
+        }
+      } else {
+        showError(data.error || 'Cancellation failed', 'generic');
+        if (inlineDowngradeBtn) {
+          inlineDowngradeBtn.disabled = false;
+          inlineDowngradeBtn.innerHTML = originalText;
+        }
+      }
+    } catch (error) {
+      showError('Cancellation failed. Please try again.', 'generic');
+      if (inlineDowngradeBtn) {
+        inlineDowngradeBtn.disabled = false;
+        inlineDowngradeBtn.innerHTML = originalText;
+      }
+    }
+  }
+
+  // Payment Modal handling functions
+  const paymentModal = document.getElementById('payment-modal');
+  const paymentForm = document.getElementById('payment-form');
+  const closePaymentModalBtn = document.getElementById('close-payment-modal');
+  const paySubmitBtn = document.getElementById('pay-submit-btn');
+
+  function showPaymentModal() {
+    paymentForm?.reset();
+    paymentModal?.classList.remove('hidden');
+  }
+
+  function hidePaymentModal() {
+    paymentModal?.classList.add('hidden');
+  }
+
+  closePaymentModalBtn?.addEventListener('click', hidePaymentModal);
+  
+  paymentModal?.addEventListener('click', (e) => {
+    if (e.target === paymentModal) {
+      hidePaymentModal();
+    }
+  });
+
+  paymentForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const originalBtnHTML = paySubmitBtn.innerHTML;
+    paySubmitBtn.disabled = true;
+    paySubmitBtn.innerHTML = '<span class="material-icons animate-spin text-sm mr-1">sync</span>Verifying Card...';
+    
+    setTimeout(async () => {
+      try {
+        await upgradeCurrentUser();
+        hidePaymentModal();
+      } catch (err) {
+        console.error(err);
+      } finally {
+        paySubmitBtn.disabled = false;
+        paySubmitBtn.innerHTML = originalBtnHTML;
+      }
+    }, 1500);
+  });
+
+  // Credit Card input formatting aids
+  const cardNumberInput = document.getElementById('card-number');
+  const cardExpiryInput = document.getElementById('card-expiry');
+  
+  cardNumberInput?.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    let matches = value.match(/\d{4,16}/g);
+    let match = matches && matches[0] || '';
+    let parts = [];
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+    if (parts.length > 0) {
+      e.target.value = parts.join(' ');
+    } else {
+      e.target.value = value;
+    }
+  });
+
+  cardExpiryInput?.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+      let month = value.substring(0, 2);
+      let year = value.substring(2, 4);
+      if (parseInt(month, 10) > 12) month = '12';
+      if (parseInt(month, 10) === 0) month = '01';
+      e.target.value = `${month}/${year}`;
+    } else {
+      e.target.value = value;
+    }
+  });
 
   // Logout user - clears all storage and redirects
   async function logoutUser() {
@@ -1572,5 +1760,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = '/landing.html';
   });
   
-  document.getElementById('inline-upgrade-btn')?.addEventListener('click', upgradeCurrentUser);
+  document.getElementById('inline-upgrade-btn')?.addEventListener('click', showPaymentModal);
+  document.getElementById('inline-downgrade-btn')?.addEventListener('click', downgradeCurrentUser);
 });

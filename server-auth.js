@@ -350,6 +350,66 @@ app.post('/api/auth/upgrade', authenticateToken, async (req, res) => {
   });
 });
 
+// POST /api/auth/downgrade - Downgrade to Free Tier (Cancel Premium Sub)
+app.post('/api/auth/downgrade', authenticateToken, async (req, res) => {
+  const { email } = req.user;
+  const user = users.get(email);
+  
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  
+  // Downgrade to free and truncate saved locations to 3
+  user.tier = 'free';
+  if (user.locations && user.locations.length > TIER_LIMITS.free.maxLocations) {
+    user.locations = user.locations.slice(0, TIER_LIMITS.free.maxLocations);
+  }
+  users.set(email, user);
+  saveUsers(); // Persist users database
+  
+  // Generate new token with free tier
+  const token = jwt.sign(
+    { email: user.email, tier: user.tier },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRY }
+  );
+  
+  res.setHeader('Set-Cookie', `weather_auth_token=${token}; ${COOKIE_MAX_AGE_FLAGS}`);
+  res.json({
+    message: 'Subscription cancelled. Downgraded to Free Tier.',
+    user: { email: user.email, tier: user.tier },
+    locations: user.locations
+  });
+});
+
+// DELETE /api/user/locations - Remove a saved location from profile
+app.delete('/api/user/locations', authenticateToken, (req, res) => {
+  const { email } = req.user;
+  const { location } = req.body;
+  
+  if (!location) {
+    return res.status(400).json({ error: 'Location is required' });
+  }
+  
+  const user = users.get(email);
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  
+  const targetCity = location.trim().toLowerCase();
+  const index = user.locations.findIndex(loc => loc.toLowerCase() === targetCity);
+  
+  if (index > -1) {
+    user.locations.splice(index, 1);
+    saveUsers();
+  }
+  
+  res.json({
+    message: 'Location removed successfully',
+    locations: user.locations
+  });
+});
+
 // GET /api/auth/profile - Get User Profile
 app.get('/api/auth/profile', authenticateToken, (req, res) => {
   const { email } = req.user;
@@ -383,6 +443,23 @@ app.get('/api/weather/premium', authenticateToken, checkTier('premium'), async (
   await handleWeatherRequest(req, res, req.user.tier);
 });
 
+// Helper to save a successfully resolved location for authenticated users
+function saveResolvedLocation(req, resolvedAddress) {
+  if (req.user) {
+    const user = users.get(req.user.email);
+    if (user) {
+      const resolvedLoc = resolvedAddress.split(',')[0].trim();
+      if (!user.locations.includes(resolvedLoc)) {
+        if (user.tier === 'free' && user.locations.length >= TIER_LIMITS.free.maxLocations) {
+          return;
+        }
+        user.locations.push(resolvedLoc);
+        saveUsers();
+      }
+    }
+  }
+}
+
 // Weather data fetcher with tier enforcement
 async function handleWeatherRequest(req, res, tier) {
   const { location, unitGroup = 'metric' } = req.query;
@@ -400,12 +477,16 @@ async function handleWeatherRequest(req, res, tier) {
   // Check location limit for free tier
   if (tier === 'free') {
     const user = req.user ? users.get(req.user.email) : null;
-    if (user && user.locations && user.locations.length >= TIER_LIMITS.free.maxLocations) {
-      return res.status(403).json({
-        error: 'Location limit reached',
-        upgradeRequired: true,
-        message: 'Free tier limited to 3 saved locations. Upgrade to premium for unlimited.'
-      });
+    if (user && user.locations) {
+      const queriedCity = location.split(',')[0].trim().toLowerCase();
+      const isAlreadySaved = user.locations.some(loc => loc.toLowerCase() === queriedCity);
+      if (!isAlreadySaved && user.locations.length >= TIER_LIMITS.free.maxLocations) {
+        return res.status(403).json({
+          error: 'Location limit reached',
+          upgradeRequired: true,
+          message: 'Free tier limited to 3 saved locations. Upgrade to premium for unlimited.'
+        });
+      }
     }
   }
 
@@ -416,6 +497,10 @@ async function handleWeatherRequest(req, res, tier) {
   if (cachedItem && (Date.now() - cachedItem.timestamp < CACHE_TTL)) {
     weatherCache.delete(cacheKey);
     weatherCache.set(cacheKey, cachedItem);
+    
+    // Save location to user's profile if authenticated
+    saveResolvedLocation(req, cachedItem.data.resolvedAddress);
+    
     return res.json(cachedItem.data);
   }
 
@@ -475,6 +560,9 @@ async function handleWeatherRequest(req, res, tier) {
     data.tier = tier;
     data.isLimited = isForecastLimited;
     data.upgradeMessage = isForecastLimited ? 'Upgrade to Premium to see full 7-day forecast' : null;
+
+    // Save location to user's profile if authenticated
+    saveResolvedLocation(req, data.resolvedAddress);
 
     // Cache the response
     if (weatherCache.size >= MAX_CACHE_SIZE) {
