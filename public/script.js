@@ -53,9 +53,17 @@ document.addEventListener("DOMContentLoaded", () => {
         updatePinButtonUI();
       }
       
+      // Immediately enforce free-tier limits on cached data
       if (state.currentWeatherData) {
         state.currentWeatherData.tier = 'free';
         state.currentWeatherData.isLimited = true;
+        // Truncate cached days to 3 (free-tier limit)
+        if (state.currentWeatherData.days && state.currentWeatherData.days.length > 3) {
+          state.currentWeatherData.days = state.currentWeatherData.days.slice(0, 3);
+        }
+        // Strip alerts (premium-only feature)
+        delete state.currentWeatherData.alerts;
+        state.currentWeatherData.upgradeMessage = 'Upgrade to Premium to see full 7-day forecast';
       }
       
       const currentLoc = state.currentWeatherData?.address || document.getElementById("location-name")?.textContent;

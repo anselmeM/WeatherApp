@@ -6,9 +6,10 @@ import { showError } from '../utils.js';
 export async function pinLocation(city) {
   const { user } = getAuth();
   
-  // Check limit
+  // Check limit using tier from localStorage (synced during upgrade/downgrade)
   const isPremium = user && user.tier === 'premium';
-  if (!isPremium && state.recentSearches.length >= 3) {
+  const maxLocations = isPremium ? Infinity : 3;
+  if (state.recentSearches.length >= maxLocations) {
     if (user) {
       showUpgradePrompt("Saving locations");
     } else {

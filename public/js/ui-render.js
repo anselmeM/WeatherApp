@@ -294,6 +294,11 @@ export function updateHourlyForecast(today, tempUnit) {
 export function updateWeeklyForecast(data, tempUnit) {
   if (!forecastGrid) return;
   forecastGrid.innerHTML = "";
+  
+  // Always remove any existing upgrade prompts first to prevent duplication
+  const existingPrompts = forecastGrid.parentElement?.querySelectorAll('[data-upgrade-prompt]');
+  existingPrompts?.forEach(el => el.remove());
+  
   const fragment = document.createDocumentFragment();
   
   const daysToShow = data.isLimited ? 3 : 7;
@@ -319,6 +324,7 @@ export function updateWeeklyForecast(data, tempUnit) {
   if (data.isLimited) {
     const upgradePrompt = document.createElement("div");
     upgradePrompt.className = "mt-4 text-center fade-in-stagger";
+    upgradePrompt.setAttribute('data-upgrade-prompt', 'true');
     upgradePrompt.style.animationDelay = "350ms";
     upgradePrompt.innerHTML = `
       <div class="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-2xl p-4 border border-yellow-200 dark:border-yellow-700/50">
@@ -334,11 +340,6 @@ export function updateWeeklyForecast(data, tempUnit) {
     upgradePrompt.querySelector('#upgrade-forecast-btn')?.addEventListener('click', () => {
       showUpgradePrompt('7-day forecast');
     });
-  } else {
-    const existingPrompt = forecastGrid.parentElement?.querySelector('.bg-gradient-to-r.from-yellow-50');
-    if (existingPrompt) {
-      existingPrompt.remove();
-    }
   }
 }
 
