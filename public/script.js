@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initAuthCallbacks({
     onUpgrade: (user) => {
       showToast('Upgrade successful! Welcome to Premium.', 'success');
-      const currentLoc = document.getElementById("location-name")?.textContent;
+      const currentLoc = state.currentWeatherData?.address || document.getElementById("location-name")?.textContent;
       if (currentLoc && currentLoc !== '--') {
         fetchWeatherData(currentLoc);
       } else {
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
         state.currentWeatherData.isLimited = true;
       }
       
-      const currentLoc = document.getElementById("location-name")?.textContent;
+      const currentLoc = state.currentWeatherData?.address || document.getElementById("location-name")?.textContent;
       if (currentLoc && currentLoc !== '--') {
         fetchWeatherData(currentLoc);
       } else {

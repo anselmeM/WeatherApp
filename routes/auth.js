@@ -42,7 +42,7 @@ router.post('/register', requireApiHeader, rateLimit({
   message: { error: 'Too many registration attempts. Please try again later.' }
 }), async (req, res) => {
   try {
-    const { email, password, tier = 'free' } = req.body;
+    const { email, password } = req.body;
     
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
@@ -67,7 +67,7 @@ router.post('/register', requireApiHeader, rateLimit({
     const user = {
       email: email.toLowerCase(),
       password: hashedPassword,
-      tier: tier === 'premium' ? 'premium' : 'free',
+      tier: 'free',
       createdAt: new Date().toISOString(),
       locations: [],
       apiCalls: 0

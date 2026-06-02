@@ -83,9 +83,14 @@ export async function handleWeatherRequest(req, res, tier) {
 
     // 🎯 Subscription Tier Enforcement: Truncate 7-day forecast for free tier
     const isForecastLimited = tier === 'free';
-    if (isForecastLimited && data.days && data.days.length > 3) {
-      // Keep only first 3 days for free tier
-      data.days = data.days.slice(0, 3);
+    if (isForecastLimited) {
+      if (data.days && data.days.length > 3) {
+        // Keep only first 3 days for free tier
+        data.days = data.days.slice(0, 3);
+      }
+      if (data.alerts) {
+        delete data.alerts;
+      }
     }
 
     // Add tier metadata to response for frontend to handle UI accordingly
