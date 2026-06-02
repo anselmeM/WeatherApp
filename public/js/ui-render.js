@@ -164,47 +164,37 @@ export function updatePinButtonUI() {
 export function showUpgradePrompt(feature) {
   const prompt = document.createElement('div');
   prompt.className = 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4';
-  prompt.innerHTML = `
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-sm text-center">
-      <span class="material-icons text-4xl text-yellow-500">star</span>
-      <h3 class="text-xl font-bold text-gray-800 dark:text-white mt-2">Premium Feature</h3>
-      <p class="text-gray-500 mt-2">${feature} requires a premium subscription.</p>
-      <div class="flex justify-center space-x-3 mt-4">
-        <button id="upgrade-cancel" class="px-4 py-2 text-gray-500">Maybe Later</button>
-        <button id="upgrade-btn" class="px-4 py-2 bg-yellow-500 text-white font-bold rounded-lg">Upgrade Now</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(prompt);
   
-  prompt.querySelector('#upgrade-cancel')?.addEventListener('click', () => prompt.remove());
-  prompt.querySelector('#upgrade-btn')?.addEventListener('click', () => {
-    prompt.remove();
-    showPaymentModal();
-  });
+  const template = document.getElementById('upgrade-prompt-template');
+  if (template) {
+    const clone = template.content.cloneNode(true);
+    clone.querySelector('.feature-text').textContent = `${feature} requires a premium subscription.`;
+    clone.querySelector('.upgrade-cancel')?.addEventListener('click', () => prompt.remove());
+    clone.querySelector('.upgrade-btn')?.addEventListener('click', () => {
+      prompt.remove();
+      showPaymentModal();
+    });
+    prompt.appendChild(clone);
+  }
+  document.body.appendChild(prompt);
 }
 
 export function showRegisterPrompt(feature) {
   const prompt = document.createElement('div');
   prompt.className = 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4';
-  prompt.innerHTML = `
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-sm text-center border border-gray-200/10">
-      <span class="material-icons text-4xl text-blue-500 animate-bounce">account_circle</span>
-      <h3 class="text-xl font-bold text-gray-800 dark:text-white mt-2">Account Required</h3>
-      <p class="text-gray-500 dark:text-gray-400 mt-2">${feature} requires a free account. Register now to save locations and sync them across devices!</p>
-      <div class="flex justify-center space-x-3 mt-5">
-        <button id="register-cancel" class="px-4 py-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 font-medium cursor-pointer">Maybe Later</button>
-        <button id="register-btn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg cursor-pointer transition">Register / Login</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(prompt);
   
-  prompt.querySelector('#register-cancel')?.addEventListener('click', () => prompt.remove());
-  prompt.querySelector('#register-btn')?.addEventListener('click', () => {
-    prompt.remove();
-    window.location.href = '/landing.html';
-  });
+  const template = document.getElementById('register-prompt-template');
+  if (template) {
+    const clone = template.content.cloneNode(true);
+    clone.querySelector('.feature-text').textContent = `${feature} requires a free account. Register now to save locations and sync them across devices!`;
+    clone.querySelector('.register-cancel')?.addEventListener('click', () => prompt.remove());
+    clone.querySelector('.register-btn')?.addEventListener('click', () => {
+      prompt.remove();
+      window.location.href = '/landing.html';
+    });
+    prompt.appendChild(clone);
+  }
+  document.body.appendChild(prompt);
 }
 
 function getCityImage(cityName) {

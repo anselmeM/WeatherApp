@@ -32,7 +32,9 @@ export function clearAuth() {
 }
 
 export async function authFetch(url, options = {}) {
-  return fetch(url, options);
+  const headers = options.headers || {};
+  headers['X-Requested-With'] = 'XMLHttpRequest';
+  return fetch(url, { ...options, headers });
 }
 
 export function updateAuthUI() {
@@ -106,7 +108,7 @@ export async function validateSession(onSessionValidated, onError) {
 
 export async function upgradeCurrentUser(onError) {
   try {
-    const response = await fetch('/api/auth/upgrade', {
+    const response = await authFetch('/api/auth/upgrade', {
       method: 'POST'
     });
     const data = await response.json();
@@ -137,7 +139,7 @@ export async function downgradeCurrentUser(onError) {
   }
   
   try {
-    const response = await fetch('/api/auth/downgrade', {
+    const response = await authFetch('/api/auth/downgrade', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json'

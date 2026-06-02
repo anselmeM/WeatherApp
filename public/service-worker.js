@@ -11,6 +11,10 @@ const urlsToCache = [
   '/script.js',
   '/utils.js',
   '/chart.js',
+  '/js/state.js',
+  '/js/auth.js',
+  '/js/ui-render.js',
+  '/js/locations.js',
   '/manifest.json',
   'https://fonts.googleapis.com/css2?family=Material+Icons',
   'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap'
@@ -44,6 +48,11 @@ self.addEventListener('fetch', event => {
   
   // ⚡ Performance: Use stale-while-revalidate for API calls (get fresh data in background)
   if (url.pathname.startsWith('/api/')) {
+    // Never cache auth or user profile endpoints — they contain PII
+    if (url.pathname.startsWith('/api/auth/') || url.pathname.startsWith('/api/user/')) {
+      event.respondWith(fetch(event.request));
+      return;
+    }
     if (event.request.method !== 'GET') {
       // Direct pass-through for non-GET API requests (POST, Register, Login, etc.)
       event.respondWith(fetch(event.request));

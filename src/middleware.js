@@ -89,8 +89,25 @@ export function securityHeaders(req, res, next) {
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   
+  // Content Security Policy (M-3)
+  res.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' https://upload.wikimedia.org https://placehold.co data:",
+    "connect-src 'self' https://en.wikipedia.org"
+  ].join('; '));
+  
   if (process.env.NODE_ENV === 'production') {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
+  next();
+}
+
+export function requireApiHeader(req, res, next) {
+  if (req.headers['x-requested-with'] !== 'XMLHttpRequest') {
+    return res.status(403).json({ error: 'CSRF validation failed: Missing or invalid X-Requested-With header' });
   }
   next();
 }

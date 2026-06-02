@@ -55,33 +55,41 @@ export function formatTime(timeStr) {
       .replace(" ", "");
 }
 
-export function showError(message, errorType = 'generic') {
-    const errorBox = document.createElement("div");
+export function showToast(message, type = 'error', errorType = 'generic') {
+    const toastBox = document.createElement("div");
     
-    // 🛡️ UX: Differentiated error messages based on type
+    // 🛡️ UX: Differentiated error messages based on type/errorType
     let displayMessage = message;
     let showRetry = false;
     
-    if (errorType === 'network') {
-      displayMessage = `Network error: ${message}`;
-      showRetry = true;
-    } else if (errorType === 'timeout') {
-      displayMessage = 'Request timed out. Please check your connection and try again.';
-      showRetry = true;
-    } else if (errorType === 'api') {
-      displayMessage = `Weather service unavailable: ${message}`;
-      showRetry = true;
-    } else if (errorType === 'location') {
-      displayMessage = `Location not found: ${message}`;
+    if (type === 'error') {
+      if (errorType === 'network') {
+        displayMessage = `Network error: ${message}`;
+        showRetry = true;
+      } else if (errorType === 'timeout') {
+        displayMessage = 'Request timed out. Please check your connection and try again.';
+        showRetry = true;
+      } else if (errorType === 'api') {
+        displayMessage = `Weather service unavailable: ${message}`;
+        showRetry = true;
+      } else if (errorType === 'location') {
+        displayMessage = `Location not found: ${message}`;
+      }
     }
     
-    // Build error toast using safe DOM methods
+    // Build toast using safe DOM methods
     const container = document.createElement("div");
     container.className = "flex items-start";
 
     const iconSpan = document.createElement("span");
     iconSpan.className = "material-icons mr-2";
-    iconSpan.textContent = "error_outline";
+    if (type === 'success') {
+      iconSpan.textContent = "check_circle_outline";
+    } else if (type === 'warning') {
+      iconSpan.textContent = "warning_amber";
+    } else {
+      iconSpan.textContent = "error_outline";
+    }
     container.appendChild(iconSpan);
 
     const messageSpan = document.createElement("span");
@@ -97,32 +105,43 @@ export function showError(message, errorType = 'generic') {
       container.appendChild(retryBtn);
     }
     
-    errorBox.appendChild(container);
+    toastBox.appendChild(container);
     
-    errorBox.className =
-      "fixed top-5 right-5 bg-red-600/90 backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl z-50 transition-all duration-500 transform translate-x-[120%] max-w-sm";
+    // Determine color class based on type
+    let bgClass = "bg-red-600/90";
+    if (type === 'success') {
+      bgClass = "bg-green-600/90";
+    } else if (type === 'warning') {
+      bgClass = "bg-yellow-600/90";
+    }
+    
+    toastBox.className =
+      `fixed top-5 right-5 ${bgClass} backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl z-50 transition-all duration-500 transform translate-x-[120%] max-w-sm`;
     // 🛡️ Accessibility: Add ARIA role for screen reader announcement
-    errorBox.setAttribute("role", "alert");
-    errorBox.setAttribute("aria-live", "assertive");
-    document.body.appendChild(errorBox);
+    toastBox.setAttribute("role", "alert");
+    toastBox.setAttribute("aria-live", "assertive");
+    document.body.appendChild(toastBox);
     setTimeout(() => {
-      errorBox.classList.remove("translate-x-[120%]");
+      toastBox.classList.remove("translate-x-[120%]");
     }, 50);
     setTimeout(() => {
-      errorBox.classList.add("translate-x-[120%]");
-      errorBox.addEventListener("transitionend", () => errorBox.remove());
+      toastBox.classList.add("translate-x-[120%]");
+      toastBox.addEventListener("transitionend", () => toastBox.remove());
     }, 5000);
     
     // Attach retry handler if button exists
     if (showRetry && retryBtn) {
       retryBtn.addEventListener('click', () => {
-        errorBox.classList.add("translate-x-[120%]");
-        // Trigger a fresh weather fetch - location will come from current UI state
-        if (typeof window.triggerWeatherRefresh === 'function') {
-          window.triggerWeatherRefresh();
-        }
+        toastBox.classList.add("translate-x-[120%]");
+        // Trigger a fresh weather fetch using a CustomEvent (L-1)
+        document.dispatchEvent(new CustomEvent('weather-retry'));
       });
     }
     
-    return errorBox;
+    return toastBox;
 }
+
+export function showError(message, errorType = 'generic') {
+  return showToast(message, 'error', errorType);
+}
+

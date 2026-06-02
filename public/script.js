@@ -1,6 +1,6 @@
 import { state, getDisplayTemp } from './js/state.js';
 import { drawTempChart } from './chart.js';
-import { showError } from './utils.js';
+import { showError, showToast } from './utils.js';
 import {
   getAuth,
   storeAuth,
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Bind Auth callbacks
   initAuthCallbacks({
     onUpgrade: (user) => {
-      showError('Upgrade successful! Welcome to Premium.', 'generic');
+      showToast('Upgrade successful! Welcome to Premium.', 'success');
       const currentLoc = document.getElementById("location-name")?.textContent;
       if (currentLoc && currentLoc !== '--') {
         fetchWeatherData(currentLoc);
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
     onDowngrade: (data) => {
-      showError('Premium subscription cancelled.', 'generic');
+      showToast('Premium subscription cancelled.', 'success');
       // Sync locations from downgrade response
       if (data.locations) {
         state.recentSearches = data.locations;
@@ -168,13 +168,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Expose refresh function for retry button
-  window.triggerWeatherRefresh = () => {
+  // Listen for retry event from retry button (L-1)
+  document.addEventListener('weather-retry', () => {
     const currentLocation = locationNameEl?.textContent;
     if (currentLocation && currentLocation !== '--') {
       fetchWeatherData(currentLocation);
     }
-  };
+  });
 
   // Deep Link Handling
   function updateLocationUrl(location) {
@@ -246,22 +246,15 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     
-    autocompleteDebounce = setTimeout(async () => {
-      try {
-        const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?localityLanguage=en`);
-        if (response.ok) {
-          const suggestions = [
-            `${query}, United States`,
-            `${query}, United Kingdom`,
-            `${query}, Canada`,
-            `${query}, Australia`,
-            `${query}, Germany`
-          ];
-          renderAutocomplete(suggestions);
-        }
-      } catch (err) {
-        console.warn('Autocomplete fetch failed:', err);
-      }
+    autocompleteDebounce = setTimeout(() => {
+      const suggestions = [
+        `${query}, United States`,
+        `${query}, United Kingdom`,
+        `${query}, Canada`,
+        `${query}, Australia`,
+        `${query}, Germany`
+      ];
+      renderAutocomplete(suggestions);
     }, 300);
   });
 
@@ -402,7 +395,10 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       await fetch('/api/auth/logout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
       });
     } catch (error) {
       console.warn('Server logout failed:', error);

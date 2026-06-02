@@ -30,7 +30,8 @@ export async function pinLocation(city) {
       const response = await fetch('/api/user/locations', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
         },
         body: JSON.stringify({ location: city })
       });
@@ -67,7 +68,8 @@ export async function deleteSavedLocation(city) {
       await fetch('/api/user/locations', {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
         },
         body: JSON.stringify({ location: city })
       });
