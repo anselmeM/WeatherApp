@@ -1,13 +1,28 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { db, initDb, getUser, createUser, updateUser, dbRun } from './db.js';
+import { execSync } from 'child_process';
+import { prisma, getUser, createUser, updateUser } from './db.js';
 
-test('Database persistence tests (SQLite)', async (t) => {
-  // Wait for table creation
-  await initDb();
+test('Database persistence tests (Prisma / SQLite)', async (t) => {
+  // Set environment variable to ensure we run against test DB
+  process.env.NODE_ENV = 'test';
+
+  // Automatically deploy database schema to test.db before running tests
+  try {
+    execSync('npx prisma db push', {
+      env: {
+        ...process.env,
+        DATABASE_URL: 'file:./test.db'
+      },
+      stdio: 'pipe' // Keep output clean
+    });
+  } catch (error) {
+    console.error('Failed to run prisma db push for test database:', error.message);
+    throw error;
+  }
   
   // Clear table for clean state
-  await dbRun('DELETE FROM users');
+  await prisma.user.deleteMany();
 
   await t.test('should return null when user does not exist', async () => {
     const user = await getUser('nonexistent@example.com');
@@ -42,6 +57,8 @@ test('Database persistence tests (SQLite)', async (t) => {
     assert.deepStrictEqual(updatedUser.locations, ['Paris']);
 
     // Clean up
-    await dbRun('DELETE FROM users WHERE email = ?', [testUser.email]);
+    await prisma.user.delete({
+      where: { email: testUser.email }
+    });
   });
 });

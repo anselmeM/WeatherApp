@@ -2,16 +2,22 @@ import express from 'express';
 import { authenticateToken, requireApiHeader } from '../src/middleware.js';
 import { getUser, updateUser } from '../src/db.js';
 import { TIER_LIMITS } from '../src/config.js';
+import { z } from 'zod';
+
+const LocationSchema = z.object({
+  location: z.string().min(1, 'Location is required').trim()
+});
 
 const router = express.Router();
 
 router.delete('/locations', requireApiHeader, authenticateToken, async (req, res) => {
   const { email } = req.user;
-  const { location } = req.body;
   
-  if (!location) {
-    return res.status(400).json({ error: 'Location is required' });
+  const validation = LocationSchema.safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({ error: validation.error.errors[0].message });
   }
+  const { location } = validation.data;
   
   const user = await getUser(email);
   if (!user) {
@@ -34,11 +40,12 @@ router.delete('/locations', requireApiHeader, authenticateToken, async (req, res
 
 router.post('/locations', requireApiHeader, authenticateToken, async (req, res) => {
   const { email } = req.user;
-  const { location } = req.body;
   
-  if (!location) {
-    return res.status(400).json({ error: 'Location is required' });
+  const validation = LocationSchema.safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({ error: validation.error.errors[0].message });
   }
+  const { location } = validation.data;
   
   const user = await getUser(email);
   if (!user) {

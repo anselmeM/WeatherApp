@@ -5,3 +5,11 @@
 node_modules/
 users.json
 *.db
+*.bak
+test.db*
+
+/src/generated/prisma
+/dist/
+/playwright-report/
+/test-results/
+/scratch/

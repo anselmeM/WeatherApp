@@ -3,7 +3,7 @@ import rateLimit from 'express-rate-limit';
 import { isTokenBlacklisted } from '../token-blacklist.js';
 import { JWT_SECRET, TIER_LIMITS } from './config.js';
 
-export function getCookieToken(req) {
+export function getCookieToken(req, cookieName = 'weather_auth_token') {
   const cookieHeader = req.headers.cookie;
   if (!cookieHeader) return null;
   
@@ -13,7 +13,7 @@ export function getCookieToken(req) {
     return acc;
   }, {});
   
-  return cookies['weather_auth_token'] || null;
+  return cookies[cookieName] || null;
 }
 
 export function authenticateToken(req, res, next) {
@@ -109,5 +109,36 @@ export function requireApiHeader(req, res, next) {
   if (req.headers['x-requested-with'] !== 'XMLHttpRequest') {
     return res.status(403).json({ error: 'CSRF validation failed: Missing or invalid X-Requested-With header' });
   }
+  next();
+}
+
+import crypto from 'crypto';
+
+export function generateCsrfToken(req, res, next) {
+  let token = getCookieToken(req, 'csrf_token');
+  if (!token) {
+    token = crypto.randomBytes(32).toString('hex');
+    res.cookie('csrf_token', token, {
+      httpOnly: false, // Must be readable by client JS
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict',
+      path: '/'
+    });
+  }
+  next();
+}
+
+export function csrfProtection(req, res, next) {
+  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    return next();
+  }
+
+  const csrfHeader = req.headers['x-csrf-token'];
+  const csrfCookie = getCookieToken(req, 'csrf_token');
+
+  if (!csrfHeader || !csrfCookie || csrfHeader !== csrfCookie) {
+    return res.status(403).json({ error: 'CSRF token validation failed' });
+  }
+
   next();
 }

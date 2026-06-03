@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherApp Pro - Premium Weather Dashboard</title>
+    
+    <!-- Local Stylesheet -->
+    <link rel="stylesheet" href="/src/style.css" />
+    
+    <!-- Google Fonts: Outfit and Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        h1, h2, h3, .font-display {
+            font-family: 'Outfit', sans-serif;
+        }
+        
+        /* Modern Weather State Gradients */
+        .theme-clear {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            --blob-one-color: rgba(245, 158, 11, 0.18);
+            --blob-two-color: rgba(239, 68, 68, 0.12);
+        }
+        .theme-rain {
+            background: linear-gradient(135deg, #081225 0%, #0d1e3d 50%, #081225 100%);
+            --blob-one-color: rgba(59, 130, 246, 0.18);
+            --blob-two-color: rgba(16, 185, 129, 0.12);
+        }
+        .theme-snow {
+            background: linear-gradient(135deg, #0f1c2e 0%, #1c355e 50%, #0f1c2e 100%);
+            --blob-one-color: rgba(147, 197, 253, 0.18);
+            --blob-two-color: rgba(224, 242, 254, 0.12);
+        }
+        .theme-storm {
+            background: linear-gradient(135deg, #050510 0%, #0a0b1e 50%, #050510 100%);
+            --blob-one-color: rgba(139, 92, 246, 0.18);
+            --blob-two-color: rgba(236, 72, 153, 0.12);
+        }
+        
+        /* Transition utility for body theme changes */
+        body {
+            transition: background 1s ease;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Floating Glow Blobs */
+        .glow-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: 0;
+            opacity: 0.8;
+            pointer-events: none;
+            transition: background-color 1s ease;
+        }
+
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            top: -100px;
+            right: -100px;
+            background-color: var(--blob-one-color, rgba(245, 158, 11, 0.18));
+            animation: drift 25s ease-in-out infinite alternate;
+        }
+
+        .blob-2 {
+            width: 450px;
+            height: 450px;
+            bottom: 20%;
+            left: -100px;
+            background-color: var(--blob-two-color, rgba(239, 68, 68, 0.12));
+            animation: drift-reverse 30s ease-in-out infinite alternate;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-100px, 80px) scale(1.1); }
+            100% { transform: translate(50px, -50px) scale(0.9); }
+        }
+
+        @keyframes drift-reverse {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(80px, -100px) scale(0.9); }
+            100% { transform: translate(-50px, 50px) scale(1.1); }
+        }
+
+        /* Glassmorphism Styles */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-hover {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-hover:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.18);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        /* Buttons & CTA */
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
+        }
+        
+        .btn-premium {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.5);
+        }
+
+        /* Active Weather Pill Styling */
+        .weather-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+
+        .weather-pill.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #ffd700;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Modal Keyframes */
+        @keyframes modalShow {
+            0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-content-animate {
+            animation: modalShow 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen theme-clear text-white relative">
+    <!-- Animated background glowing blobs -->
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <span class="material-icons text-yellow-500 text-3xl mr-2">wb_sunny</span>
+                    <span class="text-2xl font-bold text-white">WeatherApp</span>
+                    <span class="ml-1 text-yellow-500 font-bold">Pro</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="showLoginModal()" class="text-white hover:text-yellow-400 font-medium px-4 py-2">Login</button>
+                    <button onclick="showRegisterModal()" class="btn-primary text-white px-6 py-2 rounded-full font-bold">Get Started</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-4 relative z-10">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
+            <!-- Left Column: Copy & Interactive Pills -->
+            <div class="lg:col-span-7 space-y-8 text-left">
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-tight">
+                    Beautiful Weather,<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400">Powerful Insights</span>
+                </h1>
+                <p class="text-lg md:text-xl text-white/80 max-w-2xl leading-relaxed">
+                    Experience a weather dashboard designed to be both gorgeous and intelligent. Get hyper-local forecasts, interactive charts, and severe alerts instantly.
+                </p>
+                
+                <!-- Weather Selection Pills -->
+                <div class="space-y-3">
+                    <span class="text-sm font-semibold tracking-wider uppercase text-yellow-500">Live Weather Preview</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="switchWeatherState('clear')" id="pill-clear" class="weather-pill active px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2">
+                            <span>☀️</span> Clear
+                        </button>
+                        <button onclick="switchWeatherState('rain')" id="pill-rain" class="weather-pill px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2">
+                            <span>🌧️</span> Rain
+                        </button>
+                        <button onclick="switchWeatherState('snow')" id="pill-snow" class="weather-pill px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2">
+                            <span>❄️</span> Snow
+                        </button>
+                        <button onclick="switchWeatherState('storm')" id="pill-storm" class="weather-pill px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2">
+                            <span>⛈️</span> Storm
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 pt-2">
+                    <button onclick="showRegisterModal()" class="btn-primary text-white px-8 py-4 rounded-full text-base font-bold text-center">
+                        Start Free Today
+                    </button>
+                    <button onclick="scrollToPricing()" class="bg-white/10 border border-white/20 text-white px-8 py-4 rounded-full text-base font-bold hover:bg-white/20 transition text-center">
+                        View Pricing
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column: Interactive Mock Widget -->
+            <div class="lg:col-span-5 flex justify-center">
+                <div class="glass w-full max-w-[380px] rounded-3xl p-6 relative overflow-hidden transition-all duration-500 shadow-2xl hover:scale-[1.01]">
+                    <!-- Header Info -->
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-white tracking-wide" id="preview-city">Miami</h3>
+                            <p class="text-xs text-white/60" id="preview-date">Tuesday, June 2</p>
+                        </div>
+                        <span class="text-xs font-semibold uppercase tracking-widest bg-white/10 px-3 py-1 rounded-full text-white/80">Preview</span>
+                    </div>
+
+                    <!-- Temp & Main Weather -->
+                    <div class="text-center py-6 flex flex-col items-center justify-center relative z-10">
+                        <span class="text-7xl font-extrabold text-white tracking-tighter" id="preview-temp">82°</span>
+                        <div class="mt-4 flex items-center gap-2">
+                            <span class="material-icons text-4xl text-yellow-400" id="preview-icon">wb_sunny</span>
+                            <span class="text-lg font-semibold text-white/90" id="preview-desc">Sunny & Clear</span>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Details Grid -->
+                    <div class="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-white/10 relative z-10">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-white/10 p-2 rounded-xl text-yellow-400">
+                                <span class="material-icons text-lg">opacity</span>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-white/50 uppercase tracking-wider font-semibold">Humidity</p>
+                                <p class="text-sm font-bold text-white" id="preview-humidity">52%</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="bg-white/10 p-2 rounded-xl text-blue-400">
+                                <span class="material-icons text-lg">air</span>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-white/50 uppercase tracking-wider font-semibold">Wind</p>
+                                <p class="text-sm font-bold text-white" id="preview-wind">9 mph</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Alert Message (Dynamic) -->
+                    <div class="mt-5 p-3 rounded-2xl bg-white/5 border border-white/5 flex items-start gap-2 relative z-10" id="preview-alert-container">
+                        <span class="material-icons text-sm text-yellow-500" id="preview-alert-icon">light_mode</span>
+                        <p class="text-xs text-white/80 leading-snug" id="preview-alert">High UV index today. Remember to apply sunscreen.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 px-4 bg-white/10">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-4xl font-bold text-white text-center mb-16">Why Choose WeatherApp Pro?</h2>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="glass glass-hover p-8 rounded-3xl">
+                    <div class="feature-icon text-5xl mb-4 material-icons">location_on</div>
+                    <h3 class="text-xl font-bold text-white mb-3">Global Weather Search</h3>
+                    <p class="text-white/70">Search any city worldwide with our powerful geocoding API. Get accurate forecasts for any location.</p>
+                </div>
+                
+                <div class="glass glass-hover p-8 rounded-3xl">
+                    <div class="feature-icon text-5xl mb-4 material-icons">schedule</div>
+                    <h3 class="text-xl font-bold text-white mb-3">Hourly & Weekly Forecasts</h3>
+                    <p class="text-white/70">Plan ahead with 12-hour hourly forecasts and 7-day extended outlooks with smart summaries.</p>
+                </div>
+                
+                <div class="glass glass-hover p-8 rounded-3xl">
+                    <div class="feature-icon text-5xl mb-4 material-icons">bolt</div>
+                    <h3 class="text-xl font-bold text-white mb-3">Live Weather Alerts</h3>
+                    <p class="text-white/70">Get instant notifications for severe weather, temperature changes, and precipitation.</p>
+                </div>
+                
+                <div class="glass glass-hover p-8 rounded-3xl">
+                    <div class="feature-icon text-5xl mb-4 material-icons">insights</div>
+                    <h3 class="text-xl font-bold text-white mb-3">UV & Air Quality</h3>
+                    <p class="text-white/70">Monitor UV index, humidity, wind, and air quality for safe outdoor activities.</p>
+                </div>
+                
+                <div class="glass glass-hover p-8 rounded-3xl">
+                    <div class="feature-icon text-5xl mb-4 material-icons">smartphone</div>
+                    <h3 class="text-xl font-bold text-white mb-3">Progressive Web App</h3>
+                    <p class="text-white/70">Install on any device. Works offline with cached data and home screen installation.</p>
+                </div>
+                
+                <div class="glass glass-hover p-8 rounded-3xl">
+                    <div class="feature-icon text-5xl mb-4 material-icons">dark_mode</div>
+                    <h3 class="text-xl font-bold text-white mb-3">Dark Mode</h3>
+                    <p class="text-white/70">Beautiful glassmorphism design with automatic light/dark mode based on your system.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 px-4">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-4xl font-bold text-white text-center mb-6">Simple, Transparent Pricing</h2>
+            <p class="text-center text-white/70 mb-16">Choose the plan that fits your needs. Upgrade anytime.</p>
+            
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Free Plan -->
+                <div class="glass glass-hover rounded-3xl p-8 text-center">
+                    <div class="inline-block bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-bold mb-4">FREE</div>
+                    <h3 class="text-3xl font-bold text-white mb-2">$0</h3>
+                    <p class="text-white/60 mb-6">forever</p>
+                    
+                    <ul class="text-left space-y-4 mb-8">
+                        <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>100 API calls/day</li>
+                        <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>3 saved locations</li>
+                        <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>Current weather</li>
+                        <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>Hourly & 3-day forecast</li>
+                        <li class="flex items-center text-white/50"><span class="material-icons mr-2">close</span>Weather alerts</li>
+                        <li class="flex items-center text-white/50"><span class="material-icons mr-2">close</span>Historical data</li>
+                        <li class="flex items-center text-white/50"><span class="material-icons mr-2">close</span>Priority support</li>
+                    </ul>
+                    
+                    <button onclick="showRegisterModal()" class="w-full btn-primary text-white py-4 rounded-xl font-bold text-lg">
+                        Get Started Free
+                    </button>
+                </div>
+                
+                <!-- Premium Plan -->
+                <div class="glass glass-hover rounded-3xl p-8 text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-yellow-500 text-black px-4 py-1 rounded-bl-lg font-bold text-sm">BEST VALUE</div>
+                    <div class="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold mb-4">PREMIUM</div>
+                    <h3 class="text-3xl font-bold text-white mb-2">$4.99</h3>
+                    <p class="text-white/60 mb-6">per month</p>
+                    
+                    <ul class="text-left space-y-4 mb-8">
+                        <li class="flex items-center text-white"><span class="material-icons text-green-400 mr-2">check</span><span class="font-bold">Unlimited</span> API calls</li>
+                        <li class="flex items-center text-white"><span class="material-icons text-green-400 mr-2">check</span><span class="font-bold">Unlimited</span> saved locations</li>
+                        <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>7-day forecast & Weather alerts</li>
+                        <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>Historical weather data</li>
+                        <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>Priority support</li>
+                        <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>Early access to new features</li>
+                        <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>No ads</li>
+                    </ul>
+                    
+                    <button onclick="showRegisterModal()" class="w-full btn-premium text-white py-4 rounded-xl font-bold text-lg">
+                        Go Premium Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Table -->
+    <section class="py-20 px-4 bg-white/10">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-white text-center mb-10">Compare Plans</h2>
+            
+            <div class="glass rounded-3xl overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-white/10">
+                        <tr>
+                            <th class="text-left p-4 text-white font-bold">Feature</th>
+                            <th class="text-center p-4 text-white font-bold">Free</th>
+                            <th class="text-center p-4 text-yellow-400 font-bold">Premium</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/10">
+                        <tr>
+                            <td class="p-4 text-white/80">Daily API Calls</td>
+                            <td class="p-4 text-center text-white">100</td>
+                            <td class="p-4 text-center text-yellow-400 font-bold">Unlimited</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 text-white/80">Saved Locations</td>
+                            <td class="p-4 text-center text-white">3</td>
+                            <td class="p-4 text-center text-yellow-400 font-bold">Unlimited</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 text-white/80">Weather Forecasts</td>
+                            <td class="p-4 text-center text-white">3 days</td>
+                            <td class="p-4 text-center text-yellow-400 font-bold">7 days</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 text-white/80">Historical Data</td>
+                            <td class="p-4 text-center text-white/50"><span class="material-icons">close</span></td>
+                            <td class="p-4 text-center text-yellow-400"><span class="material-icons">check</span></td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 text-white/80">Push Notifications</td>
+                            <td class="p-4 text-center text-white/50"><span class="material-icons">close</span></td>
+                            <td class="p-4 text-center text-yellow-400"><span class="material-icons">check</span></td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 text-white/80">Priority Support</td>
+                            <td class="p-4 text-center text-white/50"><span class="material-icons">close</span></td>
+                            <td class="p-4 text-center text-yellow-400"><span class="material-icons">check</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-10 px-4 text-center">
+        <div class="flex items-center justify-center mb-4">
+            <span class="material-icons text-yellow-500 text-2xl mr-2">wb_sunny</span>
+            <span class="text-xl font-bold text-white">WeatherApp</span>
+            <span class="ml-1 text-yellow-500 font-bold">Pro</span>
+        </div>
+        <p class="text-white/60 mb-2">© 2026 WeatherApp Pro - Premium Weather Intelligence</p>
+        <p class="text-white/40 text-sm">Real-time forecasts • Smart alerts • Unlimited global coverage</p>
+        <div class="mt-6 pt-6 border-t border-white/10">
+            <a href="https://firstmiledev.ca/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-white/60 hover:text-yellow-400 transition text-sm">
+                <span class="mr-1">Powered by</span>
+                <span class="font-bold">FirstMileDevs</span>
+                <span class="material-icons text-xs ml-1">open_in_new</span>
+            </a>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+        <div class="glass rounded-3xl p-8 max-w-md w-full modal-content-animate">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Welcome Back</h3>
+                <button onclick="closeModals()" class="text-white/60 hover:text-white">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            
+            <form id="login-form">
+                <div class="mb-4">
+                    <label class="block text-white/80 text-sm font-medium mb-2">Email</label>
+                    <input type="email" id="login-email" required class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:border-blue-500">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-white/80 text-sm font-medium mb-2">Password</label>
+                    <input type="password" id="login-password" required class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:border-blue-500">
+                </div>
+                <button type="submit" class="w-full btn-primary text-white py-3 rounded-xl font-bold">
+                    Sign In
+                </button>
+            </form>
+            
+            <p class="text-center text-white/60 mt-4">
+                Don't have an account? 
+                <button onclick="switchToRegister()" class="text-blue-400 hover:text-blue-300 font-bold">Sign up</button>
+            </p>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+        <div class="glass rounded-3xl p-8 max-w-md w-full modal-content-animate">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Create Account</h3>
+                <button onclick="closeModals()" class="text-white/60 hover:text-white">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            
+            <form id="register-form">
+                <div class="mb-4">
+                    <label class="block text-white/80 text-sm font-medium mb-2">Email</label>
+                    <input type="email" id="register-email" required class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-white/80 text-sm font-medium mb-2">Password</label>
+                    <input type="password" id="register-password" required minlength="8" class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:border-blue-500">
+                    <p class="text-white/50 text-xs mt-1">At least 8 characters</p>
+                </div>
+                
+
+                
+                <button type="submit" class="w-full btn-primary text-white py-3 rounded-xl font-bold">
+                    Create Account
+                </button>
+            </form>
+            
+            <p class="text-center text-white/60 mt-4">
+                Already have an account? 
+                <button onclick="switchToLogin()" class="text-blue-400 hover:text-blue-300 font-bold">Sign in</button>
+            </p>
+        </div>
+    </div>
+
+    <!-- Upgrade Modal -->
+    <div id="upgrade-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+        <div class="glass rounded-3xl p-8 max-w-md w-full text-center modal-content-animate">
+            <span class="material-icons text-yellow-500 text-6xl mb-4">star</span>
+            <h3 class="text-2xl font-bold text-white mb-2">Upgrade to Premium</h3>
+            <p class="text-white/70 mb-6">Get unlimited access to all features!</p>
+            
+            <div class="bg-white/10 rounded-2xl p-4 mb-6">
+                <p class="text-3xl font-bold text-white">$4.99<span class="text-white/60 text-lg">/month</span></p>
+            </div>
+            
+            <button onclick="confirmUpgrade()" class="w-full btn-premium text-white py-3 rounded-xl font-bold mb-4">
+                Upgrade Now
+            </button>
+            
+            <button onclick="closeModals()" class="text-white/60 hover:text-white text-sm">
+                Maybe later
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+        // Modal functions
+        function showLoginModal() {
+            closeModals();
+            document.getElementById('login-modal').classList.remove('hidden');
+        }
+        
+        function showRegisterModal() {
+            closeModals();
+            document.getElementById('register-modal').classList.remove('hidden');
+        }
+        
+        function showUpgradeModal() {
+            closeModals();
+            document.getElementById('upgrade-modal').classList.remove('hidden');
+        }
+        
+        function closeModals() {
+            document.getElementById('login-modal').classList.add('hidden');
+            document.getElementById('register-modal').classList.add('hidden');
+            document.getElementById('upgrade-modal').classList.add('hidden');
+        }
+        
+        function switchToRegister() {
+            closeModals();
+            showRegisterModal();
+        }
+        
+        function switchToLogin() {
+            closeModals();
+            showLoginModal();
+        }
+        
+        function scrollToPricing() {
+            document.getElementById('pricing').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.className = isError ? 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg z-50' : 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50';
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+        
+        // Login handler
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('weather_user', JSON.stringify(data.user));
+                    showToast('Login successful!');
+                    closeModals();
+                    // Redirect to weather app
+                    window.location.href = '/index.html';
+                } else {
+                    showToast(data.error || 'Login failed', true);
+                }
+            } catch (error) {
+                showToast('Login failed. Please try again.', true);
+            }
+        });
+        
+        // Register handler
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('weather_user', JSON.stringify(data.user));
+                    showToast('Account created!');
+                    closeModals();
+                    window.location.href = '/index.html';
+                } else {
+                    showToast(data.error || 'Registration failed', true);
+                }
+            } catch (error) {
+                showToast('Registration failed. Please try again.', true);
+            }
+        });
+        
+        // Upgrade handler
+        async function confirmUpgrade() {
+            const user = localStorage.getItem('weather_user');
+            if (!user) {
+                showToast('Please login first', true);
+                closeModals();
+                showLoginModal();
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/upgrade', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('weather_user', JSON.stringify(data.user));
+                    showToast('Welcome to Premium! 🎉');
+                    closeModals();
+                } else {
+                    showToast(data.error || 'Upgrade failed', true);
+                }
+            } catch (error) {
+                showToast('Upgrade failed. Please try again.', true);
+            }
+        }
+        
+        // Check if already logged in
+        const user = localStorage.getItem('weather_user');
+        if (user) {
+            // Already logged in, could redirect to app
+            console.log('User is logged in');
+        }
+
+        // Weather State Switching Logic for Landing Page Preview
+        const weatherData = {
+            clear: {
+                city: 'Miami',
+                date: 'Tuesday, June 2',
+                temp: '82°',
+                icon: 'wb_sunny',
+                desc: 'Sunny & Clear',
+                humidity: '52%',
+                wind: '9 mph',
+                theme: 'theme-clear',
+                alert: 'High UV index today. Remember to apply sunscreen.',
+                alertIcon: 'light_mode',
+                alertColor: 'text-yellow-400'
+            },
+            rain: {
+                city: 'Seattle',
+                date: 'Tuesday, June 2',
+                temp: '58°',
+                icon: 'thunderstorm',
+                desc: 'Moderate Rain',
+                humidity: '88%',
+                wind: '14 mph',
+                theme: 'theme-rain',
+                alert: 'Precipitation active. Carry an umbrella.',
+                alertIcon: 'umbrella',
+                alertColor: 'text-blue-400'
+            },
+            snow: {
+                city: 'Aspen',
+                date: 'Tuesday, June 2',
+                temp: '26°',
+                icon: 'ac_unit',
+                desc: 'Light Snow',
+                humidity: '74%',
+                wind: '6 mph',
+                theme: 'theme-snow',
+                alert: 'Sub-zero temperatures. Wear insulated clothing.',
+                alertIcon: 'warning',
+                alertColor: 'text-cyan-300'
+            },
+            storm: {
+                city: 'Houston',
+                date: 'Tuesday, June 2',
+                temp: '76°',
+                icon: 'flash_on',
+                desc: 'Severe Storms',
+                humidity: '94%',
+                wind: '24 mph',
+                theme: 'theme-storm',
+                alert: 'Severe Weather Warning: Take shelter indoors.',
+                alertIcon: 'gavel',
+                alertColor: 'text-red-500'
+            }
+        };
+
+        function switchWeatherState(state) {
+            const data = weatherData[state];
+            if (!data) return;
+
+            // 1. Update body class for background gradient
+            document.body.className = `min-h-screen ${data.theme} text-white relative`;
+
+            // 2. Update active pill state
+            document.querySelectorAll('.weather-pill').forEach(pill => pill.classList.remove('active'));
+            document.getElementById(`pill-${state}`).classList.add('active');
+
+            // 3. Update widget texts & info
+            document.getElementById('preview-city').textContent = data.city;
+            document.getElementById('preview-date').textContent = data.date;
+            document.getElementById('preview-temp').textContent = data.temp;
+            document.getElementById('preview-desc').textContent = data.desc;
+            document.getElementById('preview-humidity').textContent = data.humidity;
+            document.getElementById('preview-wind').textContent = data.wind;
+            document.getElementById('preview-alert').textContent = data.alert;
+
+            // 4. Update widget icons & styles
+            const iconEl = document.getElementById('preview-icon');
+            iconEl.textContent = data.icon;
+            iconEl.className = `material-icons text-4xl ${data.alertColor}`;
+
+            const alertIconEl = document.getElementById('preview-alert-icon');
+            alertIconEl.textContent = data.alertIcon;
+            alertIconEl.className = `material-icons text-sm ${data.alertColor}`;
+        }
+    </script>
+</body>
+</html>

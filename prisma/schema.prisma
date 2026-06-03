@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  email     String  @id
+  password  String
+  tier      String  @default("free")
+  createdAt String?
+  locations String  @default("[]")
+  apiCalls  Int     @default(0)
+
+  @@map("users")
+}

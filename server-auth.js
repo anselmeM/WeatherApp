@@ -1,5 +1,5 @@
 import express from 'express';
-import { securityHeaders } from './src/middleware.js';
+import { securityHeaders, generateCsrfToken, csrfProtection } from './src/middleware.js';
 
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
@@ -19,16 +19,23 @@ if (process.env.NODE_ENV === 'production') {
 
 app.use(securityHeaders);
 app.use(express.json({ limit: '10kb' }));
+app.use(generateCsrfToken);
+app.use('/api', csrfProtection);
+
+// Serve static files from dist (Vite build output)
+app.use(express.static('dist', { index: 'landing.html' }));
 
 app.get('/', (req, res) => {
-  res.sendFile('landing.html', { root: 'public' });
+  res.sendFile('landing.html', { root: 'dist' });
+});
+
+app.get('/dashboard', (req, res) => {
+  res.sendFile('index.html', { root: 'dist' });
 });
 
 app.get('/favicon.ico', (req, res) => {
   res.status(204).end();
 });
-
-app.use(express.static('public', { index: 'landing.html' }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
