@@ -2,6 +2,7 @@ import { state, getDisplayTemp } from './state.js';
 import { getWeatherIcon, getWindDirection, formatTime, showError } from '../utils.js';
 import { drawTempChart } from '../chart.js';
 import { showPaymentModal } from './auth.js';
+import { initCanvasBackground, setWeatherEffect } from './canvas-bg.js';
 
 // Caches for weather data of saved locations
 const savedWeatherCache = new Map();
@@ -138,6 +139,8 @@ export function setOnSelectLocation(callback) {
   onSelectLocationCallback = callback;
 }
 
+let isCanvasInitialized = false;
+
 export function showSkeleton() {
   leftPanelContent?.classList.add("hidden");
   rightPanelContent?.classList.add("hidden");
@@ -146,10 +149,28 @@ export function showSkeleton() {
 }
 
 export function hideSkeleton() {
-  leftPanelContent?.classList.remove("hidden");
-  rightPanelContent?.classList.remove("hidden");
   leftPanelSkeleton?.classList.add("hidden");
   rightPanelSkeleton?.classList.add("hidden");
+  
+  if (!isCanvasInitialized) {
+    initCanvasBackground();
+    isCanvasInitialized = true;
+  }
+  
+  // Show dashboard card and footer
+  const dashboardFooter = document.getElementById("dashboard-footer");
+  if (dashboardFooter) dashboardFooter.classList.remove("hidden");
+  
+  leftPanelContent?.classList.remove("hidden");
+  rightPanelContent?.classList.remove("hidden");
+  
+  leftPanelContent?.classList.add("fade-out-transition");
+  rightPanelContent?.classList.add("fade-out-transition");
+  
+  void leftPanelContent?.offsetWidth; // Trigger reflow
+  
+  leftPanelContent?.classList.remove("fade-out-transition");
+  rightPanelContent?.classList.remove("fade-out-transition");
 }
 
 export function toggleForecastView(view) {
@@ -193,6 +214,9 @@ export function updateBackground(condition) {
   else if (condition.includes("cloud")) body.classList.add("weather-bg-cloudy");
   else if (condition.includes("storm")) body.classList.add("weather-bg-storm");
   else body.classList.add("weather-bg-clear");
+  
+  // Update canvas particle effect
+  setWeatherEffect(condition);
 }
 
 export function updateRecentSearchesUI() {

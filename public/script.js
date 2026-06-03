@@ -229,6 +229,45 @@ document.addEventListener("DOMContentLoaded", () => {
   todayButton?.addEventListener("click", () => toggleForecastView("today"));
   weekButton?.addEventListener("click", () => toggleForecastView("week"));
 
+  // PWA Install Prompt Logic
+  let deferredPrompt;
+  const pwaInstallBtn = document.getElementById('pwa-install-btn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (pwaInstallBtn) {
+      pwaInstallBtn.classList.remove('hidden');
+    }
+  });
+
+  pwaInstallBtn?.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    pwaInstallBtn.classList.add('hidden');
+  });
+
+  window.addEventListener('appinstalled', () => {
+    if (pwaInstallBtn) {
+      pwaInstallBtn.classList.add('hidden');
+    }
+  });
+
+  // Global Keyboard Shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && document.activeElement !== searchInput) {
+      e.preventDefault();
+      searchInput?.focus();
+    }
+    if (e.key === 'Escape' && document.activeElement === searchInput) {
+      searchInput.blur();
+      const autocompleteDropdown = document.getElementById("search-autocomplete-dropdown");
+      if (autocompleteDropdown) autocompleteDropdown.classList.add('hidden');
+    }
+  });
+
   // Clear button visibility logic
   searchInput?.addEventListener("input", () => {
     if (searchInput.value.trim().length > 0) {

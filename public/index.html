@@ -28,7 +28,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
-<body class="flex items-center justify-center min-h-screen p-2 sm:p-4">
+<body class="flex flex-col items-center justify-center min-h-screen p-2 sm:p-4">
+    <!-- Full-screen Canvas Background -->
+    <canvas id="weather-effect-canvas"></canvas>
+
     <div id="loading-overlay" class="fixed inset-0 bg-gray-100/80 dark:bg-gray-950/80 backdrop-blur-md flex flex-col items-center justify-center z-50">
         <div class="relative flex items-center justify-center w-28 h-28 mb-4">
             <div class="absolute w-24 h-24 rounded-full bg-gradient-to-tr from-yellow-400 to-orange-500 blur-xl opacity-60 animate-pulse"></div>
@@ -139,6 +142,9 @@
                     <button id="share-button" class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Share weather" title="Share weather">
                         <span class="material-icons text-gray-700 dark:text-gray-200 text-xl sm:text-2xl">share</span>
                     </button>
+                    <button id="pwa-install-btn" class="hidden w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md interactive-element" aria-label="Install App" title="Install App">
+                        <span class="material-icons text-xl sm:text-2xl animate-bounce">download</span>
+                    </button>
                     <button id="theme-toggle" class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Toggle dark and light mode" title="Toggle dark and light mode">
                         <span class="material-icons text-gray-700 dark:text-gray-200 text-xl sm:text-2xl">light_mode</span>
                     </button>
@@ -212,6 +218,15 @@
                     <div class="h-32 w-24 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse flex-shrink-0"></div>
                     <div class="h-32 w-24 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse flex-shrink-0"></div>
                 </div>
+
+    <!-- Dashboard Footer -->
+    <footer id="dashboard-footer" class="max-w-7xl w-full text-center mt-6 py-4 px-4 glass rounded-3xl hidden z-10 transition-all duration-700">
+        <p class="text-gray-600 dark:text-gray-300 text-xs font-semibold">© 2026 WeatherApp Pro - Premium Weather Intelligence</p>
+        <div class="mt-2 pt-2 border-t border-gray-200/20 dark:border-white/10 flex flex-col sm:flex-row justify-between items-center text-[10px] text-gray-400 gap-2">
+            <span>Powered by <a href="https://firstmiledev.ca/" target="_blank" rel="noopener noreferrer" class="font-bold hover:text-blue-500 transition">FirstMileDevs</a></span>
+            <span class="flex items-center gap-1"><span class="material-icons text-[10px] mr-1">keyboard</span> Press <kbd class="border border-gray-300 dark:border-gray-600 px-1 rounded bg-white/50">/</kbd> to search</span>
+        </div>
+    </footer>
                 <div class="h-10 w-64 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse mb-8"></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     <div class="h-44 bg-gray-200 dark:bg-gray-700 rounded-3xl animate-pulse"></div>
@@ -235,12 +250,20 @@
                 </button>
             </div>
             
-            <div class="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-4 text-white mb-6 shadow-md">
+            <div class="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-4 text-white mb-4 shadow-md">
                 <p class="text-xs uppercase tracking-wider font-semibold opacity-85">SaaS Weather Premium</p>
                 <p class="text-2xl font-black mt-1">$4.99<span class="text-sm font-normal opacity-90">/month</span></p>
                 <div class="flex justify-between text-xs mt-4 opacity-90 font-medium">
                     <span>Unlimited Locations</span>
                     <span>7-Day Full Forecast</span>
+                </div>
+            </div>
+            
+            <div class="bg-blue-500/10 border border-blue-400/25 rounded-2xl p-3 mb-4 text-left flex items-start">
+                <span class="material-icons text-blue-500 mr-2 text-sm mt-0.5">info</span>
+                <div>
+                    <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest">Demo / Sandbox Mode</p>
+                    <p class="text-[11px] text-gray-600 dark:text-gray-300 mt-0.5 font-medium leading-relaxed">No real payment details are required. Any dummy card number will work.</p>
                 </div>
             </div>
 

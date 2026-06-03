@@ -233,3 +233,25 @@ input:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Canvas Overlay */
+#weather-effect-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Page Crossfade Transitions */
+#left-panel-content, #right-panel-content {
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-out-transition {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
