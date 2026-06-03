@@ -21,7 +21,18 @@ export function getAuth() {
 
 export function storeAuth(user) {
   try {
+    const oldUserJson = localStorage.getItem(USER_KEY);
+    const oldUser = oldUserJson ? JSON.parse(oldUserJson) : null;
     localStorage.setItem(USER_KEY, JSON.stringify(user));
+    
+    // Clear browser service worker caches if session user or tier changes
+    if (!oldUser || oldUser.email !== user.email || oldUser.tier !== user.tier) {
+      if ('caches' in window) {
+        caches.keys().then(keys => {
+          keys.forEach(key => caches.delete(key));
+        });
+      }
+    }
   } catch (e) {
     console.error('Failed to store auth:', e);
   }
@@ -29,6 +40,11 @@ export function storeAuth(user) {
 
 export function clearAuth() {
   localStorage.removeItem(USER_KEY);
+  if ('caches' in window) {
+    caches.keys().then(keys => {
+      keys.forEach(key => caches.delete(key));
+    });
+  }
 }
 
 export async function authFetch(url, options = {}) {
