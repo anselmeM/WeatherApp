@@ -209,7 +209,9 @@ document.addEventListener("DOMContentLoaded", () => {
     state.unitGroup = "metric";
     localStorage.setItem("unitGroup", "metric");
     celsiusButton.classList.add("bg-blue-500", "text-white");
+    celsiusButton.setAttribute("aria-pressed", "true");
     fahrenheitButton?.classList.remove("bg-blue-500", "text-white");
+    fahrenheitButton?.setAttribute("aria-pressed", "false");
     updateUI();
   });
 
@@ -218,7 +220,9 @@ document.addEventListener("DOMContentLoaded", () => {
     state.unitGroup = "us";
     localStorage.setItem("unitGroup", "us");
     fahrenheitButton.classList.add("bg-blue-500", "text-white");
+    fahrenheitButton.setAttribute("aria-pressed", "true");
     celsiusButton?.classList.remove("bg-blue-500", "text-white");
+    celsiusButton?.setAttribute("aria-pressed", "false");
     updateUI();
   });
 
@@ -454,10 +458,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // Set initial unit UI button styling
   if (state.unitGroup === "metric") {
     celsiusButton?.classList.add("bg-blue-500", "text-white");
+    celsiusButton?.setAttribute("aria-pressed", "true");
     fahrenheitButton?.classList.remove("bg-blue-500", "text-white");
+    fahrenheitButton?.setAttribute("aria-pressed", "false");
   } else {
     fahrenheitButton?.classList.add("bg-blue-500", "text-white");
+    fahrenheitButton?.setAttribute("aria-pressed", "true");
     celsiusButton?.classList.remove("bg-blue-500", "text-white");
+    celsiusButton?.setAttribute("aria-pressed", "false");
   }
 
   updateRecentSearchesUI();

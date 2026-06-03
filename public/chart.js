@@ -122,6 +122,12 @@ export function drawTempChart(hours, unit) {
         circle.setAttribute('r', 5);
         circle.setAttribute('class', 'temp-point cursor-pointer transition-all duration-150 fill-blue-500 stroke-white dark:stroke-gray-900');
         circle.setAttribute('stroke-width', '2.5');
+        
+        // 🛡️ Accessibility: Add ARIA attributes and keyboard focus
+        const tempStr = `${Math.round(hourData.temp)}${unit}`;
+        circle.setAttribute('role', 'img');
+        circle.setAttribute('aria-label', `Temperature at ${displayTimeStr} is ${tempStr}`);
+        circle.setAttribute('tabindex', '0');
 
         // Hover events
         circle.addEventListener('mouseenter', (e) => {

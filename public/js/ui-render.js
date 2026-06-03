@@ -156,13 +156,25 @@ export function toggleForecastView(view) {
   if (view === "today") {
     hourlySection?.classList.remove("view-hidden");
     weeklySection?.classList.add("view-hidden");
-    if (todayButton) todayButton.className = "text-gray-900 dark:text-white font-bold text-lg border-b-4 border-blue-500 pb-1 interactive-element";
-    if (weekButton) weekButton.className = "text-gray-500 dark:text-gray-400 font-bold text-lg interactive-element";
+    if (todayButton) {
+      todayButton.className = "text-gray-900 dark:text-white font-bold text-base sm:text-lg border-b-4 border-blue-500 pb-1 interactive-element";
+      todayButton.setAttribute('aria-selected', 'true');
+    }
+    if (weekButton) {
+      weekButton.className = "text-gray-500 dark:text-gray-400 font-bold text-base sm:text-lg interactive-element hover:text-gray-700 dark:hover:text-gray-200";
+      weekButton.setAttribute('aria-selected', 'false');
+    }
   } else {
     hourlySection?.classList.add("view-hidden");
     weeklySection?.classList.remove("view-hidden");
-    if (weekButton) weekButton.className = "text-gray-900 dark:text-white font-bold text-lg border-b-4 border-blue-500 pb-1 interactive-element";
-    if (todayButton) todayButton.className = "text-gray-500 dark:text-gray-400 font-bold text-lg interactive-element";
+    if (weekButton) {
+      weekButton.className = "text-gray-900 dark:text-white font-bold text-base sm:text-lg border-b-4 border-blue-500 pb-1 interactive-element";
+      weekButton.setAttribute('aria-selected', 'true');
+    }
+    if (todayButton) {
+      todayButton.className = "text-gray-500 dark:text-gray-400 font-bold text-base sm:text-lg interactive-element hover:text-gray-700 dark:hover:text-gray-200";
+      todayButton.setAttribute('aria-selected', 'false');
+    }
   }
 }
 
