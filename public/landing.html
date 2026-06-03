@@ -199,13 +199,13 @@
                         <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>100 API calls/day</li>
                         <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>3 saved locations</li>
                         <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>Current weather</li>
-                        <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>Hourly & 7-day forecasts</li>
-                        <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>Weather alerts</li>
+                        <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>Hourly & 3-day forecast</li>
+                        <li class="flex items-center text-white/50"><span class="material-icons mr-2">close</span>Weather alerts</li>
                         <li class="flex items-center text-white/50"><span class="material-icons mr-2">close</span>Historical data</li>
                         <li class="flex items-center text-white/50"><span class="material-icons mr-2">close</span>Priority support</li>
                     </ul>
                     
-                    <button onclick="showRegisterModal('free')" class="w-full btn-primary text-white py-4 rounded-xl font-bold text-lg">
+                    <button onclick="showRegisterModal()" class="w-full btn-primary text-white py-4 rounded-xl font-bold text-lg">
                         Get Started Free
                     </button>
                 </div>
@@ -220,14 +220,14 @@
                     <ul class="text-left space-y-4 mb-8">
                         <li class="flex items-center text-white"><span class="material-icons text-green-400 mr-2">check</span><span class="font-bold">Unlimited</span> API calls</li>
                         <li class="flex items-center text-white"><span class="material-icons text-green-400 mr-2">check</span><span class="font-bold">Unlimited</span> saved locations</li>
-                        <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>All free features</li>
+                        <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>7-day forecast & Weather alerts</li>
                         <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>Historical weather data</li>
                         <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>Priority support</li>
                         <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>Early access to new features</li>
                         <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>No ads</li>
                     </ul>
                     
-                    <button onclick="showRegisterModal('premium')" class="w-full btn-premium text-white py-4 rounded-xl font-bold text-lg">
+                    <button onclick="showRegisterModal()" class="w-full btn-premium text-white py-4 rounded-xl font-bold text-lg">
                         Go Premium Now
                     </button>
                 </div>
@@ -262,8 +262,8 @@
                         </tr>
                         <tr>
                             <td class="p-4 text-white/80">Weather Forecasts</td>
-                            <td class="p-4 text-center text-white">7 days</td>
-                            <td class="p-4 text-center text-yellow-400 font-bold">14 days</td>
+                            <td class="p-4 text-center text-white">3 days</td>
+                            <td class="p-4 text-center text-yellow-400 font-bold">7 days</td>
                         </tr>
                         <tr>
                             <td class="p-4 text-white/80">Historical Data</td>
@@ -356,18 +356,7 @@
                     <p class="text-white/50 text-xs mt-1">At least 8 characters</p>
                 </div>
                 
-                <div class="mb-6">
-                    <label class="block text-white/80 text-sm font-medium mb-2">Select Plan</label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button type="button" onclick="selectPlan('free')" id="plan-free-btn" class="plan-btn selected p-3 rounded-xl border-2 border-blue-500 text-center transition">
-                            <span class="text-white font-bold">Free</span>
-                        </button>
-                        <button type="button" onclick="selectPlan('premium')" id="plan-premium-btn" class="plan-btn p-3 rounded-xl border-2 border-yellow-500 text-center transition">
-                            <span class="text-yellow-400 font-bold">Premium</span>
-                            <span class="text-white/60 text-xs block">$4.99/mo</span>
-                        </button>
-                    </div>
-                </div>
+
                 
                 <button type="submit" class="w-full btn-primary text-white py-3 rounded-xl font-bold">
                     Create Account
@@ -408,18 +397,14 @@
     </div>
 
     <script>
-        let selectedPlan = 'free';
-        
         // Modal functions
         function showLoginModal() {
             closeModals();
             document.getElementById('login-modal').classList.remove('hidden');
         }
         
-        function showRegisterModal(plan = 'free') {
+        function showRegisterModal() {
             closeModals();
-            selectedPlan = plan;
-            updatePlanButtons();
             document.getElementById('register-modal').classList.remove('hidden');
         }
         
@@ -442,16 +427,6 @@
         function switchToLogin() {
             closeModals();
             showLoginModal();
-        }
-        
-        function selectPlan(plan) {
-            selectedPlan = plan;
-            updatePlanButtons();
-        }
-        
-        function updatePlanButtons() {
-            document.getElementById('plan-free-btn').className = selectedPlan === 'free' ? 'plan-btn selected p-3 rounded-xl border-2 border-blue-500 text-center transition' : 'plan-btn p-3 rounded-xl border-2 border-white/20 text-center transition';
-            document.getElementById('plan-premium-btn').className = selectedPlan === 'premium' ? 'plan-btn selected p-3 rounded-xl border-2 border-yellow-500 text-center transition' : 'plan-btn p-3 rounded-xl border-2 border-white/20 text-center transition';
         }
         
         function scrollToPricing() {
@@ -478,7 +453,10 @@
             try {
                 const response = await fetch('/api/auth/login', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
                     body: JSON.stringify({ email, password })
                 });
                 const data = await response.json();
@@ -502,19 +480,20 @@
             e.preventDefault();
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
-            const tier = selectedPlan;
-            
             try {
                 const response = await fetch('/api/auth/register', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password, tier })
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ email, password })
                 });
                 const data = await response.json();
                 
                 if (response.ok) {
                     localStorage.setItem('weather_user', JSON.stringify(data.user));
-                    showToast(tier === 'premium' ? 'Welcome to Premium!' : 'Account created!');
+                    showToast('Account created!');
                     closeModals();
                     window.location.href = '/index.html';
                 } else {
@@ -539,7 +518,8 @@
                 const response = await fetch('/api/auth/upgrade', {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 });
                 const data = await response.json();
