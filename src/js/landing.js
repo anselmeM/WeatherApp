@@ -1,4 +1,5 @@
 import { authFetch, storeAuth } from './auth.js';
+import { registerSW } from 'virtual:pwa-register';
 
 // Cosmic Weather Journal State Configuration
 const weatherJournalData = {
@@ -711,4 +712,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Initialize with clear state variables
     switchWeatherState('clear');
+
+    // Register Service Worker for offline updates
+    registerSW({
+        onNeedRefresh() {
+            showToast('New update available. Refreshing...');
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        },
+        onOfflineReady() {
+            console.log('Weather App is ready to work offline!');
+        }
+    });
+
+    // Auto-reload the page when a new service worker takes control
+    let refreshing = false;
+    const hasController = !!navigator.serviceWorker?.controller;
+    navigator.serviceWorker?.addEventListener('controllerchange', () => {
+        if (hasController && !refreshing) {
+            refreshing = true;
+            window.location.reload();
+        }
+    });
 });

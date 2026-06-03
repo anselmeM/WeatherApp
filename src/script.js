@@ -37,6 +37,16 @@ const updateSW = registerSW({
     console.log('Weather App is ready to work offline!');
   },
 });
+
+// Auto-reload the page when a new service worker takes control
+let refreshing = false;
+const hasController = !!navigator.serviceWorker?.controller;
+navigator.serviceWorker?.addEventListener('controllerchange', () => {
+  if (hasController && !refreshing) {
+    refreshing = true;
+    window.location.reload();
+  }
+});
 // Caching local variables
 const CONSENT_KEY = 'weather_privacy_consent';
 

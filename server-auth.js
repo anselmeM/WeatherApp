@@ -23,14 +23,40 @@ app.use(express.json({ limit: '10kb' }));
 app.use(generateCsrfToken);
 app.use('/api', csrfProtection);
 
-// Serve static files from dist (Vite build output)
-app.use(express.static('dist', { index: 'landing.html' }));
+// Serve static files from dist (Vite build output) with custom cache-control headers
+app.use(express.static('dist', {
+  index: 'landing.html',
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html') || path.includes('sw.js')) {
+      // Never cache HTML pages or the Service Worker
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    } else if (path.includes('assets')) {
+      // Long-term immutable caching for fingerprinted assets built by Vite
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    } else {
+      // Fallback cache policy for standard files (e.g. manifest, icons)
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+    }
+  }
+}));
 
 app.get('/', (req, res) => {
+  res.set({
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+    'Pragma': 'no-cache',
+    'Expires': '0'
+  });
   res.sendFile('landing.html', { root: 'dist' });
 });
 
 app.get('/dashboard', (req, res) => {
+  res.set({
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+    'Pragma': 'no-cache',
+    'Expires': '0'
+  });
   res.sendFile('index.html', { root: 'dist' });
 });
 
