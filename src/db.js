@@ -12,16 +12,6 @@ const adapter = new PrismaBetterSqlite3({
 
 export const prisma = new PrismaClient({ adapter });
 
-// Stub functions to maintain backward compatibility with any legacy imports
-export const db = null;
-export const dbRun = null;
-export const dbGet = null;
-
-export async function initDb() {
-  // Schema is managed via Prisma CLI (npx prisma db push)
-  // This is a no-op to prevent existing code from throwing errors.
-}
-
 /**
  * Retrieve a user by email.
  * @param {string} email
