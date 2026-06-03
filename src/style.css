@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   --bg-clear: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
