@@ -14,8 +14,8 @@ test.describe('Weather Dashboard - Landing Page UI Widget', () => {
     // Verify default active state (clear theme)
     await expect(page.locator('#pill-clear')).toHaveClass(/active/);
     await expect(page.locator('#preview-city')).toHaveText('Miami');
-    await expect(page.locator('#preview-temp')).toHaveText('82°');
-    await expect(page.locator('#preview-desc')).toHaveText('Sunny & Clear');
+    await expect(page.locator('#preview-temp')).toHaveText('82°F');
+    await expect(page.locator('#preview-desc')).toHaveText('Solaris / Clear & Unobstructed');
     
     // Verify default background theme class on body
     await expect(page.locator('body')).toHaveClass(/theme-clear/);
@@ -29,11 +29,11 @@ test.describe('Weather Dashboard - Landing Page UI Widget', () => {
     await expect(page.locator('#pill-rain')).toHaveClass(/active/);
     await expect(page.locator('#pill-clear')).not.toHaveClass(/active/);
     await expect(page.locator('#preview-city')).toHaveText('Seattle');
-    await expect(page.locator('#preview-temp')).toHaveText('58°');
-    await expect(page.locator('#preview-desc')).toHaveText('Moderate Rain');
+    await expect(page.locator('#preview-temp')).toHaveText('58°F');
+    await expect(page.locator('#preview-desc')).toHaveText('Imber / Moderate Precipitation');
     await expect(page.locator('#preview-humidity')).toHaveText('88%');
-    await expect(page.locator('#preview-wind')).toHaveText('14 mph');
-    await expect(page.locator('#preview-alert')).toHaveText('Precipitation active. Carry an umbrella.');
+    await expect(page.locator('#preview-wind')).toHaveText(/14 mph/);
+    await expect(page.locator('#preview-alert')).toHaveText('Steady precipitation active. High humidity saturating topsoils.');
     await expect(page.locator('body')).toHaveClass(/theme-rain/);
 
     // Click on the Storm state pill
@@ -43,9 +43,9 @@ test.describe('Weather Dashboard - Landing Page UI Widget', () => {
     await expect(page.locator('#pill-storm')).toHaveClass(/active/);
     await expect(page.locator('#pill-rain')).not.toHaveClass(/active/);
     await expect(page.locator('#preview-city')).toHaveText('Houston');
-    await expect(page.locator('#preview-temp')).toHaveText('76°');
-    await expect(page.locator('#preview-desc')).toHaveText('Severe Storms');
-    await expect(page.locator('#preview-alert')).toHaveText('Severe Weather Warning: Take shelter indoors.');
+    await expect(page.locator('#preview-temp')).toHaveText('76°F');
+    await expect(page.locator('#preview-desc')).toHaveText('Procella / Severe Cyclonic Disturbances');
+    await expect(page.locator('#preview-alert')).toHaveText('Severe cyclonic warning. Rapidly falling pressure. Shelter indoors.');
     await expect(page.locator('body')).toHaveClass(/theme-storm/);
   });
 });

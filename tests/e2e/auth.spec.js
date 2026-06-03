@@ -5,12 +5,12 @@ test.describe('Weather Dashboard - Landing', () => {
     await page.goto('/landing.html');
     
     // Verify the page title
-    await expect(page).toHaveTitle(/WeatherApp Pro/);
+    await expect(page).toHaveTitle(/Cosmic Weather Journal/);
 
     // Verify the hero text is visible
-    await expect(page.locator('text=Beautiful Weather')).toBeVisible();
+    await expect(page.locator('text=The Physics of the Atmosphere')).toBeVisible();
 
     // Verify login button is present
-    await expect(page.locator('button:has-text("Login")')).toBeVisible();
+    await expect(page.locator('#nav-login-btn')).toBeVisible();
   });
 });
