@@ -1,5 +1,6 @@
 import PrismaClientPkg from '@prisma/client';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { execSync } from 'child_process';
 
 const { PrismaClient } = PrismaClientPkg;
 
@@ -11,6 +12,21 @@ const adapter = new PrismaBetterSqlite3({
 });
 
 export const prisma = new PrismaClient({ adapter });
+
+export function pushSchema() {
+  try {
+    execSync('npx prisma db push --accept-data-loss', {
+      env: {
+        ...process.env,
+        DATABASE_URL: dbUrl
+      },
+      stdio: 'pipe'
+    });
+  } catch (error) {
+    console.error('Failed to run prisma db push:', error.message);
+  }
+}
+
 
 /**
  * Retrieve a user by email.

@@ -1,5 +1,6 @@
 import express from 'express';
 import { securityHeaders, generateCsrfToken, csrfProtection } from './src/middleware.js';
+import { pushSchema } from './src/db.js';
 
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
@@ -40,6 +41,9 @@ app.get('/favicon.ico', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/weather', weatherRoutes);
+
+// Run schema push on startup to ensure database tables are synchronized
+pushSchema();
 
 app.listen(port, () => {
   console.log(`Weather API Server running on port ${port}`);
