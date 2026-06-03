@@ -585,8 +585,22 @@ async function confirmUpgrade() {
     }
 }
 
+async function ensureCsrfToken() {
+    const match = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/);
+    if (!match) {
+        try {
+            await fetch('/api/auth/csrf');
+        } catch (e) {
+            console.warn('CSRF initialization failed:', e);
+        }
+    }
+}
+
 // Global binding once DOM is parsed
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Ensure CSRF token cookie exists
+    await ensureCsrfToken();
+
     // 1. Instantiate the Canvas gage
     gageInstance = new MeteorologicalGage('meteorological-gage');
 

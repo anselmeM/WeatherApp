@@ -15,6 +15,10 @@ import { authenticateToken, getCookieToken, requireApiHeader } from '../src/midd
 
 const router = express.Router();
 
+router.get('/csrf', (req, res) => {
+  res.json({ success: true });
+});
+
 const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
