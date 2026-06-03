@@ -38,11 +38,17 @@
         <p class="text-gray-600 dark:text-gray-300 font-semibold tracking-wider text-sm uppercase animate-pulse">Fetching forecasts...</p>
     </div>
     
-    <div id="weather-alert-banner" class="fixed top-0 left-0 right-0 bg-yellow-400 text-yellow-900 p-4 text-center z-40 transform -translate-y-full transition-transform duration-300 ease-in-out hidden" role="alert" aria-live="polite">
-        <div class="container mx-auto flex justify-between items-center">
-            <span class="material-icons mr-2">warning</span>
-            <p id="weather-alert-text" class="flex-grow"></p>
-            <button id="close-alert-button" class="ml-4" aria-label="Close weather alert" title="Close weather alert">&times;</button>
+    <div id="weather-alert-banner" class="fixed top-4 left-1/2 -translate-x-1/2 max-w-xl w-[90%] mx-auto bg-yellow-500/90 dark:bg-yellow-600/90 backdrop-blur-md text-white px-5 py-4 rounded-3xl shadow-2xl z-40 transform -translate-y-40 transition-all duration-500 ease-out hidden" role="alert" aria-live="polite">
+        <div class="flex items-start justify-between">
+            <div class="flex items-start flex-grow">
+                <span id="weather-alert-icon" class="material-icons mr-3 mt-0.5 text-2xl">warning</span>
+                <div class="flex-grow">
+                    <p id="weather-alert-text" class="font-bold text-sm sm:text-base leading-snug"></p>
+                    <div id="weather-alert-details" class="hidden text-xs text-white/80 mt-2 max-h-24 overflow-y-auto pr-1"></div>
+                    <button id="toggle-alert-details" class="hidden text-xs underline font-bold mt-1 text-white/95 focus:outline-none">Read More</button>
+                </div>
+            </div>
+            <button id="close-alert-button" class="ml-4 text-white hover:text-gray-200 transition focus:outline-none flex items-center justify-center w-6 h-6 rounded-full hover:bg-white/20" aria-label="Close weather alert">&times;</button>
         </div>
     </div>
 
