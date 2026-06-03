@@ -1,5 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import PrismaClientPkg from '@prisma/client';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+
+const { PrismaClient } = PrismaClientPkg;
 
 const isTest = process.env.NODE_ENV === 'test';
 const dbUrl = isTest ? 'file:./test.db' : 'file:./users.db';

@@ -12,6 +12,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
     
+    <!-- CSP-compliant External Script -->
+    <script type="module" src="/src/js/landing.js" defer></script>
+    
     <style>
         * {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -174,8 +177,8 @@
                     <span class="ml-1 text-yellow-500 font-bold">Pro</span>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button onclick="showLoginModal()" class="text-white hover:text-yellow-400 font-medium px-4 py-2">Login</button>
-                    <button onclick="showRegisterModal()" class="btn-primary text-white px-6 py-2 rounded-full font-bold">Get Started</button>
+                    <button id="nav-login-btn" class="text-white hover:text-yellow-400 font-medium px-4 py-2">Login</button>
+                    <button id="nav-register-btn" class="btn-primary text-white px-6 py-2 rounded-full font-bold">Get Started</button>
                 </div>
             </div>
         </div>
@@ -198,26 +201,26 @@
                 <div class="space-y-3">
                     <span class="text-sm font-semibold tracking-wider uppercase text-yellow-500">Live Weather Preview</span>
                     <div class="flex flex-wrap gap-2">
-                        <button onclick="switchWeatherState('clear')" id="pill-clear" class="weather-pill active px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2">
+                        <button id="pill-clear" class="weather-pill active px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2">
                             <span>☀️</span> Clear
                         </button>
-                        <button onclick="switchWeatherState('rain')" id="pill-rain" class="weather-pill px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2">
+                        <button id="pill-rain" class="weather-pill px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2">
                             <span>🌧️</span> Rain
                         </button>
-                        <button onclick="switchWeatherState('snow')" id="pill-snow" class="weather-pill px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2">
+                        <button id="pill-snow" class="weather-pill px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2">
                             <span>❄️</span> Snow
                         </button>
-                        <button onclick="switchWeatherState('storm')" id="pill-storm" class="weather-pill px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2">
+                        <button id="pill-storm" class="weather-pill px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2">
                             <span>⛈️</span> Storm
                         </button>
                     </div>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-4 pt-2">
-                    <button onclick="showRegisterModal()" class="btn-primary text-white px-8 py-4 rounded-full text-base font-bold text-center">
+                    <button id="hero-register-btn" class="btn-primary text-white px-8 py-4 rounded-full text-base font-bold text-center">
                         Start Free Today
                     </button>
-                    <button onclick="scrollToPricing()" class="bg-white/10 border border-white/20 text-white px-8 py-4 rounded-full text-base font-bold hover:bg-white/20 transition text-center">
+                    <button id="hero-pricing-btn" class="bg-white/10 border border-white/20 text-white px-8 py-4 rounded-full text-base font-bold hover:bg-white/20 transition text-center">
                         View Pricing
                     </button>
                 </div>
@@ -344,7 +347,7 @@
                         <li class="flex items-center text-white/50"><span class="material-icons mr-2">close</span>Priority support</li>
                     </ul>
                     
-                    <button onclick="showRegisterModal()" class="w-full btn-primary text-white py-4 rounded-xl font-bold text-lg">
+                    <button id="pricing-free-btn" class="w-full btn-primary text-white py-4 rounded-xl font-bold text-lg">
                         Get Started Free
                     </button>
                 </div>
@@ -366,7 +369,7 @@
                         <li class="flex items-center text-white/80"><span class="material-icons text-green-400 mr-2">check</span>No ads</li>
                     </ul>
                     
-                    <button onclick="showRegisterModal()" class="w-full btn-premium text-white py-4 rounded-xl font-bold text-lg">
+                    <button id="pricing-premium-btn" class="w-full btn-premium text-white py-4 rounded-xl font-bold text-lg">
                         Go Premium Now
                     </button>
                 </div>
@@ -448,7 +451,7 @@
         <div class="glass rounded-3xl p-8 max-w-md w-full modal-content-animate">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-white">Welcome Back</h3>
-                <button onclick="closeModals()" class="text-white/60 hover:text-white">
+                <button class="text-white/60 hover:text-white modal-close-btn">
                     <span class="material-icons">close</span>
                 </button>
             </div>
@@ -469,7 +472,7 @@
             
             <p class="text-center text-white/60 mt-4">
                 Don't have an account? 
-                <button onclick="switchToRegister()" class="text-blue-400 hover:text-blue-300 font-bold">Sign up</button>
+                <button id="switch-to-register-btn" class="text-blue-400 hover:text-blue-300 font-bold">Sign up</button>
             </p>
         </div>
     </div>
@@ -479,7 +482,7 @@
         <div class="glass rounded-3xl p-8 max-w-md w-full modal-content-animate">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-white">Create Account</h3>
-                <button onclick="closeModals()" class="text-white/60 hover:text-white">
+                <button class="text-white/60 hover:text-white modal-close-btn">
                     <span class="material-icons">close</span>
                 </button>
             </div>
@@ -495,8 +498,6 @@
                     <p class="text-white/50 text-xs mt-1">At least 8 characters</p>
                 </div>
                 
-
-                
                 <button type="submit" class="w-full btn-primary text-white py-3 rounded-xl font-bold">
                     Create Account
                 </button>
@@ -504,7 +505,7 @@
             
             <p class="text-center text-white/60 mt-4">
                 Already have an account? 
-                <button onclick="switchToLogin()" class="text-blue-400 hover:text-blue-300 font-bold">Sign in</button>
+                <button id="switch-to-login-btn" class="text-blue-400 hover:text-blue-300 font-bold">Sign in</button>
             </p>
         </div>
     </div>
@@ -520,11 +521,11 @@
                 <p class="text-3xl font-bold text-white">$4.99<span class="text-white/60 text-lg">/month</span></p>
             </div>
             
-            <button onclick="confirmUpgrade()" class="w-full btn-premium text-white py-3 rounded-xl font-bold mb-4">
+            <button id="confirm-upgrade-btn" class="w-full btn-premium text-white py-3 rounded-xl font-bold mb-4">
                 Upgrade Now
             </button>
             
-            <button onclick="closeModals()" class="text-white/60 hover:text-white text-sm">
+            <button class="text-white/60 hover:text-white text-sm modal-close-btn">
                 Maybe later
             </button>
         </div>
@@ -534,239 +535,5 @@
     <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50">
         <span id="toast-message"></span>
     </div>
-
-    <script>
-        // Modal functions
-        function showLoginModal() {
-            closeModals();
-            document.getElementById('login-modal').classList.remove('hidden');
-        }
-        
-        function showRegisterModal() {
-            closeModals();
-            document.getElementById('register-modal').classList.remove('hidden');
-        }
-        
-        function showUpgradeModal() {
-            closeModals();
-            document.getElementById('upgrade-modal').classList.remove('hidden');
-        }
-        
-        function closeModals() {
-            document.getElementById('login-modal').classList.add('hidden');
-            document.getElementById('register-modal').classList.add('hidden');
-            document.getElementById('upgrade-modal').classList.add('hidden');
-        }
-        
-        function switchToRegister() {
-            closeModals();
-            showRegisterModal();
-        }
-        
-        function switchToLogin() {
-            closeModals();
-            showLoginModal();
-        }
-        
-        function scrollToPricing() {
-            document.getElementById('pricing').scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-            toastMessage.textContent = message;
-            toast.className = isError ? 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg z-50' : 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50';
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
-        }
-        
-        // Login handler
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            try {
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await response.json();
-                
-                if (response.ok) {
-                    localStorage.setItem('weather_user', JSON.stringify(data.user));
-                    showToast('Login successful!');
-                    closeModals();
-                    // Redirect to weather app
-                    window.location.href = '/index.html';
-                } else {
-                    showToast(data.error || 'Login failed', true);
-                }
-            } catch (error) {
-                showToast('Login failed. Please try again.', true);
-            }
-        });
-        
-        // Register handler
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            try {
-                const response = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await response.json();
-                
-                if (response.ok) {
-                    localStorage.setItem('weather_user', JSON.stringify(data.user));
-                    showToast('Account created!');
-                    closeModals();
-                    window.location.href = '/index.html';
-                } else {
-                    showToast(data.error || 'Registration failed', true);
-                }
-            } catch (error) {
-                showToast('Registration failed. Please try again.', true);
-            }
-        });
-        
-        // Upgrade handler
-        async function confirmUpgrade() {
-            const user = localStorage.getItem('weather_user');
-            if (!user) {
-                showToast('Please login first', true);
-                closeModals();
-                showLoginModal();
-                return;
-            }
-            
-            try {
-                const response = await fetch('/api/auth/upgrade', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-                const data = await response.json();
-                
-                if (response.ok) {
-                    localStorage.setItem('weather_user', JSON.stringify(data.user));
-                    showToast('Welcome to Premium! 🎉');
-                    closeModals();
-                } else {
-                    showToast(data.error || 'Upgrade failed', true);
-                }
-            } catch (error) {
-                showToast('Upgrade failed. Please try again.', true);
-            }
-        }
-        
-        // Check if already logged in
-        const user = localStorage.getItem('weather_user');
-        if (user) {
-            // Already logged in, could redirect to app
-            console.log('User is logged in');
-        }
-
-        // Weather State Switching Logic for Landing Page Preview
-        const weatherData = {
-            clear: {
-                city: 'Miami',
-                date: 'Tuesday, June 2',
-                temp: '82°',
-                icon: 'wb_sunny',
-                desc: 'Sunny & Clear',
-                humidity: '52%',
-                wind: '9 mph',
-                theme: 'theme-clear',
-                alert: 'High UV index today. Remember to apply sunscreen.',
-                alertIcon: 'light_mode',
-                alertColor: 'text-yellow-400'
-            },
-            rain: {
-                city: 'Seattle',
-                date: 'Tuesday, June 2',
-                temp: '58°',
-                icon: 'thunderstorm',
-                desc: 'Moderate Rain',
-                humidity: '88%',
-                wind: '14 mph',
-                theme: 'theme-rain',
-                alert: 'Precipitation active. Carry an umbrella.',
-                alertIcon: 'umbrella',
-                alertColor: 'text-blue-400'
-            },
-            snow: {
-                city: 'Aspen',
-                date: 'Tuesday, June 2',
-                temp: '26°',
-                icon: 'ac_unit',
-                desc: 'Light Snow',
-                humidity: '74%',
-                wind: '6 mph',
-                theme: 'theme-snow',
-                alert: 'Sub-zero temperatures. Wear insulated clothing.',
-                alertIcon: 'warning',
-                alertColor: 'text-cyan-300'
-            },
-            storm: {
-                city: 'Houston',
-                date: 'Tuesday, June 2',
-                temp: '76°',
-                icon: 'flash_on',
-                desc: 'Severe Storms',
-                humidity: '94%',
-                wind: '24 mph',
-                theme: 'theme-storm',
-                alert: 'Severe Weather Warning: Take shelter indoors.',
-                alertIcon: 'gavel',
-                alertColor: 'text-red-500'
-            }
-        };
-
-        function switchWeatherState(state) {
-            const data = weatherData[state];
-            if (!data) return;
-
-            // 1. Update body class for background gradient
-            document.body.className = `min-h-screen ${data.theme} text-white relative`;
-
-            // 2. Update active pill state
-            document.querySelectorAll('.weather-pill').forEach(pill => pill.classList.remove('active'));
-            document.getElementById(`pill-${state}`).classList.add('active');
-
-            // 3. Update widget texts & info
-            document.getElementById('preview-city').textContent = data.city;
-            document.getElementById('preview-date').textContent = data.date;
-            document.getElementById('preview-temp').textContent = data.temp;
-            document.getElementById('preview-desc').textContent = data.desc;
-            document.getElementById('preview-humidity').textContent = data.humidity;
-            document.getElementById('preview-wind').textContent = data.wind;
-            document.getElementById('preview-alert').textContent = data.alert;
-
-            // 4. Update widget icons & styles
-            const iconEl = document.getElementById('preview-icon');
-            iconEl.textContent = data.icon;
-            iconEl.className = `material-icons text-4xl ${data.alertColor}`;
-
-            const alertIconEl = document.getElementById('preview-alert-icon');
-            alertIconEl.textContent = data.alertIcon;
-            alertIconEl.className = `material-icons text-sm ${data.alertColor}`;
-        }
-    </script>
 </body>
 </html>
