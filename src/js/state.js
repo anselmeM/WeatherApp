@@ -1,9 +1,12 @@
+// ⚡ Bolt: Define regex outside loop and use .test() instead of .match() for boolean checks
+const coordinatePattern = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
+
 export const state = {
   unitGroup: localStorage.getItem("unitGroup") || "metric",
   fetchedUnitGroup: null, // Tracks the unit weather data was originally fetched in
   currentWeatherData: null,
   isInitialLoad: true,
-  recentSearches: JSON.parse(localStorage.getItem("recentSearches") || "[]").filter(c => !c.match(/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/)),
+  recentSearches: JSON.parse(localStorage.getItem("recentSearches") || "[]").filter(c => !coordinatePattern.test(c)),
 };
 
 export function getDisplayTemp(tempVal) {

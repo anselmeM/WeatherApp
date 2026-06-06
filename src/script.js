@@ -121,9 +121,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (granted) {
       localStorage.setItem(CONSENT_KEY, 'granted');
       localStorage.setItem(CONSENT_KEY + '_date', new Date().toISOString());
+      // ⚡ Bolt: Define regex outside loop and use .test() instead of .match() for boolean checks
+      const coordinatePattern = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
       // Populate state with cached searches if any
       state.recentSearches = JSON.parse(localStorage.getItem("recentSearches") || "[]")
-        .filter(c => !c.match(/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/));
+        .filter(c => !coordinatePattern.test(c));
       updateRecentSearchesUI();
       updatePinButtonUI();
     } else {
