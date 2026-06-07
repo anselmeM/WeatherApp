@@ -363,6 +363,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Close dropdown on focus outside (accessibility)
+  document.addEventListener("focusin", (e) => {
+    if (autocompleteDropdown && !autocompleteDropdown.contains(e.target) && e.target !== searchInput) {
+      autocompleteDropdown.classList.add("hidden");
+    }
+  });
+
   searchInput?.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && searchInput.value.trim()) {
       const location = searchInput.value.trim();
@@ -446,8 +453,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initial Theme load
   const cachedTheme = localStorage.getItem("theme");
-  const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  if (cachedTheme === "dark" || (!cachedTheme && systemPrefersDark)) {
+  const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+  if (cachedTheme === "dark" || (!cachedTheme && systemPrefersDark.matches)) {
     document.documentElement.classList.add("dark");
     const iconSpan = themeToggleButton?.querySelector('.material-icons');
     if (iconSpan) iconSpan.textContent = "light_mode";
@@ -456,6 +463,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const iconSpan = themeToggleButton?.querySelector('.material-icons');
     if (iconSpan) iconSpan.textContent = "dark_mode";
   }
+
+  // Listen to OS theme changes if user hasn't explicitly set a preference
+  systemPrefersDark.addEventListener("change", (e) => {
+    if (!localStorage.getItem("theme")) {
+      if (e.matches) {
+        document.documentElement.classList.add("dark");
+        const iconSpan = themeToggleButton?.querySelector('.material-icons');
+        if (iconSpan) iconSpan.textContent = "light_mode";
+      } else {
+        document.documentElement.classList.remove("dark");
+        const iconSpan = themeToggleButton?.querySelector('.material-icons');
+        if (iconSpan) iconSpan.textContent = "dark_mode";
+      }
+    }
+  });
 
   // Logout listener
   logoutButton?.addEventListener('click', async () => {
