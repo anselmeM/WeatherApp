@@ -47,6 +47,10 @@ navigator.serviceWorker?.addEventListener('controllerchange', () => {
     window.location.reload();
   }
 });
+
+// ⚡ Bolt: Define regex at module level to avoid costly recreation in .filter() loop
+const COORD_REGEX = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
+
 // Caching local variables
 const CONSENT_KEY = 'weather_privacy_consent';
 
@@ -122,8 +126,9 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem(CONSENT_KEY, 'granted');
       localStorage.setItem(CONSENT_KEY + '_date', new Date().toISOString());
       // Populate state with cached searches if any
+      // ⚡ Bolt: Use .test() instead of .match() for faster boolean checks
       state.recentSearches = JSON.parse(localStorage.getItem("recentSearches") || "[]")
-        .filter(c => !c.match(/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/));
+        .filter(c => !COORD_REGEX.test(c));
       updateRecentSearchesUI();
       updatePinButtonUI();
     } else {

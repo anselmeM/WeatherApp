@@ -1,9 +1,13 @@
+// ⚡ Bolt: Define regex at module level to avoid costly recreation in .filter() loop
+const COORD_REGEX = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
+
 export const state = {
   unitGroup: localStorage.getItem("unitGroup") || "metric",
   fetchedUnitGroup: null, // Tracks the unit weather data was originally fetched in
   currentWeatherData: null,
   isInitialLoad: true,
-  recentSearches: JSON.parse(localStorage.getItem("recentSearches") || "[]").filter(c => !c.match(/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/)),
+  // ⚡ Bolt: Use .test() instead of .match() for faster boolean checks
+  recentSearches: JSON.parse(localStorage.getItem("recentSearches") || "[]").filter(c => !COORD_REGEX.test(c)),
 };
 
 export function getDisplayTemp(tempVal) {
