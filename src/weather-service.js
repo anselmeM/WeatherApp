@@ -4,13 +4,16 @@ const weatherCache = new Map();
 const CACHE_TTL = 10 * 60 * 1000;
 const MAX_CACHE_SIZE = 100;
 
+// ⚡ Bolt: Cache regular expressions at module scope to avoid recompiling on every validation call
+const coordinatePattern = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
+const cityNamePattern = /^[\p{L}\p{N}\s\-.,']+$/u;
+
 export function isValidLocation(location) {
   if (!location || typeof location !== 'string') return false;
   if (location.length > 200) return false;
   if (location.includes('..')) return false;
-  const coordinatePattern = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
-  const cityNamePattern = /^[\p{L}\p{N}\s\-.,']+$/u;
-  return coordinatePattern.test(location.trim()) || cityNamePattern.test(location.trim());
+  const trimmed = location.trim();
+  return coordinatePattern.test(trimmed) || cityNamePattern.test(trimmed);
 }
 
 export async function handleWeatherRequest(req, res, tier) {
