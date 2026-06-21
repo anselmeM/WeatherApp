@@ -344,23 +344,36 @@ document.addEventListener("DOMContentLoaded", () => {
       const li = document.createElement("li");
       li.className = "px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-700 dark:text-gray-200 transition-colors border-b border-gray-100 dark:border-gray-700/50 last:border-0";
       li.textContent = loc;
-      li.onclick = () => {
+      li.tabIndex = 0;
+      li.setAttribute("role", "option");
+
+      const selectSuggestion = () => {
         if (searchInput) searchInput.value = "";
         clearSearchButton?.classList.add("hidden");
         autocompleteDropdown.classList.add("hidden");
         updateLocationUrl(loc);
         fetchWeatherData(loc);
       };
+
+      li.onclick = selectSuggestion;
+      li.addEventListener("keydown", (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectSuggestion();
+        }
+      });
       autocompleteDropdown.appendChild(li);
     });
     autocompleteDropdown.classList.remove("hidden");
   }
 
   // Close dropdown on click outside
-  document.addEventListener("click", (e) => {
-    if (autocompleteDropdown && !autocompleteDropdown.contains(e.target) && e.target !== searchInput) {
-      autocompleteDropdown.classList.add("hidden");
-    }
+  ['click', 'focusin'].forEach(eventType => {
+    document.addEventListener(eventType, (e) => {
+      if (autocompleteDropdown && !autocompleteDropdown.contains(e.target) && e.target !== searchInput) {
+        autocompleteDropdown.classList.add("hidden");
+      }
+    });
   });
 
   searchInput?.addEventListener("keydown", (e) => {
