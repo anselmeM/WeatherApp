@@ -1,7 +1,7 @@
 import { authFetch, storeAuth } from './auth.js';
 import { registerSW } from 'virtual:pwa-register';
 
-// Cosmic Weather Journal State Configuration
+// Cosmic Weather Journal State Configuration (Glassmorphism Accents & Ambient Glows)
 const weatherJournalData = {
     clear: {
         city: 'Miami',
@@ -14,8 +14,8 @@ const weatherJournalData = {
         humidity: '52%',
         wind: '09 mph / NE',
         alert: 'High solar radiation detected. UV index is critical.',
-        gageAccent: '#b89047', // Brass / Gold
-        ambientGlow: 'rgba(184, 144, 71, 0.05)'
+        gageAccent: '#f59e0b', // Amber Gold
+        ambientGlow: 'rgba(245, 158, 11, 0.15)'
     },
     rain: {
         city: 'Seattle',
@@ -28,8 +28,8 @@ const weatherJournalData = {
         humidity: '88%',
         wind: '14 mph / SSW',
         alert: 'Steady precipitation active. High humidity saturating topsoils.',
-        gageAccent: '#5a7b8c', // Muted Blue
-        ambientGlow: 'rgba(90, 123, 140, 0.06)'
+        gageAccent: '#06b6d4', // Cyan
+        ambientGlow: 'rgba(6, 182, 212, 0.15)'
     },
     snow: {
         city: 'Aspen',
@@ -42,8 +42,8 @@ const weatherJournalData = {
         humidity: '74%',
         wind: '06 mph / W',
         alert: 'Sub-zero temperatures. Frost formation on exposed surfaces.',
-        gageAccent: '#8fa9c4', // Muted Ice Blue
-        ambientGlow: 'rgba(143, 169, 196, 0.05)'
+        gageAccent: '#10b981', // Mint Emerald
+        ambientGlow: 'rgba(16, 185, 129, 0.15)'
     },
     storm: {
         city: 'Houston',
@@ -56,8 +56,8 @@ const weatherJournalData = {
         humidity: '94%',
         wind: '28 mph / ENE',
         alert: 'Severe cyclonic warning. Rapidly falling pressure. Shelter indoors.',
-        gageAccent: '#7c5c96', // Slate Violet
-        ambientGlow: 'rgba(124, 92, 150, 0.06)'
+        gageAccent: '#d946ef', // Magenta
+        ambientGlow: 'rgba(217, 70, 239, 0.15)'
     }
 };
 
@@ -99,8 +99,8 @@ class MeteorologicalGage {
     }
 
     init() {
-        // Track mouse position over the canvas parent card
-        const card = this.canvas.closest('.gage-card');
+        // Track mouse position over the canvas parent card (supports glass-card class name)
+        const card = this.canvas.closest('.glass-card') || this.canvas.closest('.gage-card');
         if (card) {
             card.addEventListener('mousemove', (e) => {
                 const rect = this.canvas.getBoundingClientRect();
@@ -198,14 +198,14 @@ class MeteorologicalGage {
         // Outer clean circle
         this.ctx.beginPath();
         this.ctx.arc(center, center, radius, 0, Math.PI * 2);
-        this.ctx.strokeStyle = 'rgba(15, 23, 42, 0.08)';
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
         this.ctx.lineWidth = 1;
         this.ctx.stroke();
 
         // Inner nested sub-ring
         this.ctx.beginPath();
         this.ctx.arc(center, center, radius - 8, 0, Math.PI * 2);
-        this.ctx.strokeStyle = 'rgba(15, 23, 42, 0.04)';
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
         this.ctx.lineWidth = 1;
         this.ctx.stroke();
     }
@@ -218,7 +218,7 @@ class MeteorologicalGage {
         for (let r = 0.2; r < 1.0; r += 0.2) {
             this.ctx.beginPath();
             this.ctx.arc(center, center, radius * r, 0, Math.PI * 2);
-            this.ctx.strokeStyle = 'rgba(15, 23, 42, 0.03)';
+            this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
             this.ctx.lineWidth = 0.5;
             this.ctx.stroke();
         }
@@ -229,8 +229,8 @@ class MeteorologicalGage {
         this.ctx.lineTo(center + radius, center);
         this.ctx.moveTo(center, center - radius);
         this.ctx.lineTo(center, center + radius);
-        this.ctx.strokeStyle = 'rgba(15, 23, 42, 0.02)';
-        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
+        this.ctx.lineWidth = 0.5;
         this.ctx.stroke();
     }
 
@@ -239,7 +239,6 @@ class MeteorologicalGage {
         const radius = (this.width / 2) - 28;
 
         // Pressure ranges: 970 hPa to 1050 hPa
-        // Arc spans from -135deg to +135deg (facing upwards)
         const startAngle = -Math.PI * 1.25;
         const endAngle = Math.PI * 0.25;
         const totalAngle = endAngle - startAngle;
@@ -272,8 +271,8 @@ class MeteorologicalGage {
             this.ctx.beginPath();
             this.ctx.moveTo(xStart, yStart);
             this.ctx.lineTo(xEnd, yEnd);
-            this.ctx.strokeStyle = isMajor ? `rgba(15, 23, 42, ${alpha})` : `rgba(15, 23, 42, ${alpha})`;
-            this.ctx.lineWidth = isMajor ? 1.5 : 1;
+            this.ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+            this.ctx.lineWidth = isMajor ? 1.2 : 0.8;
             this.ctx.stroke();
 
             // Label major values (970, 980, ..., 1050)
@@ -283,8 +282,8 @@ class MeteorologicalGage {
                 const xLabel = Math.cos(tickAngle) * labelRadius;
                 const yLabel = Math.sin(tickAngle) * labelRadius;
 
-                this.ctx.font = '500 8px "Plus Jakarta Sans"';
-                this.ctx.fillStyle = 'rgba(15, 23, 42, 0.45)';
+                this.ctx.font = '500 8px "Space Grotesk"';
+                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
                 this.ctx.fillText(labelVal.toString(), xLabel, yLabel);
@@ -292,13 +291,13 @@ class MeteorologicalGage {
         }
 
         // Draw Dial Title
-        this.ctx.font = '600 6px "Plus Jakarta Sans"';
-        this.ctx.fillStyle = 'rgba(15, 23, 42, 0.3)';
+        this.ctx.font = '600 6px "Space Grotesk"';
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
         this.ctx.letterSpacing = '1px';
         this.ctx.textAlign = 'center';
         this.ctx.fillText('BAROMETRIC PRESSURE', 0, radius * 0.4);
 
-        this.ctx.font = 'italic 500 8px "Cormorant Garamond"';
+        this.ctx.font = 'italic 500 8px "Outfit"';
         this.ctx.fillStyle = accentColor;
         this.ctx.fillText('Cosmic Weather Journal', 0, radius * 0.52);
 
@@ -339,7 +338,7 @@ class MeteorologicalGage {
         this.ctx.beginPath();
         this.ctx.moveTo(0, 5); // tiny tail
         this.ctx.lineTo(0, -radius + 8); // pointy tip
-        this.ctx.strokeStyle = '#0f172a';
+        this.ctx.strokeStyle = '#ffffff';
         this.ctx.lineWidth = 1.2;
         this.ctx.stroke();
 
@@ -348,7 +347,7 @@ class MeteorologicalGage {
         this.ctx.moveTo(-3, -radius + 15);
         this.ctx.lineTo(0, -radius + 8);
         this.ctx.lineTo(3, -radius + 15);
-        this.ctx.fillStyle = '#0f172a';
+        this.ctx.fillStyle = '#ffffff';
         this.ctx.fill();
 
         this.ctx.restore();
@@ -360,7 +359,7 @@ class MeteorologicalGage {
         // Base disk
         this.ctx.beginPath();
         this.ctx.arc(center, center, 6, 0, Math.PI * 2);
-        this.ctx.fillStyle = '#0f172a';
+        this.ctx.fillStyle = '#ffffff';
         this.ctx.fill();
 
         // Outer brass ring
@@ -373,7 +372,7 @@ class MeteorologicalGage {
         // Center dot
         this.ctx.beginPath();
         this.ctx.arc(center, center, 1.5, 0, Math.PI * 2);
-        this.ctx.fillStyle = '#faf9f6';
+        this.ctx.fillStyle = '#06070a';
         this.ctx.fill();
     }
 
@@ -387,7 +386,7 @@ class MeteorologicalGage {
 
             // If mouse is not hovered, drift gently in orbit
             if (!this.isHovered) {
-                const angleOffset = (timestamp) => (timestamp * 0.0002 + idx * 0.15);
+                const angleOffset = (t) => (t * 0.0002 + idx * 0.15);
                 const t = performance.now();
                 targetX = center + Math.cos(angleOffset(t)) * (radius * 0.6);
                 targetY = center + Math.sin(angleOffset(t)) * (radius * 0.6);
@@ -418,7 +417,7 @@ class MeteorologicalGage {
             this.ctx.beginPath();
             this.ctx.moveTo(p.x, p.y);
             this.ctx.lineTo(p.x - p.vx * 1.5, p.y - p.vy * 1.5);
-            this.ctx.strokeStyle = `rgba(15, 23, 42, ${p.life * 0.15})`;
+            this.ctx.strokeStyle = `rgba(255, 255, 255, ${p.life * 0.12})`;
             this.ctx.lineWidth = p.size;
             this.ctx.stroke();
 
@@ -432,7 +431,6 @@ class MeteorologicalGage {
 }
 
 // --- STATE MANAGEMENT AND INTERACTIVE BINDINGS ---
-
 let gageInstance = null;
 
 function switchWeatherState(state) {
@@ -442,29 +440,29 @@ function switchWeatherState(state) {
     activeState = state;
 
     // 1. Update body class and styling variables
-    document.body.className = `min-h-screen theme-${state} text-slate-900 relative`;
+    document.body.className = `min-h-screen theme-${state} text-white relative`;
     document.documentElement.style.setProperty('--accent-color', data.gageAccent);
     document.documentElement.style.setProperty('--glow-color', data.ambientGlow);
 
     // Update ambient card glow backgrounds
     const journalCard = document.getElementById('journal-card');
     if (journalCard) {
-        journalCard.style.boxShadow = `0 24px 60px -15px ${data.ambientGlow}, 0 0 1px 1px rgba(15, 23, 42, 0.05)`;
-        journalCard.style.borderColor = `rgba(15, 23, 42, 0.08)`;
+        journalCard.style.boxShadow = `0 24px 60px -15px ${data.ambientGlow}, 0 0 1px 1px rgba(255, 255, 255, 0.05)`;
+        journalCard.style.borderColor = `rgba(255, 255, 255, 0.08)`;
     }
 
     // 2. Toggle active pill class states
     document.querySelectorAll('.weather-pill').forEach(pill => {
         pill.classList.remove('active');
-        pill.style.borderColor = 'rgba(15, 23, 42, 0.1)';
-        pill.style.color = 'rgba(15, 23, 42, 0.6)';
+        pill.style.borderColor = 'rgba(255, 255, 255, 0.06)';
+        pill.style.color = 'rgba(255, 255, 255, 0.4)';
     });
 
     const activePill = document.getElementById(`pill-${state}`);
     if (activePill) {
         activePill.classList.add('active');
         activePill.style.borderColor = data.gageAccent;
-        activePill.style.color = '#0f172a';
+        activePill.style.color = '#ffffff';
     }
 
     // 3. Update gage configuration targets
@@ -491,7 +489,7 @@ function switchWeatherState(state) {
     if (windEl) windEl.textContent = data.wind;
     if (alertTextEl) alertTextEl.textContent = data.alert;
 
-    // Trigger minor opacity blink to simulate ink drawing updates
+    // Trigger minor opacity blink to simulate drawing updates
     const journalContent = document.getElementById('journal-dynamic-content');
     if (journalContent) {
         journalContent.style.opacity = '0.3';
@@ -544,10 +542,10 @@ function showToast(message, isError = false) {
 
     toastMessage.textContent = message;
     
-    // Modern editorial toast styling
+    // Glassmorphic toast styles
     toast.className = isError 
-        ? 'fixed bottom-4 right-4 bg-red-950 border border-red-800 text-red-200 px-6 py-3 rounded-md shadow-2xl z-50 font-medium text-xs tracking-wider uppercase transition-all duration-300' 
-        : 'fixed bottom-4 right-4 bg-slate-950 border border-slate-800 text-slate-200 px-6 py-3 rounded-md shadow-2xl z-50 font-medium text-xs tracking-wider uppercase transition-all duration-300';
+        ? 'fixed bottom-4 right-4 bg-red-950/80 backdrop-blur-md border border-red-800 text-red-200 px-6 py-3 rounded-lg shadow-2xl z-50 font-medium text-xs tracking-wider uppercase transition-all duration-300' 
+        : 'fixed bottom-4 right-4 bg-zinc-950/80 backdrop-blur-md border border-zinc-800/80 text-white px-6 py-3 rounded-lg shadow-2xl z-50 font-medium text-xs tracking-wider uppercase transition-all duration-300';
         
     toast.classList.remove('translate-y-20', 'opacity-0');
     setTimeout(() => {
