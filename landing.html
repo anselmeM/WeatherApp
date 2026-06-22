@@ -8,8 +8,8 @@
     <!-- Local Stylesheet -->
     <link rel="stylesheet" href="/src/style.css" />
     
-    <!-- Google Fonts: Cormorant Garamond (Editorial Serif) and Plus Jakarta Sans (Clean Sans-serif) -->
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Newsreader (Editorial Serif), Geist (Clean Sans-serif), and Geist Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
     
     <!-- CSP-compliant External Script -->
@@ -17,25 +17,25 @@
     
     <style>
         :root {
-            --journal-bg: #faf9f6; /* Warm Alabaster Paper */
-            --journal-dark: #0f172a; /* Slate Charcoal */
-            --journal-gold: #b89047; /* Muted Brass Gold */
-            --journal-border: rgba(15, 23, 42, 0.12);
+            --journal-bg: #fbfbfa; /* Warm Off-white bone */
+            --journal-dark: #111111; /* Charcoal */
+            --journal-border: #eaeaea; /* Crisp 1px gray */
+            --journal-gold: #956400; /* Muted Brass Gold Accent */
             --accent-color: var(--journal-gold);
-            --glow-color: rgba(184, 144, 71, 0.04);
+            --glow-color: rgba(149, 100, 0, 0.02);
             
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--journal-bg);
             color: var(--journal-dark);
         }
         
         h1, h2, h3, h4, .font-serif {
-            font-family: 'Cormorant Garamond', serif;
+            font-family: 'Newsreader', Georgia, serif;
         }
 
         /* Ambient Transitions for Meteorological States */
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--journal-bg);
             color: var(--journal-dark);
             transition: background-color 1.2s ease, color 1.2s ease;
@@ -44,23 +44,35 @@
         }
 
         .theme-clear {
-            --journal-bg: #faf9f6;
-            --journal-dark: #0f172a;
+            --journal-bg: #fbfbfa;
+            --journal-dark: #111111;
+            --journal-border: #eaeaea;
+            --accent-color: #956400;
+            --glow-color: rgba(149, 100, 0, 0.02);
         }
         
         .theme-rain {
-            --journal-bg: #f1f4f6;
-            --journal-dark: #1e2d3d;
+            --journal-bg: #f4f6f7;
+            --journal-dark: #1f2a38;
+            --journal-border: #dce1e5;
+            --accent-color: #1f6c9f;
+            --glow-color: rgba(31, 108, 159, 0.02);
         }
         
         .theme-snow {
-            --journal-bg: #f4f7fa;
-            --journal-dark: #202d3d;
+            --journal-bg: #f4f7f6;
+            --journal-dark: #243538;
+            --journal-border: #dae5e2;
+            --accent-color: #346538;
+            --glow-color: rgba(52, 101, 56, 0.02);
         }
         
         .theme-storm {
-            --journal-bg: #ede9f0;
-            --journal-dark: #221c2b;
+            --journal-bg: #ede9eb;
+            --journal-dark: #2c1f24;
+            --journal-border: #dcd1d7;
+            --accent-color: #9f2f2d;
+            --glow-color: rgba(159, 47, 45, 0.02);
         }
 
         /* Fine-Line Editorial Layout Elements */
@@ -81,40 +93,38 @@
         .weather-pill {
             background: transparent;
             border: 1px solid var(--journal-border);
-            color: rgba(15, 23, 42, 0.6);
+            color: rgba(17, 17, 17, 0.6);
             font-size: 0.75rem;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: 500;
             transition: all 0.4s ease;
         }
 
         .weather-pill.active {
             color: var(--journal-dark) !important;
             border-color: var(--accent-color) !important;
-            background: rgba(15, 23, 42, 0.02);
-            box-shadow: inset 0 0 10px rgba(15, 23, 42, 0.01);
+            background: rgba(17, 17, 17, 0.02);
         }
 
         /* Luxury Interactive Gage Card */
         .gage-card {
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(10px);
+            background: #ffffff;
             border: 1px solid var(--journal-border);
-            box-shadow: 0 24px 60px -15px var(--glow-color), 0 0 1px 1px rgba(15, 23, 42, 0.05);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .gage-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 32px 70px -10px var(--glow-color), 0 0 1px 1px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.05);
         }
 
         /* Modals & Forms Re-Styled as Journal Folders */
         .modal-glass {
-            background: #faf9f6;
-            border: 1px solid var(--journal-dark);
-            box-shadow: 0 30px 90px rgba(15, 23, 42, 0.2);
+            background: #ffffff;
+            border: 1px solid var(--journal-border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
         }
 
         .input-journal {
@@ -134,30 +144,45 @@
 
         .btn-journal-primary {
             background: var(--journal-dark);
-            color: #faf9f6;
-            transition: all 0.3s ease;
+            color: #ffffff;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             letter-spacing: 0.05em;
+            border-radius: 6px;
         }
         
         .btn-journal-primary:hover {
-            background: var(--accent-color);
-            transform: translateY(-1px);
+            background: #333333;
+            transform: scale(0.98);
         }
 
         .btn-journal-outline {
             background: transparent;
-            border: 1px solid var(--journal-dark);
+            border: 1px solid var(--journal-border);
             color: var(--journal-dark);
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             letter-spacing: 0.05em;
+            border-radius: 6px;
         }
 
         .btn-journal-outline:hover {
-            background: rgba(15, 23, 42, 0.04);
-            transform: translateY(-1px);
+            background: rgba(17, 17, 17, 0.04);
+            transform: scale(0.98);
         }
 
-        /* Animation Sequence */
+        /* Scroll entry animation styling */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform, opacity;
+        }
+        
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Animation Sequence for Modals */
         @keyframes modalShow {
             0% { opacity: 0; transform: scale(0.98) translateY(12px); }
             100% { opacity: 1; transform: scale(1) translateY(0); }
@@ -171,38 +196,44 @@
 <body class="min-h-screen theme-clear text-slate-900 overflow-x-hidden antialiased">
 
     <!-- Navigation Header -->
-    <nav class="sticky top-0 left-0 right-0 z-50 bg-[#faf9f6]/95 backdrop-blur-md journal-border-b">
+    <nav class="sticky top-0 left-0 right-0 z-50 bg-[#fbfbfa]/95 backdrop-blur-md journal-border-b">
         <div class="max-w-7xl mx-auto px-6 sm:px-8">
             <div class="flex justify-between items-center h-20">
                 <div class="flex items-center space-x-3">
                     <span class="material-icons text-slate-900 text-2xl">science</span>
-                    <span class="text-xs font-semibold tracking-[0.2em] uppercase font-sans">COSMIC WEATHER JOURNAL</span>
+                    <span class="text-xs font-semibold tracking-[0.25em] uppercase font-sans">COSMIC WEATHER JOURNAL</span>
                 </div>
                 <div class="flex items-center space-x-6">
-                    <button id="nav-login-btn" class="text-xs font-semibold tracking-wider uppercase text-slate-600 hover:text-slate-900 transition">ARCHIVE LOGIN</button>
-                    <button id="nav-register-btn" class="btn-journal-primary text-xs font-bold uppercase px-5 py-2.5 rounded-none">SUBSCRIBE</button>
+                    <button id="nav-login-btn" class="text-xs font-semibold tracking-wider uppercase text-slate-600 hover:text-slate-900 transition flex items-center">
+                        ARCHIVE LOGIN
+                        <kbd class="hidden md:inline-block px-1.5 py-0.5 text-[9px] font-mono border border-[#eaeaea] bg-[#f7f6f3] rounded text-[#787774] ml-2">L</kbd>
+                    </button>
+                    <button id="nav-register-btn" class="btn-journal-primary text-xs font-bold uppercase px-5 py-2.5 flex items-center">
+                        SUBSCRIBE
+                        <kbd class="hidden md:inline-block px-1.5 py-0.5 text-[9px] font-mono border border-zinc-800 bg-zinc-900 rounded text-zinc-400 ml-2">S</kbd>
+                    </button>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Entry Hero Section -->
-    <section class="max-w-7xl mx-auto px-6 sm:px-8 pt-20 pb-28">
+    <section class="max-w-7xl mx-auto px-6 sm:px-8 pt-20 pb-28 scroll-reveal">
         <div class="grid lg:grid-cols-12 gap-16 items-start">
             
             <!-- Left Column: Editorial Content -->
             <div class="lg:col-span-7 space-y-10 text-left">
                 <div class="space-y-4">
-                    <span class="text-xs font-bold tracking-[0.25em] text-[#b89047] uppercase font-sans">VOL. XIV // METEOROLOGY</span>
+                    <span class="text-xs font-bold tracking-[0.25em] text-[#956400] uppercase font-sans">VOL. XIV // METEOROLOGY</span>
                     <h1 class="text-6xl md:text-7xl font-light tracking-tight text-slate-900 leading-[1.05]">
-                        The Physics of the Atmosphere, <br>
+                        The Physics of the <span class="inline-flex items-center align-middle mx-1.5"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Altocumulus_undulatus.jpg/120px-Altocumulus_undulatus.jpg" class="h-6 w-10 object-cover rounded-[3px] border border-[#eaeaea]" alt="Atmosphere" /></span> Atmosphere, <br>
                         <span class="italic font-normal">Transposed in Ink.</span>
                     </h1>
                 </div>
 
                 <div class="journal-border-t pt-8">
                     <p class="text-xl md:text-2xl text-slate-700 font-serif leading-relaxed italic font-light">
-                        "Experience a weather record that elevates daily observations to a high-craft science. Read real-time barometric pressure indices, dynamic wind stream vectors, and local alerts recorded with mathematical purity."
+                        "Record daily meteorological observations with mathematical purity and high-craft precision. Read real-time barometric pressure indices, dynamic wind stream vectors, and local alerts."
                     </p>
                 </div>
 
@@ -210,26 +241,27 @@
                 <div class="space-y-4 pt-4">
                     <span class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-400 font-sans block">Select Observation Module</span>
                     <div class="flex flex-wrap gap-3">
-                        <button id="pill-clear" class="weather-pill active px-5 py-3 rounded-none font-semibold flex items-center gap-2">
+                        <button id="pill-clear" class="weather-pill active px-5 py-3 rounded-md font-semibold flex items-center gap-2">
                             <span>01 /</span> Solaris
                         </button>
-                        <button id="pill-rain" class="weather-pill px-5 py-3 rounded-none font-semibold flex items-center gap-2">
+                        <button id="pill-rain" class="weather-pill px-5 py-3 rounded-md font-semibold flex items-center gap-2">
                             <span>02 /</span> Imber
                         </button>
-                        <button id="pill-snow" class="weather-pill px-5 py-3 rounded-none font-semibold flex items-center gap-2">
+                        <button id="pill-snow" class="weather-pill px-5 py-3 rounded-md font-semibold flex items-center gap-2">
                             <span>03 /</span> Nivalis
                         </button>
-                        <button id="pill-storm" class="weather-pill px-5 py-3 rounded-none font-semibold flex items-center gap-2">
+                        <button id="pill-storm" class="weather-pill px-5 py-3 rounded-md font-semibold flex items-center gap-2">
                             <span>04 /</span> Procella
                         </button>
                     </div>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-6 pt-6">
-                    <button id="hero-register-btn" class="btn-journal-primary text-sm font-bold uppercase px-8 py-4.5 rounded-none text-center">
+                    <button id="hero-register-btn" class="btn-journal-primary text-sm font-bold uppercase px-8 py-4.5 text-center flex items-center justify-center">
                         Acquire Archive Access
+                        <kbd class="hidden md:inline-block px-1.5 py-0.5 text-[10px] font-mono border border-zinc-800 bg-zinc-900 rounded text-zinc-400 ml-3">S</kbd>
                     </button>
-                    <button id="hero-pricing-btn" class="btn-journal-outline text-sm font-bold uppercase px-8 py-4.5 rounded-none text-center">
+                    <button id="hero-pricing-btn" class="btn-journal-outline text-sm font-bold uppercase px-8 py-4.5 text-center">
                         View Journal Tiers
                     </button>
                 </div>
@@ -303,104 +335,177 @@
         </div>
     </section>
 
-    <!-- Catalog Archive Features (Table of Contents Style) -->
-    <section class="py-24 bg-slate-900 text-[#faf9f6] journal-border-t">
+    <!-- Catalog Archive Features (Asymmetric Bento Grid) -->
+    <section class="py-24 bg-[#fbfbfa] text-[#111111] journal-border-t">
         <div class="max-w-7xl mx-auto px-6 sm:px-8">
-            <div class="max-w-3xl mb-20 text-left">
-                <span class="text-xs font-bold tracking-[0.2em] text-[#b89047] uppercase font-sans">CATALOG OVERVIEW</span>
-                <h2 class="text-4xl md:text-5xl font-light tracking-tight mt-3">Journal Capabilities & Modules</h2>
-                <p class="text-slate-400 font-serif italic mt-4 text-lg">Every module is structured for precise, reliable meteorological reporting.</p>
+            <div class="max-w-3xl mb-20 text-left scroll-reveal">
+                <span class="text-xs font-bold tracking-[0.2em] text-[#956400] uppercase font-sans">CATALOG OVERVIEW</span>
+                <h2 class="text-4xl md:text-5xl font-light tracking-tight mt-3 text-[#111111]">Journal Capabilities & Modules</h2>
+                <p class="text-[#787774] font-serif italic mt-4 text-lg">Every module is structured for precise, reliable meteorological reporting.</p>
             </div>
             
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
-                <div class="border-b border-[#faf9f6]/10 pb-8 text-left space-y-4">
-                    <span class="text-xs font-bold tracking-widest text-[#b89047] font-sans">INDEX 01 //</span>
-                    <h3 class="text-2xl font-medium tracking-wide">Global Geocoding Query</h3>
-                    <p class="text-slate-400 text-sm font-light leading-relaxed">Search coordinates and city centers globally using structured geo-mapping data hooks.</p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Row 1: Card 1 (2 cols) & Card 2 (1 col) -->
+                <div class="md:col-span-2 border border-[#eaeaea] bg-white p-8 md:p-10 rounded-lg flex flex-col justify-between scroll-reveal" style="transition-delay: 0ms;">
+                    <div class="space-y-4 text-left">
+                        <span class="text-xs font-mono font-bold tracking-widest text-[#956400]">INDEX 01 // QUERY</span>
+                        <h3 class="text-3xl font-normal tracking-tight text-[#111111]">Global Geocoding Query</h3>
+                        <p class="text-[#787774] text-base font-light leading-relaxed max-w-xl">
+                            Search coordinates and city centers globally using structured geo-mapping data hooks. Resolve local administrative boundaries and timezone offsets instantly.
+                        </p>
+                    </div>
+                    <div class="mt-8 pt-8 border-t border-[#eaeaea] flex items-center justify-between text-[11px] font-mono text-[#787774]">
+                        <span>Engine: Open-source OSM Integration</span>
+                        <span class="material-icons text-sm text-[#956400]">arrow_forward</span>
+                    </div>
                 </div>
-                
-                <div class="border-b border-[#faf9f6]/10 pb-8 text-left space-y-4">
-                    <span class="text-xs font-bold tracking-widest text-[#b89047] font-sans">INDEX 02 //</span>
-                    <h3 class="text-2xl font-medium tracking-wide">Astronomical Forecasts</h3>
-                    <p class="text-slate-400 text-sm font-light leading-relaxed">Hour-by-hour pressure projections and weekly forecast ledgers compiled smoothly.</p>
+
+                <div class="md:col-span-1 border border-[#eaeaea] bg-white p-8 rounded-lg flex flex-col justify-between scroll-reveal" style="transition-delay: 80ms;">
+                    <div class="space-y-4 text-left">
+                        <span class="text-xs font-mono font-bold tracking-widest text-[#956400]">INDEX 02 // FORECASTS</span>
+                        <h3 class="text-2xl font-normal tracking-tight text-[#111111]">Astronomical Forecasts</h3>
+                        <p class="text-[#787774] text-sm font-light leading-relaxed">
+                            Hour-by-hour pressure projections and weekly forecast ledgers compiled smoothly.
+                        </p>
+                    </div>
+                    <div class="mt-6 flex items-center gap-1.5 font-mono text-[10px] text-[#787774]">
+                        <span class="px-1.5 py-0.5 bg-[#f7f6f3] border border-[#eaeaea] rounded">7-Day</span>
+                        <span class="px-1.5 py-0.5 bg-[#f7f6f3] border border-[#eaeaea] rounded">Hourly</span>
+                    </div>
                 </div>
-                
-                <div class="border-b border-[#faf9f6]/10 pb-8 text-left space-y-4">
-                    <span class="text-xs font-bold tracking-widest text-[#b89047] font-sans">INDEX 03 //</span>
-                    <h3 class="text-2xl font-medium tracking-wide">Real-time Warning Feeds</h3>
-                    <p class="text-slate-400 text-sm font-light leading-relaxed">Instant warnings mapping severe storm, snow drifts, and high temperature thresholds.</p>
+
+                <!-- Row 2: Card 3 (1 col), Card 4 (1 col), Card 5 (1 col) -->
+                <div class="md:col-span-1 border border-[#eaeaea] bg-white p-8 rounded-lg flex flex-col justify-between scroll-reveal" style="transition-delay: 160ms;">
+                    <div class="space-y-4 text-left">
+                        <span class="text-xs font-mono font-bold tracking-widest text-[#956400]">INDEX 03 // ALERTS</span>
+                        <h3 class="text-2xl font-normal tracking-tight text-[#111111]">Real-time Warning Feeds</h3>
+                        <p class="text-[#787774] text-sm font-light leading-relaxed">
+                            Instant warnings mapping severe storm, snow drifts, and high temperature thresholds.
+                        </p>
+                    </div>
+                    <div class="mt-6 flex justify-between items-center">
+                        <span class="material-icons text-xl text-red-500">crisis_alert</span>
+                        <span class="text-[10px] font-mono text-red-600 bg-red-50 px-2 py-0.5 border border-red-200 rounded">LIVE ADVISORIES</span>
+                    </div>
                 </div>
-                
-                <div class="border-b border-[#faf9f6]/10 pb-8 text-left space-y-4">
-                    <span class="text-xs font-bold tracking-widest text-[#b89047] font-sans">INDEX 04 //</span>
-                    <h3 class="text-2xl font-medium tracking-wide">Meteorological Analytics</h3>
-                    <p class="text-slate-400 text-sm font-light leading-relaxed">Tracks UV indices, precipitation ratios, wind force directions, and ambient air particles.</p>
+
+                <div class="md:col-span-1 border border-[#eaeaea] bg-white p-8 rounded-lg flex flex-col justify-between scroll-reveal" style="transition-delay: 240ms;">
+                    <div class="space-y-4 text-left">
+                        <span class="text-xs font-mono font-bold tracking-widest text-[#956400]">INDEX 04 // PWA</span>
+                        <h3 class="text-2xl font-normal tracking-tight text-[#111111]">PWA Offline Caching</h3>
+                        <p class="text-[#787774] text-sm font-light leading-relaxed">
+                            Locally caches forecast records via background service workers, keeping data readable offline.
+                        </p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between text-[10px] font-mono text-[#787774]">
+                        <span>Offline Status: Active</span>
+                        <span class="material-icons text-sm text-green-600">offline_pin</span>
+                    </div>
                 </div>
-                
-                <div class="border-b border-[#faf9f6]/10 pb-8 text-left space-y-4">
-                    <span class="text-xs font-bold tracking-widest text-[#b89047] font-sans">INDEX 05 //</span>
-                    <h3 class="text-2xl font-medium tracking-wide">PWA Offline Caching</h3>
-                    <p class="text-slate-400 text-sm font-light leading-relaxed">Locally caches forecast records via background service workers, keeping data readable offline.</p>
+
+                <div class="md:col-span-1 border border-[#eaeaea] bg-white p-8 rounded-lg flex flex-col justify-between scroll-reveal" style="transition-delay: 320ms;">
+                    <div class="space-y-4 text-left">
+                        <span class="text-xs font-mono font-bold tracking-widest text-[#956400]">INDEX 05 // VISUALS</span>
+                        <h3 class="text-2xl font-normal tracking-tight text-[#111111]">Editorial Dark Theme</h3>
+                        <p class="text-[#787774] text-sm font-light leading-relaxed">
+                            A clean, dark interface optimized for low-light observation environments and night shifts.
+                        </p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between text-[10px] font-mono text-[#787774]">
+                        <span>Theme: Automatic</span>
+                        <span class="material-icons text-sm">dark_mode</span>
+                    </div>
                 </div>
-                
-                <div class="border-b border-[#faf9f6]/10 pb-8 text-left space-y-4">
-                    <span class="text-xs font-bold tracking-widest text-[#b89047] font-sans">INDEX 06 //</span>
-                    <h3 class="text-2xl font-medium tracking-wide">Editorial Dark Theme</h3>
-                    <p class="text-slate-400 text-sm font-light leading-relaxed">A clean, dark interface optimized for low-light observation environments and night shifts.</p>
+
+                <!-- Row 3: Card 6 (3 cols) -->
+                <div class="md:col-span-3 border border-[#eaeaea] bg-white p-8 md:p-10 rounded-lg flex flex-col justify-between scroll-reveal" style="transition-delay: 400ms;">
+                    <div class="grid md:grid-cols-2 gap-8 text-left">
+                        <div class="space-y-4">
+                            <span class="text-xs font-mono font-bold tracking-widest text-[#956400]">INDEX 06 // METRICS</span>
+                            <h3 class="text-3xl font-normal tracking-tight text-[#111111]">Meteorological Analytics</h3>
+                            <p class="text-[#787774] text-base font-light leading-relaxed">
+                                Tracks UV indices, precipitation ratios, wind force directions, and ambient air particles with detailed mathematical purity.
+                            </p>
+                        </div>
+                        <div class="border-l border-[#eaeaea] pl-8 space-y-6">
+                            <div class="grid grid-cols-2 gap-4 text-xs font-mono text-[#787774]">
+                                <div>
+                                    <p class="font-bold text-[#111111]">UV INDEX</p>
+                                    <p class="mt-1">0 - 11+ UV Index scale mapping</p>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-[#111111]">PRECIPITATION</p>
+                                    <p class="mt-1">Intensity and probability tracking</p>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-[#111111]">WIND VECTORS</p>
+                                    <p class="mt-1">Wind speed and cardinal direction angle</p>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-[#111111]">AIR QUALITY</p>
+                                    <p class="mt-1">Real-time AQI indices tracking</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8 pt-6 border-t border-[#eaeaea] flex justify-between items-center text-[10px] font-mono text-[#787774]">
+                        <span>Data source: Global Met Agency</span>
+                        <span>Update rate: 15-minute intervals</span>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Pricing Section (Styled as Columns) -->
-    <section id="pricing" class="py-28 px-6 sm:px-8">
+    <section id="pricing" class="py-28 px-6 sm:px-8 scroll-reveal">
         <div class="max-w-4xl mx-auto text-center">
-            <span class="text-xs font-bold tracking-[0.2em] text-[#b89047] uppercase font-sans">SUBSCRIPTION LEDGER</span>
-            <h2 class="text-4xl md:text-5xl font-light tracking-tight mt-3 mb-6">Choose Your Access Tier</h2>
-            <p class="text-slate-600 font-serif italic text-lg mb-20">Transparent access terms. Cancel or upgrade your meteorological credentials anytime.</p>
+            <span class="text-xs font-bold tracking-[0.2em] text-[#956400] uppercase font-sans">SUBSCRIPTION LEDGER</span>
+            <h2 class="text-4xl md:text-5xl font-light tracking-tight mt-3 mb-6 text-[#111111]">Choose Your Access Tier</h2>
+            <p class="text-slate-600 font-serif italic text-lg mb-20">Transparent access terms. Cancel or upgrade your credentials anytime.</p>
             
             <div class="grid md:grid-cols-2 gap-12 text-left">
                 <!-- Free Plan -->
-                <div class="border border-slate-900/10 p-10 bg-[#faf9f6] flex flex-col justify-between">
+                <div class="border border-[#eaeaea] p-10 bg-white flex flex-col justify-between rounded-lg">
                     <div>
-                        <span class="text-xs font-bold tracking-widest text-slate-400 uppercase font-sans">TIER I</span>
+                        <span class="text-xs font-mono font-bold tracking-widest text-[#787774] uppercase">TIER I</span>
                         <h3 class="text-3xl font-light mt-2 mb-4">Standard Reader</h3>
-                        <p class="text-4xl font-semibold font-serif italic text-slate-950 mb-10">$0 <span class="text-xs font-sans tracking-wide uppercase text-slate-400 font-normal">/ Free Tier</span></p>
+                        <p class="text-4xl font-semibold font-serif italic text-slate-950 mb-10">$0 <span class="text-xs font-sans tracking-wide uppercase text-[#787774] font-normal">/ Free Tier</span></p>
                         
-                        <ul class="space-y-5 mb-12 border-t border-slate-900/10 pt-8 text-sm text-slate-700">
+                        <ul class="space-y-5 mb-12 border-t border-[#eaeaea] pt-8 text-sm text-[#787774]">
                             <li class="flex items-center"><span class="material-icons text-slate-900 text-sm mr-3">check</span>100 API queries daily</li>
                             <li class="flex items-center"><span class="material-icons text-slate-900 text-sm mr-3">check</span>Up to 3 saved observation locations</li>
                             <li class="flex items-center"><span class="material-icons text-slate-900 text-sm mr-3">check</span>Current weather reports</li>
                             <li class="flex items-center"><span class="material-icons text-slate-900 text-sm mr-3">check</span>Limited 3-day forecast grids</li>
-                            <li class="flex items-center text-slate-400"><span class="material-icons mr-3 text-sm">close</span>Immediate severe weather alerts</li>
-                            <li class="flex items-center text-slate-400"><span class="material-icons mr-3 text-sm">close</span>Priority meteorological support</li>
+                            <li class="flex items-center text-slate-300"><span class="material-icons mr-3 text-sm">close</span>Immediate severe weather alerts</li>
+                            <li class="flex items-center text-slate-300"><span class="material-icons mr-3 text-sm">close</span>Priority support lines</li>
                         </ul>
                     </div>
                     
-                    <button id="pricing-free-btn" class="w-full btn-journal-outline text-xs font-bold uppercase py-4 rounded-none">
+                    <button id="pricing-free-btn" class="w-full btn-journal-outline text-xs font-bold uppercase py-4 rounded-md">
                         Activate Free Reader
                     </button>
                 </div>
                 
                 <!-- Premium Plan -->
-                <div class="border-2 border-slate-950 p-10 bg-[#faf9f6] relative flex flex-col justify-between shadow-lg">
-                    <div class="absolute top-0 right-0 bg-slate-950 text-[#faf9f6] text-[8px] font-bold tracking-[0.2em] px-3 py-1.5 uppercase font-sans">RECOMMENDED</div>
+                <div class="border-2 border-[#111111] p-10 bg-white relative flex flex-col justify-between shadow-sm rounded-lg">
+                    <div class="absolute top-0 right-0 bg-[#111111] text-[#fbfbfa] text-[8px] font-bold tracking-[0.2em] px-3 py-1.5 uppercase font-mono rounded-tr-md rounded-bl-md">RECOMMENDED</div>
                     <div>
-                        <span class="text-xs font-bold tracking-widest text-[#b89047] uppercase font-sans">TIER II</span>
+                        <span class="text-xs font-mono font-bold tracking-widest text-[#956400] uppercase">TIER II</span>
                         <h3 class="text-3xl font-light mt-2 mb-4">Journal Fellow</h3>
-                        <p class="text-4xl font-semibold font-serif italic text-[#b89047] mb-10">$4.99 <span class="text-xs font-sans tracking-wide uppercase text-slate-400 font-normal">/ Monthly Billing</span></p>
+                        <p class="text-4xl font-semibold font-serif italic text-[#956400] mb-10">$4.99 <span class="text-xs font-sans tracking-wide uppercase text-[#787774] font-normal">/ Monthly Billing</span></p>
                         
-                        <ul class="space-y-5 mb-12 border-t border-slate-900/10 pt-8 text-sm text-slate-800">
-                            <li class="flex items-center font-semibold"><span class="material-icons text-[#b89047] text-sm mr-3">check</span>Unlimited meteorological queries</li>
-                            <li class="flex items-center font-semibold"><span class="material-icons text-[#b89047] text-sm mr-3">check</span>Unlimited saved observation locations</li>
-                            <li class="flex items-center"><span class="material-icons text-[#b89047] text-sm mr-3">check</span>Full 7-day forecast ledgers</li>
-                            <li class="flex items-center"><span class="material-icons text-[#b89047] text-sm mr-3">check</span>Severe weather alerts (push & sms)</li>
-                            <li class="flex items-center"><span class="material-icons text-[#b89047] text-sm mr-3">check</span>Priority analytical support lines</li>
-                            <li class="flex items-center"><span class="material-icons text-[#b89047] text-sm mr-3">check</span>Ad-free observation interface</li>
+                        <ul class="space-y-5 mb-12 border-t border-[#eaeaea] pt-8 text-sm text-slate-800">
+                            <li class="flex items-center font-semibold"><span class="material-icons text-[#956400] text-sm mr-3">check</span>Unlimited meteorological queries</li>
+                            <li class="flex items-center font-semibold"><span class="material-icons text-[#956400] text-sm mr-3">check</span>Unlimited saved observation locations</li>
+                            <li class="flex items-center"><span class="material-icons text-[#956400] text-sm mr-3">check</span>Full 7-day forecast ledgers</li>
+                            <li class="flex items-center"><span class="material-icons text-[#956400] text-sm mr-3">check</span>Severe weather alerts (push & sms)</li>
+                            <li class="flex items-center"><span class="material-icons text-[#956400] text-sm mr-3">check</span>Priority support lines</li>
+                            <li class="flex items-center"><span class="material-icons text-[#956400] text-sm mr-3">check</span>Ad-free observation interface</li>
                         </ul>
                     </div>
                     
-                    <button id="pricing-premium-btn" class="w-full btn-journal-primary text-xs font-bold uppercase py-4 rounded-none">
+                    <button id="pricing-premium-btn" class="w-full btn-journal-primary text-xs font-bold uppercase py-4 rounded-md">
                         Acquire Fellowship
                     </button>
                 </div>
@@ -409,49 +514,49 @@
     </section>
 
     <!-- Comparison Table (Editorial Ledger Style) -->
-    <section class="py-24 px-6 sm:px-8 bg-slate-900 text-[#faf9f6]">
+    <section class="py-24 px-6 sm:px-8 bg-[#111111] text-[#fbfbfa] scroll-reveal">
         <div class="max-w-4xl mx-auto text-left">
             <h2 class="text-3xl font-light tracking-tight mb-12 text-center">Comparative Access Features</h2>
             
-            <div class="border-y border-[#faf9f6]/10 overflow-hidden font-sans">
+            <div class="border-y border-[#fbfbfa]/10 overflow-hidden font-sans">
                 <table class="w-full">
                     <thead>
-                        <tr class="border-b border-[#faf9f6]/15">
-                            <th class="text-left py-5 text-xs font-bold uppercase tracking-widest text-slate-400">Feature Description</th>
-                            <th class="text-center py-5 text-xs font-bold uppercase tracking-widest text-slate-400">Reader (Tier I)</th>
-                            <th class="text-center py-5 text-xs font-bold uppercase tracking-widest text-[#b89047]">Fellow (Tier II)</th>
+                        <tr class="border-b border-[#fbfbfa]/15">
+                            <th class="text-left py-5 text-xs font-bold uppercase tracking-widest text-[#787774]">Feature Description</th>
+                            <th class="text-center py-5 text-xs font-bold uppercase tracking-widest text-[#787774]">Reader (Tier I)</th>
+                            <th class="text-center py-5 text-xs font-bold uppercase tracking-widest text-[#956400]">Fellow (Tier II)</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-[#faf9f6]/10 text-sm font-light text-slate-300">
+                    <tbody class="divide-y divide-[#fbfbfa]/10 text-sm font-light text-slate-300">
                         <tr>
                             <td class="py-5 font-serif italic">Daily API calls</td>
                             <td class="py-5 text-center">100</td>
-                            <td class="py-5 text-center text-[#b89047] font-semibold">Unlimited</td>
+                            <td class="py-5 text-center text-[#956400] font-semibold">Unlimited</td>
                         </tr>
                         <tr>
                             <td class="py-5 font-serif italic">Saved Locations</td>
                             <td class="py-5 text-center">3</td>
-                            <td class="py-5 text-center text-[#b89047] font-semibold">Unlimited</td>
+                            <td class="py-5 text-center text-[#956400] font-semibold">Unlimited</td>
                         </tr>
                         <tr>
                             <td class="py-5 font-serif italic">Extended Forecast Ledgers</td>
                             <td class="py-5 text-center">3 Days</td>
-                            <td class="py-5 text-center text-[#b89047] font-semibold">7 Days</td>
+                            <td class="py-5 text-center text-[#956400] font-semibold">7 Days</td>
                         </tr>
                         <tr>
                             <td class="py-5 font-serif italic">Historical Observations</td>
-                            <td class="py-5 text-center text-slate-500"><span class="material-icons text-sm">close</span></td>
-                            <td class="py-5 text-center text-[#b89047]"><span class="material-icons text-sm">check</span></td>
+                            <td class="py-5 text-center text-[#787774]"><span class="material-icons text-sm">close</span></td>
+                            <td class="py-5 text-center text-[#956400]"><span class="material-icons text-sm">check</span></td>
                         </tr>
                         <tr>
                             <td class="py-5 font-serif italic">Severe Weather Advisories</td>
-                            <td class="py-5 text-center text-slate-500"><span class="material-icons text-sm">close</span></td>
-                            <td class="py-5 text-center text-[#b89047]"><span class="material-icons text-sm">check</span></td>
+                            <td class="py-5 text-center text-[#787774]"><span class="material-icons text-sm">close</span></td>
+                            <td class="py-5 text-center text-[#956400]"><span class="material-icons text-sm">check</span></td>
                         </tr>
                         <tr>
                             <td class="py-5 font-serif italic">Priority Support Dispatch</td>
-                            <td class="py-5 text-center text-slate-500"><span class="material-icons text-sm">close</span></td>
-                            <td class="py-5 text-center text-[#b89047]"><span class="material-icons text-sm">check</span></td>
+                            <td class="py-5 text-center text-[#787774]"><span class="material-icons text-sm">close</span></td>
+                            <td class="py-5 text-center text-[#956400]"><span class="material-icons text-sm">check</span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -460,7 +565,7 @@
     </section>
 
     <!-- Footer (Colophon Style) -->
-    <footer class="py-20 px-6 sm:px-8 text-center bg-[#faf9f6] journal-border-t">
+    <footer class="py-20 px-6 sm:px-8 text-center bg-[#fbfbfa] journal-border-t">
         <div class="flex items-center justify-center space-x-2 mb-6">
             <span class="material-icons text-slate-900 text-xl">science</span>
             <span class="text-xs font-bold tracking-[0.2em] text-slate-900 uppercase font-sans">COSMIC WEATHER JOURNAL</span>
@@ -476,10 +581,10 @@
     </footer>
 
     <!-- Login Modal -->
-    <div id="login-modal" class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="modal-glass w-full max-w-md p-10 modal-content-animate rounded-none">
-            <div class="flex justify-between items-center mb-8 pb-3 border-b border-slate-900/10">
-                <h3 class="text-3xl font-light tracking-wide text-slate-950">Journal Authentication</h3>
+    <div id="login-modal" class="fixed inset-0 bg-[#111111]/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-glass w-full max-w-md p-10 modal-content-animate rounded-lg">
+            <div class="flex justify-between items-center mb-8 pb-3 border-b border-[#eaeaea]">
+                <h3 class="text-3xl font-light tracking-wide text-[#111111]">Journal Authentication</h3>
                 <button class="text-slate-400 hover:text-slate-950 modal-close-btn transition">
                     <span class="material-icons text-lg">close</span>
                 </button>
@@ -487,30 +592,30 @@
             
             <form id="login-form" class="space-y-6">
                 <div class="flex flex-col">
-                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 font-sans">Email Address</label>
-                    <input type="email" id="login-email" required class="input-journal py-2 text-sm text-slate-900 placeholder-slate-300">
+                    <label class="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1">Email Address</label>
+                    <input type="email" id="login-email" required class="input-journal py-2 text-sm text-[#111111] placeholder-slate-300">
                 </div>
                 <div class="flex flex-col">
-                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 font-sans">Password</label>
-                    <input type="password" id="login-password" required class="input-journal py-2 text-sm text-slate-900 placeholder-slate-300">
+                    <label class="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1">Password</label>
+                    <input type="password" id="login-password" required class="input-journal py-2 text-sm text-[#111111] placeholder-slate-300">
                 </div>
-                <button type="submit" class="w-full btn-journal-primary text-xs font-bold uppercase py-4 rounded-none">
+                <button type="submit" class="w-full btn-journal-primary text-xs font-bold uppercase py-4 rounded-md">
                     Authenticate Session
                 </button>
             </form>
             
-            <p class="text-center text-xs text-slate-500 font-sans mt-8 pt-4 border-t border-slate-900/5">
-                New researcher? 
-                <button id="switch-to-register-btn" class="text-[#b89047] hover:text-slate-950 font-bold ml-1 transition">Activate Account</button>
+            <p class="text-center text-xs text-slate-500 font-sans mt-8 pt-4 border-t border-[#eaeaea] flex items-center justify-between">
+                <span>New researcher? <button id="switch-to-register-btn" class="text-[#956400] hover:text-slate-950 font-bold ml-1 transition">Activate Account</button></span>
+                <span class="text-[9px] font-mono text-slate-400"><kbd class="px-1.5 py-0.5 border border-[#eaeaea] bg-[#f7f6f3] rounded">Esc</kbd> close</span>
             </p>
         </div>
     </div>
 
     <!-- Register Modal -->
-    <div id="register-modal" class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="modal-glass w-full max-w-md p-10 modal-content-animate rounded-none">
-            <div class="flex justify-between items-center mb-8 pb-3 border-b border-slate-900/10">
-                <h3 class="text-3xl font-light tracking-wide text-slate-950">Activate Credentials</h3>
+    <div id="register-modal" class="fixed inset-0 bg-[#111111]/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-glass w-full max-w-md p-10 modal-content-animate rounded-lg">
+            <div class="flex justify-between items-center mb-8 pb-3 border-b border-[#eaeaea]">
+                <h3 class="text-3xl font-light tracking-wide text-[#111111]">Activate Credentials</h3>
                 <button class="text-slate-400 hover:text-slate-950 modal-close-btn transition">
                     <span class="material-icons text-lg">close</span>
                 </button>
@@ -518,45 +623,48 @@
             
             <form id="register-form" class="space-y-6">
                 <div class="flex flex-col">
-                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 font-sans">Email Address</label>
-                    <input type="email" id="register-email" required class="input-journal py-2 text-sm text-slate-900 placeholder-slate-300">
+                    <label class="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1">Email Address</label>
+                    <input type="email" id="register-email" required class="input-journal py-2 text-sm text-[#111111] placeholder-slate-300">
                 </div>
                 <div class="flex flex-col">
-                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 font-sans">Secure Password</label>
-                    <input type="password" id="register-password" required minlength="8" class="input-journal py-2 text-sm text-slate-900 placeholder-slate-300">
-                    <p class="text-slate-400 text-[9px] font-sans mt-1.5 italic">Must contain at least 8 characters</p>
+                    <label class="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1">Secure Password</label>
+                    <input type="password" id="register-password" required minlength="8" class="input-journal py-2 text-sm text-[#111111] placeholder-slate-300">
+                    <p class="text-slate-400 text-[9px] font-mono mt-1.5 italic">Must contain at least 8 characters</p>
                 </div>
                 
-                <button type="submit" class="w-full btn-journal-primary text-xs font-bold uppercase py-4 rounded-none">
+                <button type="submit" class="w-full btn-journal-primary text-xs font-bold uppercase py-4 rounded-md">
                     Create Observation Account
                 </button>
             </form>
             
-            <p class="text-center text-xs text-slate-500 font-sans mt-8 pt-4 border-t border-slate-900/5">
-                Already registered? 
-                <button id="switch-to-login-btn" class="text-[#b89047] hover:text-slate-950 font-bold ml-1 transition">Archive Login</button>
+            <p class="text-center text-xs text-slate-500 font-sans mt-8 pt-4 border-t border-[#eaeaea] flex items-center justify-between">
+                <span>Already registered? <button id="switch-to-login-btn" class="text-[#956400] hover:text-slate-950 font-bold ml-1 transition">Archive Login</button></span>
+                <span class="text-[9px] font-mono text-slate-400"><kbd class="px-1.5 py-0.5 border border-[#eaeaea] bg-[#f7f6f3] rounded">Esc</kbd> close</span>
             </p>
         </div>
     </div>
 
     <!-- Upgrade Modal -->
-    <div id="upgrade-modal" class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="modal-glass w-full max-w-md p-10 text-center modal-content-animate rounded-none">
-            <span class="material-icons text-[#b89047] text-5xl mb-3">workspace_premium</span>
-            <h3 class="text-3xl font-light tracking-wide text-slate-950 mb-2">Fellowship Upgrade</h3>
-            <p class="text-sm text-slate-500 font-serif italic mb-6">Unlock unrestricted global records, historical observations, and priority analytical data.</p>
+    <div id="upgrade-modal" class="fixed inset-0 bg-[#111111]/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-glass w-full max-w-md p-10 text-center modal-content-animate rounded-lg">
+            <span class="material-icons text-[#956400] text-5xl mb-3">workspace_premium</span>
+            <h3 class="text-3xl font-light tracking-wide text-[#111111] mb-2">Fellowship Upgrade</h3>
+            <p class="text-sm text-slate-500 font-serif italic mb-6">Unlock unrestricted records, historical observations, and priority data.</p>
             
-            <div class="border border-slate-900/10 p-5 bg-slate-900/5 mb-6">
+            <div class="border border-[#eaeaea] p-5 bg-[#f7f6f3] mb-6 rounded-md">
                 <p class="text-3xl font-semibold font-serif italic text-slate-950">$4.99 <span class="text-xs font-sans tracking-wide uppercase text-slate-400 font-normal">/ Monthly Billing</span></p>
             </div>
             
-            <button id="confirm-upgrade-btn" class="w-full btn-journal-primary text-xs font-bold uppercase py-4 rounded-none mb-4">
+            <button id="confirm-upgrade-btn" class="w-full btn-journal-primary text-xs font-bold uppercase py-4 rounded-md mb-4">
                 Confirm Fellowship Upgrade
             </button>
             
-            <button class="text-slate-400 hover:text-slate-950 text-xs font-semibold tracking-wider uppercase font-sans modal-close-btn transition">
-                Return to Archive
-            </button>
+            <div class="flex items-center justify-between mt-4 text-xs font-mono text-slate-400">
+                <button class="text-slate-400 hover:text-slate-950 text-xs font-semibold tracking-wider uppercase font-sans modal-close-btn transition">
+                    Return to Archive
+                </button>
+                <span><kbd class="px-1.5 py-0.5 border border-[#eaeaea] bg-[#f7f6f3] rounded">Esc</kbd> close</span>
+            </div>
         </div>
     </div>
 

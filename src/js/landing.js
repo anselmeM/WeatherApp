@@ -735,4 +735,40 @@ document.addEventListener('DOMContentLoaded', async () => {
             window.location.reload();
         }
     });
+
+    // Keyboard shortcuts micro-UI
+    window.addEventListener('keydown', (e) => {
+        const activeTag = document.activeElement?.tagName.toLowerCase();
+        if (activeTag === 'input' || activeTag === 'textarea') {
+            return;
+        }
+
+        if (e.key === 'l' || e.key === 'L') {
+            e.preventDefault();
+            showLoginModal();
+        } else if (e.key === 's' || e.key === 'S') {
+            e.preventDefault();
+            showRegisterModal();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            closeModals();
+        }
+    });
+
+    // Intersection Observer for scroll-reveal animations
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.05,
+        rootMargin: '0px 0px -20px 0px'
+    });
+
+    document.querySelectorAll('.scroll-reveal').forEach(el => {
+        revealObserver.observe(el);
+    });
 });
