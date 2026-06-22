@@ -333,7 +333,27 @@ export function showRegisterPrompt(feature) {
   document.body.appendChild(prompt);
 }
 
+const FAMOUS_LOCATION_IMAGES = {
+  'new york': 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=600&q=80',
+  'new york city': 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=600&q=80',
+  'nyc': 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=600&q=80',
+  'london': 'https://images.unsplash.com/photo-1513635269975-59663e0ca1ad?auto=format&fit=crop&w=600&q=80',
+  'paris': 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=600&q=80',
+  'tokyo': 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80',
+  'toronto': 'https://images.unsplash.com/photo-1507992781348-31024bc79483?auto=format&fit=crop&w=600&q=80',
+  'sydney': 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=600&q=80',
+  'rome': 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=600&q=80',
+  'san francisco': 'https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?auto=format&fit=crop&w=600&q=80',
+  'seattle': 'https://images.unsplash.com/photo-1508859439226-60d1d1130e8a?auto=format&fit=crop&w=600&q=80',
+  'miami': 'https://images.unsplash.com/photo-1514218953589-2d7d37efd2ec?auto=format&fit=crop&w=600&q=80',
+};
+
 function getCityImage(cityName) {
+  const cleanName = cityName.trim().toLowerCase();
+  if (FAMOUS_LOCATION_IMAGES[cleanName]) {
+    return Promise.resolve(FAMOUS_LOCATION_IMAGES[cleanName]);
+  }
+
   if (imageCache.has(cityName)) {
     const cachedPromise = imageCache.get(cityName);
     imageCache.delete(cityName);

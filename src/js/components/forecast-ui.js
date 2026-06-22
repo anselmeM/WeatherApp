@@ -13,7 +13,7 @@ export function updateHourlyForecast(today, tempUnit) {
     .slice(0, 12)
     .forEach((h, index) => {
       const card = document.createElement("div");
-      card.className = "bg-white/60 dark:bg-gray-800/60 backdrop-blur-md rounded-3xl p-5 text-center flex-shrink-0 min-w-[110px] interactive-element border border-white/20 fade-in-stagger";
+      card.className = "bg-white dark:bg-slate-900 rounded-3xl p-4 flex flex-col items-center justify-between shadow-sm h-36 w-24 flex-shrink-0 hover:shadow-md transition-all cursor-pointer border border-gray-150/10 fade-in-stagger";
       card.style.animationDelay = `${index * 50}ms`;
       card.innerHTML = `
               <p class="font-bold text-gray-500 dark:text-gray-400 text-sm mb-2">${index === 0 ? "Now" : formatTime(h.datetime)}</p>
@@ -41,7 +41,7 @@ export function updateWeeklyForecast(data, tempUnit) {
   
   displayDays.forEach((day, index) => {
     const card = document.createElement("div");
-    card.className = "bg-white/60 dark:bg-gray-800/60 backdrop-blur-md rounded-3xl p-5 text-center border border-white/20 interactive-element fade-in-stagger";
+    card.className = "bg-white dark:bg-slate-900 rounded-3xl p-4 flex flex-col items-center justify-between shadow-sm h-36 hover:shadow-md transition-all cursor-pointer border border-gray-150/10 fade-in-stagger";
     card.style.animationDelay = `${index * 50}ms`;
     const date = new Date(day.datetime);
     card.innerHTML = `

@@ -18,12 +18,16 @@
     <!-- External Stylesheet -->
     <link rel="stylesheet" href="/src/style.css" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-2 sm:p-4">
+<body class="flex flex-col items-center justify-start min-h-screen p-2 sm:p-4 md:p-8 relative">
     <!-- Full-screen Canvas Background -->
     <canvas id="weather-effect-canvas"></canvas>
+
+    <!-- Ambient Background Glows for Premium Dark Mode -->
+    <div class="glow-blob glow-1"></div>
+    <div class="glow-blob glow-2"></div>
 
     <div id="loading-overlay" class="fixed inset-0 bg-gray-100/80 dark:bg-gray-950/80 backdrop-blur-md flex flex-col items-center justify-center z-50">
         <div class="relative flex items-center justify-center w-28 h-28 mb-4">
@@ -47,138 +51,153 @@
             <button id="close-alert-button" class="ml-4 text-white hover:text-gray-200 transition focus:outline-none flex items-center justify-center w-6 h-6 rounded-full hover:bg-white/20" aria-label="Close weather alert">&times;</button>
         </div>
     </div>
-
-    <div id="weather-dashboard" class="rounded-3xl shadow-2xl w-full max-w-7xl p-4 md:p-8 flex flex-col lg:flex-row space-y-8 lg:space-y-0 lg:space-x-8 hidden transition-all duration-700">
-        <!-- Left Panel -->
-        <aside class="w-full lg:w-1/3 glass-panel rounded-3xl p-4 sm:p-6 flex flex-col shadow-xl">
-            <div class="relative flex items-center justify-between text-gray-500 dark:text-gray-400 bg-gray-100/50 dark:bg-gray-700/50 p-3 rounded-2xl mb-6 focus-within:ring-2 focus-within:ring-blue-500">
-                <span class="material-icons flex-shrink-0">search</span>
-                <input id="search-input" autocomplete="off" class="bg-transparent focus:outline-none mx-2 flex-grow min-w-0 w-full text-gray-800 dark:text-white placeholder-gray-400" placeholder="Search for places ..." type="text" aria-label="Search for a city or location" aria-keyshortcuts="/" />
-                <button type="button" id="clear-search-button" class="material-icons flex-shrink-0 cursor-pointer interactive-element rounded-full p-1 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 hidden" aria-label="Clear search" title="Clear search">close</button>
-                <kbd class="hidden sm:inline-block border border-gray-300 dark:border-gray-600 rounded px-1.5 py-0.5 text-xs font-mono text-gray-400 mr-2 bg-white/50 dark:bg-gray-800/50" aria-hidden="true">/</kbd>
-                <button type="button" id="geolocation-button" class="material-icons flex-shrink-0 cursor-pointer interactive-element rounded-full p-1 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500" aria-label="Get current location's weather" title="Get current location's weather">my_location</button>
+    <div id="weather-dashboard" class="rounded-[2.5rem] shadow-2xl w-full max-w-[1200px] flex flex-col lg:flex-row min-h-[800px] overflow-hidden hidden transition-all duration-700 bg-white dark:bg-slate-900/65 dark:backdrop-blur-2xl border border-gray-100 dark:border-slate-800/80">
+        <!-- Left Panel (Sidebar) -->
+        <aside class="w-full lg:w-[320px] xl:w-[380px] p-8 flex flex-col bg-white dark:bg-slate-900/45 dark:backdrop-blur-md flex-shrink-0 border-r border-gray-50 dark:border-slate-800/40">
+            <!-- Search Bar -->
+            <div class="relative flex items-center space-x-3 text-gray-800 dark:text-gray-200 mb-8 mt-2 bg-gray-100/50 dark:bg-slate-800/40 px-4 py-2.5 rounded-full focus-within:ring-2 focus-within:ring-blue-500">
+                <span class="material-icons text-gray-400 text-xl flex-shrink-0">search</span>
+                <input id="search-input" autocomplete="off" class="outline-none bg-transparent w-full text-sm font-medium placeholder-gray-400 text-gray-800 dark:text-white" placeholder="Search for places ..." type="text" aria-label="Search for a city or location" aria-keyshortcuts="/" />
+                <button type="button" id="clear-search-button" class="material-icons text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg flex-shrink-0 cursor-pointer hidden" aria-label="Clear search">close</button>
+                <span class="hidden sm:inline-block border border-gray-200 dark:border-gray-700 rounded px-1.5 py-0.5 text-[10px] font-mono text-gray-400 bg-white/80 dark:bg-gray-900/80" aria-hidden="true">/</span>
+                <button type="button" id="geolocation-button" class="bg-white/80 hover:bg-white dark:bg-gray-900/85 dark:hover:bg-gray-900 transition-colors rounded-full p-2 flex-shrink-0 cursor-pointer flex items-center justify-center border border-gray-200/20 shadow-sm" aria-label="Get current location's weather" title="Get current location's weather">
+                    <span class="material-icons text-sm text-gray-600 dark:text-gray-300">my_location</span>
+                </button>
                 
                 <!-- Autocomplete Dropdown -->
                 <ul id="search-autocomplete-dropdown" class="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-2xl z-50 hidden" role="listbox" aria-label="Location suggestions"></ul>
             </div>
 
             <!-- Recent Searches -->
-            <div id="recent-searches-container" class="mb-6 hidden">
+            <div id="recent-searches-container" class="mb-8 hidden">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2 px-1">Saved Locations</h3>
                 <div id="recent-searches-list" class="flex flex-wrap gap-2"></div>
             </div>
 
-            <div id="left-panel-content">
-                <div class="my-4 flex justify-center items-center h-48">
-                    <div class="relative flex items-center justify-center">
-                        <div id="main-weather-bg" class="absolute w-40 h-40 bg-yellow-400 rounded-full blur-3xl opacity-50 animate-pulse"></div>
-                        <span id="main-weather-icon" class="material-icons text-9xl text-yellow-500 z-10 drop-shadow-2xl">wb_sunny</span>
-                    </div>
+            <div id="left-panel-content" class="flex flex-col items-center mt-6 flex-grow">
+                <!-- Weather Graphic & Temp -->
+                <div class="relative w-48 h-48 mb-8 flex items-center justify-center">
+                    <div id="main-weather-bg" class="absolute w-40 h-40 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full blur-2xl opacity-60 animate-pulse"></div>
+                    <span id="main-weather-icon" class="material-icons text-[7rem] text-yellow-500 dark:text-yellow-400 z-10 drop-shadow-lg icon-pop">wb_sunny</span>
                 </div>
-                <div class="text-center mt-auto">
-                    <h1 id="current-temp" class="text-7xl sm:text-8xl font-bold text-gray-800 dark:text-white tracking-tighter">12°C</h1>
-                    <p id="feels-like-temp" class="text-xl font-medium text-gray-500 dark:text-gray-400 mt-1">Feels like 10°C</p>
-                    <p id="current-datetime" class="text-gray-400 dark:text-gray-500 mt-2 font-medium">Monday, 16:00</p>
-                    <hr class="my-8 border-gray-200/50 dark:border-gray-700/50" />
-                    <div class="flex items-center text-gray-700 dark:text-gray-200 justify-center text-lg font-medium">
-                        <span id="condition-icon" class="material-icons text-2xl mr-3 text-blue-500">cloud</span>
-                        <span id="condition-text">Mostly Cloudy</span>
+                
+                <h1 id="current-temp" class="text-[5.5rem] leading-none font-light tracking-tighter mb-2 text-gray-900 dark:text-white flex items-start">
+                    12<span class="text-3xl font-normal mt-2">°C</span>
+                </h1>
+                <p id="feels-like-temp" class="text-sm font-medium text-gray-400 dark:text-gray-500 mt-1">Feels like 10°C</p>
+                <p class="text-sm font-medium text-gray-800 dark:text-gray-200 mt-2">
+                    <span id="current-datetime">Monday, 16:00</span>
+                </p>
+                
+                <!-- Conditions & Location -->
+                <div class="w-full mt-8 border-t border-gray-100 dark:border-slate-800 pt-8 space-y-4 text-left">
+                    <div class="flex items-center space-x-4">
+                        <span id="condition-icon" class="material-icons text-gray-400 text-xl">cloud</span>
+                        <p id="condition-text" class="font-medium text-sm text-gray-700 dark:text-gray-300">Mostly Cloudy</p>
                     </div>
-                    <div class="flex items-center text-blue-600 dark:text-blue-400 mt-3 justify-center text-lg font-medium">
-                        <span class="material-icons text-2xl mr-3">water_drop</span>
-                        <span id="rain-chance">Rain - 30%</span>
+                    <div class="flex items-center space-x-4">
+                        <span class="material-icons text-blue-500 text-xl">water_drop</span>
+                        <p id="rain-chance" class="font-medium text-sm text-gray-700 dark:text-gray-300">Rain - 30%</p>
                     </div>
-                    <!-- 🔗 Phase 11.5: Minute-by-Minute Precipitation -->
-                    <div id="minutely-precip" class="mt-6">
-                        <p class="text-xs font-bold text-gray-400 uppercase mb-2">Next 60 Minutes</p>
-                        <div class="h-12 flex items-end space-x-1" id="minutely-bars"></div>
-                        <p class="text-xs text-gray-400 mt-1" id="minutely-summary">Loading precipitation data...</p>
+                    
+                    <!-- Minutely Precipitation -->
+                    <div id="minutely-precip" class="mt-6 pt-4 border-t border-gray-100/50 dark:border-slate-800">
+                        <p class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">Next 60 Minutes</p>
+                        <div class="h-10 flex items-end space-x-1" id="minutely-bars"></div>
+                        <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-1" id="minutely-summary">Loading precipitation data...</p>
                     </div>
-                    <div class="mt-10 rounded-2xl overflow-hidden relative shadow-lg group">
-                        <img id="location-image" alt="City skyline" class="w-full h-32 object-cover transition-transform duration-700 group-hover:scale-110" src="https://placehold.co/300x120/a7a7a7/ffffff?text=Loading..." />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center pb-4">
-                            <div class="flex items-center justify-center gap-2">
-                                <p id="location-name" class="text-white font-bold text-center pl-4 text-xl">New York, NY, USA</p>
-                                <button id="pin-location-btn" class="text-white/70 hover:text-yellow-400 transition cursor-pointer flex items-center justify-center" aria-label="Pin Location" title="Pin Location">
-                                    <span class="material-icons text-xl">bookmark_border</span>
-                                </button>
-                            </div>
+                    
+                    <!-- City Image Card -->
+                    <div class="mt-8 relative rounded-[1.5rem] overflow-hidden h-28 shadow-md group">
+                        <img id="location-image" alt="City skyline" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://placehold.co/300x120/a7a7a7/ffffff?text=Loading..." />
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-between px-6 backdrop-blur-[1px]">
+                            <p id="location-name" class="text-white font-semibold text-[15px] tracking-wide truncate pr-2">New York, NY, USA</p>
+                            <button id="pin-location-btn" class="text-white/80 hover:text-yellow-400 transition cursor-pointer flex items-center justify-center p-1.5 rounded-full hover:bg-white/10" aria-label="Pin Location" title="Pin Location">
+                                <span class="material-icons text-lg">bookmark_border</span>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div id="left-panel-skeleton" class="hidden">
-                <div class="my-8 flex justify-center items-center h-48"><div class="w-40 h-40 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div></div>
-                <div class="text-center mt-auto">
-                    <div class="h-24 w-48 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse mx-auto"></div>
-                    <div class="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mx-auto mt-2"></div>
-                    <div class="h-6 w-48 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mx-auto mt-4"></div>
-                    <hr class="my-8 border-gray-200/50 dark:border-gray-700/50" />
-                    <div class="h-8 w-40 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mx-auto"></div>
-                    <div class="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mx-auto mt-3"></div>
-                    <div class="mt-10 rounded-2xl h-32 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+
+            <div id="left-panel-skeleton" class="hidden flex flex-col items-center mt-6 flex-grow">
+                <div class="my-8 flex justify-center items-center h-48"><div class="w-40 h-40 bg-gray-200 dark:bg-gray-800 rounded-full animate-pulse"></div></div>
+                <div class="text-center mt-auto w-full">
+                    <div class="h-20 w-48 bg-gray-200 dark:bg-gray-800 rounded-2xl animate-pulse mx-auto"></div>
+                    <div class="h-6 w-32 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse mx-auto mt-2"></div>
+                    <div class="h-6 w-48 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse mx-auto mt-4"></div>
+                    <hr class="my-8 border-gray-200/50 dark:border-gray-800" />
+                    <div class="h-6 w-40 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse mx-auto"></div>
+                    <div class="h-6 w-32 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse mx-auto mt-3"></div>
+                    <div class="mt-10 rounded-2xl h-28 bg-gray-200 dark:bg-gray-800 animate-pulse"></div>
                 </div>
             </div>
         </aside>
 
-        <!-- Right Panel -->
-        <main class="w-full lg:w-2/3 flex flex-col">
-            <div class="flex flex-wrap gap-4 justify-between items-center mb-8 bg-white/30 dark:bg-gray-800/30 p-4 rounded-3xl backdrop-blur-md border border-white/20">
-                <div class="flex space-x-4 sm:space-x-8 items-center" role="tablist">
-                    <button id="today-button" class="text-gray-900 dark:text-white font-bold text-base sm:text-lg border-b-4 border-blue-500 pb-1 interactive-element" aria-label="Show today's forecast" role="tab" aria-selected="true" aria-controls="hourly-forecast-section">Today</button>
-                    <button id="week-button" class="text-gray-500 dark:text-gray-400 font-bold text-base sm:text-lg interactive-element hover:text-gray-700 dark:hover:text-gray-200" aria-label="Show weekly forecast" role="tab" aria-selected="false" aria-controls="weekly-forecast-section">Week</button>
+        <!-- Right Main Content -->
+        <main class="flex-1 bg-gray-50/80 dark:bg-slate-950/30 p-8 lg:p-10 xl:p-12 flex flex-col rounded-t-[2.5rem] lg:rounded-l-none lg:rounded-r-[2.5rem] border-t lg:border-t-0 lg:border-l border-gray-100 dark:border-slate-800/40">
+            <!-- Header Navigation -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+                <div class="flex space-x-6 text-lg font-semibold" role="tablist">
+                    <button id="today-button" class="transition-colors text-black border-b-2 border-black pb-1 cursor-pointer dark:text-white dark:border-white font-bold" role="tab" aria-selected="true" aria-controls="hourly-forecast-section">Today</button>
+                    <button id="week-button" class="transition-colors text-gray-400 hover:text-black dark:hover:text-white pb-1 border-b-2 border-transparent cursor-pointer font-bold" role="tab" aria-selected="false" aria-controls="weekly-forecast-section">Week</button>
                 </div>
-                <div class="flex flex-wrap items-center gap-2 sm:gap-4">
-                    <button id="compare-button" class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Compare locations" title="Compare locations">
-                        <span class="material-icons text-gray-700 dark:text-gray-200 text-xl sm:text-2xl">compare_arrows</span>
-                    </button>
-                    <button id="share-button" class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Share weather" title="Share weather">
-                        <span class="material-icons text-gray-700 dark:text-gray-200 text-xl sm:text-2xl">share</span>
-                    </button>
-                    <button id="pwa-install-btn" class="hidden w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md interactive-element" aria-label="Install App" title="Install App">
-                        <span class="material-icons text-xl sm:text-2xl animate-bounce">download</span>
-                    </button>
-                    <button id="theme-toggle" class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Toggle dark and light mode" title="Toggle dark and light mode">
-                        <span class="material-icons text-gray-700 dark:text-gray-200 text-xl sm:text-2xl">light_mode</span>
-                    </button>
-                    <div class="flex items-center bg-gray-900/10 dark:bg-white/10 p-0.5 sm:p-1 rounded-2xl" role="group" aria-label="Temperature units">
-                        <button id="celsius-button" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-md rounded-xl px-2 sm:px-3 py-1 sm:py-1.5 flex items-center justify-center font-bold text-xs sm:text-sm interactive-element" aria-label="Switch to Celsius" title="Switch to Celsius" aria-pressed="true">°C</button>
-                        <button id="fahrenheit-button" class="px-2 sm:px-3 py-1 sm:py-1.5 flex items-center justify-center font-bold text-xs sm:text-sm text-gray-500 dark:text-gray-400 interactive-element" aria-label="Switch to Fahrenheit" title="Switch to Fahrenheit" aria-pressed="false">°F</button>
+                
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="flex bg-gray-200/60 dark:bg-slate-800/60 p-1 rounded-full" role="group" aria-label="Temperature units">
+                        <button id="celsius-button" class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shadow-sm transition-all bg-gray-900 text-white dark:bg-white dark:text-gray-900 cursor-pointer" aria-pressed="true">°C</button>
+                        <button id="fahrenheit-button" class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all text-gray-500 dark:text-gray-400 cursor-pointer" aria-pressed="false">°F</button>
                     </div>
+                    
+                    <button id="compare-button" class="w-9 h-9 rounded-full bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 shadow-sm border border-gray-100 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition flex items-center justify-center cursor-pointer" aria-label="Compare locations" title="Compare locations">
+                        <span class="material-icons text-base">compare_arrows</span>
+                    </button>
+                    <button id="share-button" class="w-9 h-9 rounded-full bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 shadow-sm border border-gray-100 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition flex items-center justify-center cursor-pointer" aria-label="Share weather" title="Share weather">
+                        <span class="material-icons text-base">share</span>
+                    </button>
+                    <button id="pwa-install-btn" class="hidden w-9 h-9 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md flex items-center justify-center cursor-pointer" aria-label="Install App" title="Install App">
+                        <span class="material-icons text-base animate-bounce">download</span>
+                    </button>
+                    <button id="theme-toggle" class="w-9 h-9 rounded-full bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 shadow-sm border border-gray-100 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition flex items-center justify-center cursor-pointer" aria-label="Toggle theme" title="Toggle theme">
+                        <span class="material-icons text-base">light_mode</span>
+                    </button>
+                    
                     <!-- User Profile Badge -->
-                    <div id="user-profile-badge" class="hidden flex items-center bg-white/50 dark:bg-gray-700/50 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-2xl shadow-sm border border-white/20 text-xs text-gray-700 dark:text-gray-200 font-medium">
-                        <span class="material-icons text-sm mr-1">person</span>
-                        <span id="user-email" class="max-w-[50px] sm:max-w-[100px] truncate mr-2"></span>
-                        <span id="user-tier-badge" class="bg-blue-500 text-white font-bold px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px]">Free</span>
-                        <button id="inline-upgrade-btn" class="ml-1.5 sm:ml-2 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold px-2 py-0.5 sm:py-1 rounded-xl flex items-center transition shadow-sm text-[9px] sm:text-[10px]">
-                            <span class="material-icons text-[9px] sm:text-[10px] mr-0.5">star</span><span class="hidden sm:inline">Upgrade</span>
+                    <div id="user-profile-badge" class="hidden flex items-center bg-white dark:bg-slate-800 px-3 py-1 rounded-full shadow-sm border border-gray-100 dark:border-slate-700 text-xs text-gray-700 dark:text-gray-300 font-medium">
+                        <span class="material-icons text-[14px] mr-1">person</span>
+                        <span id="user-email" class="max-w-[70px] truncate mr-1.5"></span>
+                        <span id="user-tier-badge" class="bg-blue-500 text-white font-bold px-1.5 py-0.5 rounded-full text-[9px]">Free</span>
+                        <button id="inline-upgrade-btn" class="ml-2 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold px-2 py-0.5 rounded-lg flex items-center transition shadow-sm text-[9px] cursor-pointer">
+                            <span class="material-icons text-[9px] mr-0.5">star</span><span>Upgrade</span>
                         </button>
-                        <button id="inline-downgrade-btn" class="hidden ml-1.5 sm:ml-2 bg-gray-500 hover:bg-gray-600 text-white font-bold px-2 py-0.5 sm:py-1 rounded-xl flex items-center transition shadow-sm text-[9px] sm:text-[10px]">
-                            <span class="hidden sm:inline">Cancel Sub</span><span class="sm:hidden">Cancel</span>
+                        <button id="inline-downgrade-btn" class="hidden ml-2 bg-gray-500 hover:bg-gray-600 text-white font-bold px-2 py-0.5 rounded-lg flex items-center transition shadow-sm text-[9px] cursor-pointer">
+                            <span>Cancel</span>
                         </button>
                     </div>
-                    <button id="signin-button" class="hidden flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl font-bold text-xs sm:text-sm shadow-md transition" aria-label="Sign In">
+                    
+                    <button id="signin-button" class="hidden flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full font-bold text-xs shadow-sm transition-all cursor-pointer" aria-label="Sign In">
                         Sign In
                     </button>
-                    <button id="logout-button" class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-2xl bg-white/50 dark:bg-gray-700/50 shadow-sm interactive-element" aria-label="Logout" title="Logout">
-                        <span class="material-icons text-gray-700 dark:text-gray-200 text-xl sm:text-2xl">logout</span>
+                    
+                    <button id="logout-button" class="w-9 h-9 rounded-full bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 shadow-sm border border-gray-100 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition flex items-center justify-center cursor-pointer" aria-label="Logout" title="Logout">
+                        <span class="material-icons text-base">logout</span>
                     </button>
                 </div>
             </div>
             
             <div id="right-panel-content">
                 <div id="hourly-forecast-section">
-                    <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center">
+                    <h2 class="text-xl font-bold mb-6 text-gray-900 dark:text-white flex items-center font-display">
                         <span class="material-icons mr-2 text-blue-500">schedule</span>
                         24-Hour Forecast
                     </h2>
                     
                     <!-- Temp Chart -->
-                    <div class="temp-chart-container bg-white/40 dark:bg-gray-800/40 rounded-3xl p-4 mb-8 border border-white/20 shadow-inner overflow-hidden">
+                    <div class="temp-chart-container bg-white dark:bg-slate-900 rounded-3xl p-4 mb-8 border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden h-[150px]">
                         <svg id="temp-chart-svg" width="100%" height="100%" preserveAspectRatio="none">
                             <defs>
                                 <linearGradient id="temp-gradient" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.5" />
+                                    <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3" />
                                     <stop offset="100%" stop-color="#3b82f6" stop-opacity="0" />
                                 </linearGradient>
                             </defs>
@@ -190,45 +209,47 @@
                     <div id="hourly-forecast-container" class="flex space-x-4 overflow-x-auto pb-6 no-scrollbar mb-8"></div>
                 </div>
                 <div id="weekly-forecast-section" class="view-hidden">
-                     <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center">
+                     <h2 class="text-xl font-bold mb-6 text-gray-900 dark:text-white flex items-center font-display">
                         <span class="material-icons mr-2 text-blue-500">calendar_month</span>
                         7-Day Forecast
                      </h2>
-                     <div id="forecast-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8"></div>
+                     <div id="forecast-grid" class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-4 mb-8"></div>
                 </div>
                 
-                <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center">
+                <h2 class="text-xl font-bold mb-6 text-gray-900 dark:text-white flex items-center font-display">
                     <span class="material-icons mr-2 text-blue-500">stars</span>
                     Today's Weather Highlights
                 </h2>
-                <div id="highlights-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                <div id="highlights-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
-            <div id="right-panel-skeleton" class="hidden">
-                <div class="h-10 w-64 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse mb-8"></div>
-                <div class="h-40 bg-gray-200 dark:bg-gray-700 rounded-3xl animate-pulse mb-8"></div>
-                <div class="flex space-x-4 mb-12">
-                    <div class="h-32 w-24 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse flex-shrink-0"></div>
-                    <div class="h-32 w-24 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse flex-shrink-0"></div>
-                    <div class="h-32 w-24 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse flex-shrink-0"></div>
+
+            <div id="right-panel-skeleton" class="hidden flex flex-col">
+                <div class="h-6 w-48 bg-gray-200 dark:bg-gray-800 rounded-xl animate-pulse mb-6"></div>
+                <div class="h-40 bg-gray-200 dark:bg-gray-800 rounded-3xl animate-pulse mb-8"></div>
+                <div class="flex space-x-4 mb-10 overflow-x-auto pb-4 no-scrollbar">
+                    <div class="h-36 w-24 bg-gray-200 dark:bg-gray-800 rounded-3xl animate-pulse flex-shrink-0"></div>
+                    <div class="h-36 w-24 bg-gray-200 dark:bg-gray-800 rounded-3xl animate-pulse flex-shrink-0"></div>
+                    <div class="h-36 w-24 bg-gray-200 dark:bg-gray-800 rounded-3xl animate-pulse flex-shrink-0"></div>
+                    <div class="h-36 w-24 bg-gray-200 dark:bg-gray-800 rounded-3xl animate-pulse flex-shrink-0"></div>
                 </div>
+                <div class="h-6 w-48 bg-gray-200 dark:bg-gray-800 rounded-xl animate-pulse mb-6"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="h-44 bg-gray-200 dark:bg-gray-800 rounded-[2rem] animate-pulse"></div>
+                    <div class="h-44 bg-gray-200 dark:bg-gray-800 rounded-[2rem] animate-pulse"></div>
+                    <div class="h-44 bg-gray-200 dark:bg-gray-800 rounded-[2rem] animate-pulse"></div>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <!-- Dashboard Footer -->
-    <footer id="dashboard-footer" class="max-w-7xl w-full text-center mt-6 py-4 px-4 glass rounded-3xl hidden z-10 transition-all duration-700">
-        <p class="text-gray-600 dark:text-gray-300 text-xs font-semibold">© 2026 WeatherApp Pro - Premium Weather Intelligence</p>
+    <footer id="dashboard-footer" class="max-w-[1200px] w-full text-center mt-6 py-4 px-4 hidden z-10 transition-all duration-700">
+        <p class="text-gray-500 dark:text-gray-400 text-xs font-semibold">© 2026 WeatherApp Pro - Premium Weather Intelligence</p>
         <div class="mt-2 pt-2 border-t border-gray-200/20 dark:border-white/10 flex flex-col sm:flex-row justify-between items-center text-[10px] text-gray-400 gap-2">
             <span>Powered by <a href="https://firstmiledev.ca/" target="_blank" rel="noopener noreferrer" class="font-bold hover:text-blue-500 transition">FirstMileDevs</a></span>
             <span class="flex items-center gap-1"><span class="material-icons text-[10px] mr-1">keyboard</span> Press <kbd class="border border-gray-300 dark:border-gray-600 px-1 rounded bg-white/50">/</kbd> to search</span>
         </div>
     </footer>
-                <div class="h-10 w-64 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse mb-8"></div>
-                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    <div class="h-44 bg-gray-200 dark:bg-gray-700 rounded-3xl animate-pulse"></div>
-                    <div class="h-44 bg-gray-200 dark:bg-gray-700 rounded-3xl animate-pulse"></div>
-                    <div class="h-44 bg-gray-200 dark:bg-gray-700 rounded-3xl animate-pulse"></div>
-                </div>
-            </div>
-        </main>
-    </div>
 
     <!-- Mock Payment Modal for SaaS Upgrades -->
     <div id="payment-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">

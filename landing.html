@@ -8,30 +8,23 @@
     <!-- Local Stylesheet -->
     <link rel="stylesheet" href="/src/style.css" />
     
-    <!-- Google Fonts: Outfit (Geometric Sans-serif) and Space Grotesk (Display Technical Sans) -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
+    <!-- Google Fonts: Inter (SANS) and Space Grotesk (Display Technical Sans) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <!-- CSP-compliant External Script -->
     <script type="module" src="/src/js/landing.js" defer></script>
     
     <style>
         :root {
-            --bg-base: #06070a;
-            --bg-card: rgba(255, 255, 255, 0.02);
-            --bg-card-hover: rgba(255, 255, 255, 0.04);
-            --border-glow: rgba(255, 255, 255, 0.06);
-            --border-glow-hover: rgba(255, 255, 255, 0.12);
-            --text-primary: #ffffff;
-            --text-secondary: #8e95a2;
-            --text-muted: #5e6573;
+            --bg-base: #e5edf5;
+            --primary: #1d64d8; 
+            --primary-dark: #154fb0;
+            --accent-color: #ffffff;
+            --glow-color: rgba(255, 255, 255, 0.15);
             
-            --accent-color: #f59e0b; /* Amber Accent */
-            --glow-color: rgba(245, 158, 11, 0.12);
-            
-            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-base);
-            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            color: #1f2937;
         }
         
         h1, h2, h3, h4, .font-display {
@@ -39,161 +32,151 @@
         }
 
         body {
-            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg-base);
-            color: var(--text-primary);
-            transition: background-color 1.2s ease, color 1.2s ease;
-            position: relative;
-            display: block !important;
+            background-image: 
+                linear-gradient(to right, rgba(29, 100, 216, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(29, 100, 216, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 2rem 1rem;
+            transition: background-color 1.2s ease;
         }
 
-        .theme-clear {
-            --accent-color: #f59e0b;
-            --glow-color: rgba(245, 158, 11, 0.12);
-        }
-        
-        .theme-rain {
-            --accent-color: #06b6d4;
-            --glow-color: rgba(6, 182, 212, 0.12);
-        }
-        
-        .theme-snow {
-            --accent-color: #10b981;
-            --glow-color: rgba(16, 185, 129, 0.12);
-        }
-        
-        .theme-storm {
-            --accent-color: #d946ef;
-            --glow-color: rgba(217, 70, 239, 0.12);
-        }
+        /* Dynamic background shifting outside the card */
+        body.theme-clear { background-color: #e5edf5; }
+        body.theme-rain { background-color: #dbeafe; }
+        body.theme-snow { background-color: #ecfeff; }
+        body.theme-storm { background-color: #fae8ff; }
 
-        /* Ambient transitions */
-        .ambient-glow-transition {
-            transition: background-color 1.2s ease, box-shadow 1.2s ease, border-color 1.2s ease;
-        }
-
-        /* Glassmorphic card styling */
-        .glass-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-glow);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 16px;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        .main-container {
+            background: linear-gradient(145deg, #2b7af0, #195ac9);
+            box-shadow: 0 25px 50px -12px rgba(29, 100, 216, 0.25);
+            border-radius: 1.5rem;
             position: relative;
             overflow: hidden;
+            width: 100%;
+            max-width: 72rem; /* max-w-6xl */
+            transition: all 1.2s ease;
         }
 
-        .glass-card::before {
+        .main-container::before {
             content: '';
             position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 80px 80px;
             pointer-events: none;
-            transition: opacity 0.5s ease;
+            z-index: 0;
         }
 
-        .glass-card:hover {
-            transform: translateY(-4px);
-            background: var(--bg-card-hover);
-            border-color: var(--border-glow-hover);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 20px var(--glow-color);
+        /* Dynamic gradient shift inside the card */
+        .theme-clear .main-container { background: linear-gradient(145deg, #2b7af0, #195ac9); }
+        .theme-rain .main-container { background: linear-gradient(145deg, #3b82f6, #1e3a8a); }
+        .theme-snow .main-container { background: linear-gradient(145deg, #0d9488, #115e59); }
+        .theme-storm .main-container { background: linear-gradient(145deg, #701a75, #4a044e); }
+
+        .content-layer {
+            position: relative;
+            z-index: 10;
         }
 
-        /* Button configurations */
-        .btn-glass-primary {
-            background: var(--accent-color);
-            color: #06070a;
-            font-weight: 600;
+        .floating-card {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            animation: float 6s ease-in-out infinite;
+            backdrop-filter: blur(12px);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .delay-1 { animation-delay: 0s; }
+        .delay-2 { animation-delay: 1.5s; }
+        .delay-3 { animation-delay: 3s; }
+
+        .store-btn {
+            background-color: #0c0d12;
+            color: white;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 4px 15px var(--glow-color);
-        }
-
-        .btn-glass-primary:hover {
-            transform: scale(0.98);
-            box-shadow: 0 6px 20px var(--accent-color);
-            filter: brightness(1.08);
-        }
-
-        .btn-glass-outline {
-            background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #ffffff;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            backdrop-filter: blur(10px);
         }
-
-        .btn-glass-outline:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: scale(0.98);
+        .store-btn:hover {
+            transform: translateY(-2px);
+            background-color: #1a1c24;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
         }
 
         /* Weather selector pills */
         .weather-pill {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.8);
             font-size: 0.75rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
+            letter-spacing: 0.05em;
             font-weight: 500;
-            transition: all 0.4s ease;
+            transition: all 0.3s ease;
             backdrop-filter: blur(8px);
         }
 
         .weather-pill:hover {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.16);
             color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.15);
         }
 
         .weather-pill.active {
-            color: #ffffff !important;
-            border-color: var(--accent-color) !important;
-            background: rgba(255, 255, 255, 0.06) !important;
-            box-shadow: 0 0 15px var(--glow-color);
+            background: #ffffff !important;
+            color: #1d64d8 !important;
+            border-color: #ffffff !important;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.25);
         }
 
-        /* Glass Input forms */
+        .theme-rain .weather-pill.active { color: #3b82f6 !important; }
+        .theme-snow .weather-pill.active { color: #0d9488 !important; }
+        .theme-storm .weather-pill.active { color: #701a75 !important; }
+
+        /* Frosted glass cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(29, 100, 216, 0.03);
+            border-radius: 1.25rem;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.85);
+            border-color: rgba(29, 100, 216, 0.3);
+            box-shadow: 0 15px 40px rgba(29, 100, 216, 0.1);
+        }
+
         .input-glass {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: 8px;
-            color: #ffffff;
+            color: #1f2937;
             outline: none;
             padding: 0.75rem 1rem;
             transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
         }
 
         .input-glass:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 10px var(--glow-color);
-            background: rgba(255, 255, 255, 0.04);
+            border-color: #2b7af0;
+            box-shadow: 0 0 10px rgba(43, 122, 240, 0.15);
+            background: rgba(255, 255, 255, 0.08);
         }
 
-        /* Ambient floating anims */
-        @keyframes float-orb {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(35px, -35px) scale(1.06); }
-        }
-
-        @keyframes float-orb-reverse {
-            0%, 100% { transform: translate(0, 0) scale(1.06); }
-            50% { transform: translate(-25px, 25px) scale(0.94); }
-        }
-
-        #glow-orb-1 {
-            animation: float-orb 20s ease-in-out infinite;
-        }
-
-        #glow-orb-2 {
-            animation: float-orb-reverse 24s ease-in-out infinite;
-        }
-
-        /* Scroll entry reveal animations */
         .scroll-reveal {
             opacity: 0;
             transform: translateY(16px);
@@ -206,14 +189,13 @@
             transform: translateY(0);
         }
 
-        /* Modal styling */
         .modal-glass {
-            background: rgba(8, 9, 14, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border-radius: 1.5rem;
         }
 
         @keyframes modalShow {
@@ -224,499 +206,549 @@
         .modal-content-animate {
             animation: modalShow 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+
+        /* Dial canvas stroke colors */
+        .ambient-glow-transition {
+            transition: color 1.2s ease, border-color 1.2s ease, background-color 1.2s ease, box-shadow 1.2s ease;
+        }
     </style>
 </head>
-<body class="min-h-screen theme-clear text-white overflow-x-hidden antialiased bg-[#06070a]">
+<body class="text-gray-800 antialiased font-sans min-h-screen p-4 sm:p-8 flex flex-col items-center justify-start">
 
-    <!-- Ambient Glow Background Orbs -->
-    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div id="glow-orb-1" class="absolute w-[500px] h-[500px] rounded-full blur-[150px] opacity-25 mix-blend-screen transition-all duration-1000 ease-out" style="background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%); top: -10%; right: -10%;"></div>
-        <div id="glow-orb-2" class="absolute w-[600px] h-[600px] rounded-full blur-[180px] opacity-20 mix-blend-screen transition-all duration-1000 ease-out" style="background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%); bottom: -20%; left: -10%;"></div>
-        <!-- Grid layout texture -->
-        <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.012)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.012)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
-    </div>
-
-    <!-- Page Content Wrapper -->
-    <div class="relative z-10">
-
-        <!-- Navigation Header -->
-        <nav class="sticky top-0 left-0 right-0 z-50 bg-[#06070a]/60 backdrop-blur-xl border-b border-white/5">
-            <div class="max-w-7xl mx-auto px-6 sm:px-8">
-                <div class="flex justify-between items-center h-20">
-                    <div class="flex items-center space-x-3">
-                        <span class="material-icons text-white text-2xl">science</span>
-                        <span class="text-xs font-semibold tracking-[0.25em] uppercase font-sans text-white">COSMIC WEATHER JOURNAL</span>
-                    </div>
-                    <div class="flex items-center space-x-6">
-                        <button id="nav-login-btn" class="text-xs font-semibold tracking-wider uppercase text-gray-400 hover:text-white transition flex items-center">
-                            ARCHIVE LOGIN
-                            <kbd class="hidden md:inline-block px-1.5 py-0.5 text-[9px] font-mono border border-white/10 bg-white/5 rounded text-gray-400 ml-2">L</kbd>
-                        </button>
-                        <button id="nav-register-btn" class="btn-glass-primary text-xs font-bold uppercase px-5 py-2.5 flex items-center rounded-lg">
-                            SUBSCRIBE
-                            <kbd class="hidden md:inline-block px-1.5 py-0.5 text-[9px] font-mono border border-black/10 bg-black/10 rounded text-black/60 ml-2">S</kbd>
-                        </button>
-                    </div>
+    <!-- Main Showcase Container -->
+    <div class="main-container w-full max-w-6xl mx-auto min-h-[820px] flex flex-col text-white">
+        <div class="content-layer h-full flex flex-col flex-1">
+            
+            <!-- Navigation -->
+            <nav class="flex justify-between items-center px-10 py-8 z-20">
+                <div class="flex items-center gap-2 text-2xl font-bold tracking-tight">
+                    <span class="material-icons">science</span> Cosmic Weather
                 </div>
-            </div>
-        </nav>
 
-        <!-- Main Entry Hero Section -->
-        <section class="max-w-7xl mx-auto px-6 sm:px-8 pt-20 pb-28 scroll-reveal">
-            <div class="grid lg:grid-cols-12 gap-16 items-start">
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+                    <a href="#features" class="hover:text-blue-100 transition-colors">Features</a>
+                    <a href="#pricing" class="hover:text-blue-100 transition-colors">Pricing</a>
+                    <button id="nav-login-btn" class="hover:text-blue-100 transition-colors flex items-center">
+                        ARCHIVE LOGIN <kbd class="px-1 py-0.5 text-[9px] font-mono border border-white/20 bg-white/10 rounded ml-2">L</kbd>
+                    </button>
+                    <button id="nav-register-btn" class="bg-white text-blue-600 px-5 py-2.5 rounded-xl font-semibold shadow hover:bg-blue-50 transition flex items-center">
+                        SUBSCRIBE <kbd class="px-1 py-0.5 text-[9px] font-mono border border-blue-200 bg-blue-50 rounded ml-2">S</kbd>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Icon -->
+                <div class="md:hidden cursor-pointer">
+                    <span class="material-icons">menu</span>
+                </div>
+            </nav>
+
+            <!-- Hero Section -->
+            <main class="flex-grow flex flex-col lg:flex-row items-center px-10 py-8 gap-12 relative z-10">
                 
-                <!-- Left Column: Editorial Content -->
-                <div class="lg:col-span-7 space-y-10 text-left">
+                <!-- Left Column: Content & Controls -->
+                <div class="w-full lg:w-1/2 flex flex-col justify-center space-y-8 z-20">
                     <div class="space-y-4">
-                        <span class="text-xs font-bold tracking-[0.25em] text-gray-400 uppercase font-sans">VOL. XIV // METEOROLOGY</span>
-                        <h1 class="text-6xl md:text-7xl font-semibold tracking-tight text-white leading-[1.05]">
-                            The Physics of the <span class="inline-flex items-center align-middle mx-1.5"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Altocumulus_undulatus.jpg/120px-Altocumulus_undulatus.jpg" class="h-6 w-10 object-cover rounded-[3px] border border-white/10" alt="Atmosphere" /></span> Atmosphere, <br>
-                            <span class="italic font-light text-gray-400">Transposed in Glass.</span>
+                        <span class="text-xs font-bold tracking-widest text-blue-100 uppercase opacity-90 block">The Physics of the Atmosphere</span>
+                        <h1 class="text-5xl lg:text-7xl font-bold leading-none tracking-tight">
+                            Accurate<br>Forecasting
                         </h1>
-                    </div>
-
-                    <div class="border-t border-white/5 pt-8">
-                        <p class="text-xl md:text-2xl text-gray-300 font-light leading-relaxed">
-                            "Record daily meteorological observations with mathematical purity and high-craft precision. Read real-time barometric pressure indices, dynamic wind stream vectors, and local alerts."
+                        <p class="text-lg lg:text-xl font-light text-blue-50 max-w-md">
+                            Plan your day with Cosmic Weather Journal's accurate forecasts and scientific telemetry.
                         </p>
                     </div>
 
-                    <!-- Weather Selection Label Filters -->
-                    <div class="space-y-4 pt-4">
-                        <span class="text-xs font-semibold tracking-[0.15em] uppercase text-gray-500 font-sans block">Select Observation Module</span>
-                        <div class="flex flex-wrap gap-3">
-                            <button id="pill-clear" class="weather-pill active px-5 py-3 rounded-lg font-semibold flex items-center gap-2">
-                                <span>01 /</span> Solaris
+                    <!-- Weather Pills Switcher -->
+                    <div class="space-y-3">
+                        <span class="text-xs font-semibold tracking-wider text-blue-200 uppercase block">Select Observation Module</span>
+                        <div class="flex flex-wrap gap-2">
+                            <button id="pill-clear" class="weather-pill active px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2">
+                                Solaris
                             </button>
-                            <button id="pill-rain" class="weather-pill px-5 py-3 rounded-lg font-semibold flex items-center gap-2">
-                                <span>02 /</span> Imber
+                            <button id="pill-rain" class="weather-pill px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2">
+                                Imber
                             </button>
-                            <button id="pill-snow" class="weather-pill px-5 py-3 rounded-lg font-semibold flex items-center gap-2">
-                                <span>03 /</span> Nivalis
+                            <button id="pill-snow" class="weather-pill px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2">
+                                Nivalis
                             </button>
-                            <button id="pill-storm" class="weather-pill px-5 py-3 rounded-lg font-semibold flex items-center gap-2">
-                                <span>04 /</span> Procella
+                            <button id="pill-storm" class="weather-pill px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2">
+                                Procella
                             </button>
                         </div>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row gap-6 pt-6">
-                        <button id="hero-register-btn" class="btn-glass-primary text-sm font-bold uppercase px-8 py-4 text-center flex items-center justify-center rounded-lg">
-                            Acquire Archive Access
-                            <kbd class="hidden md:inline-block px-1.5 py-0.5 text-[10px] font-mono border border-black/10 bg-black/10 rounded text-black/60 ml-3">S</kbd>
+                    <!-- Social Proof / Reviews -->
+                    <div class="flex items-center gap-8 pt-2">
+                        <div class="flex items-center gap-2 text-white">
+                            <span class="material-icons text-3xl opacity-80">workspace_premium</span>
+                            <div class="flex flex-col text-sm leading-tight">
+                                <span class="font-semibold">Editors'</span>
+                                <span class="opacity-80">Choice</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <div class="flex gap-0.5 text-yellow-300 mb-1">
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star_half</span>
+                            </div>
+                            <span class="text-xs text-blue-100">3000+ 5-Star Reviews</span>
+                        </div>
+                    </div>
+
+                    <!-- App store download links -->
+                    <div class="flex flex-wrap gap-4">
+                        <button id="hero-register-btn" class="store-btn flex items-center gap-3 px-5 py-2.5 rounded-xl">
+                            <span class="material-icons text-3xl">download_for_offline</span>
+                            <div class="text-left flex flex-col">
+                                <span class="text-[9px] uppercase tracking-wider text-gray-400">Acquire Access</span>
+                                <span class="text-sm font-semibold leading-none">Subscribe Now</span>
+                            </div>
                         </button>
-                        <button id="hero-pricing-btn" class="btn-glass-outline text-sm font-bold uppercase px-8 py-4 text-center rounded-lg">
-                            View Journal Tiers
+                        <button id="hero-pricing-btn" class="store-btn flex items-center gap-3 px-5 py-2.5 rounded-xl">
+                            <span class="material-icons text-2xl">local_offer</span>
+                            <div class="text-left flex flex-col">
+                                <span class="text-[9px] uppercase tracking-wider text-gray-400">Journal Plans</span>
+                                <span class="text-sm font-semibold leading-none">View Tiers</span>
+                            </div>
                         </button>
                     </div>
                 </div>
 
-                <!-- Right Column: Interactive Meteorological Glass Widget -->
-                <div class="lg:col-span-5 flex justify-center">
-                    <div id="journal-card" class="glass-card w-full max-w-[420px] p-8 flex flex-col relative overflow-hidden transition-all duration-500">
+                <!-- Right Column: Visual Mockup Showcase -->
+                <div class="w-full lg:w-1/2 relative min-h-[560px] flex justify-center items-center">
+                    <div class="relative w-72 h-[560px] z-10">
                         
-                        <!-- Widget Header -->
-                        <div class="flex justify-between items-start mb-6 pb-4 border-b border-white/5">
-                            <div>
-                                <span class="text-[9px] font-bold tracking-[0.2em] text-gray-500 uppercase font-sans">METEOROLOGICAL STATION</span>
-                                <h3 class="text-2xl font-semibold text-white tracking-wide mt-1" id="preview-city">Miami</h3>
-                                <p class="text-xs text-gray-400 italic mt-0.5" id="preview-region">Subtropical Atlantic Basin</p>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-[9px] font-bold tracking-[0.2em] bg-white/10 text-white px-2 py-1 uppercase font-sans rounded">RECORD No. 1</span>
-                            </div>
-                        </div>
-
-                        <!-- Main Dynamic Content Wrapper -->
-                        <div id="journal-dynamic-content" class="transition-opacity duration-300">
+                        <!-- Phone UI Screen -->
+                        <div id="journal-card" class="absolute inset-0 bg-[#06070a] rounded-[2.5rem] shadow-2xl overflow-hidden border-[6px] border-gray-800 text-white flex flex-col relative z-10 transition-all duration-500">
                             
-                            <!-- Dial Canvas -->
-                            <div class="my-4 flex justify-center items-center relative">
-                                <canvas id="meteorological-gage" width="300" height="300" class="w-full h-auto max-w-[280px] mx-auto block z-10 cursor-pointer"></canvas>
-                            </div>
-
-                            <!-- Readout Values -->
-                            <div class="grid grid-cols-3 gap-2 py-6 border-y border-white/5 text-center">
-                                <div>
-                                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider font-sans">Temperature</p>
-                                    <p class="text-xl font-bold text-white mt-1 font-mono" id="preview-temp">82°F</p>
-                                </div>
-                                <div>
-                                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider font-sans">Barometer</p>
-                                    <p class="text-xl font-bold text-white mt-1 font-mono" id="preview-barometer">1024 hPa</p>
-                                </div>
-                                <div>
-                                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider font-sans">Condition</p>
-                                    <p class="text-[10px] font-bold uppercase tracking-wide mt-2 font-sans ambient-glow-transition" style="color: var(--accent-color)" id="preview-desc">Solaris</p>
+                            <!-- Notch & Top Bar -->
+                            <div class="flex justify-between items-center px-6 pt-3 pb-1 text-[10px] font-medium z-30 bg-black/40">
+                                <span>9:41</span>
+                                <div class="w-24 h-4 bg-black rounded-full absolute top-1.5 left-1/2 transform -translate-x-1/2"></div>
+                                <div class="flex gap-1 items-center">
+                                    <span class="material-icons text-[10px]">signal_cellular_alt</span>
+                                    <span class="material-icons text-[10px]">wifi</span>
+                                    <span class="material-icons text-[10px]">battery_full</span>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4 py-4 border-b border-white/5">
-                                <div>
-                                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider font-sans">Relative Humidity</p>
-                                    <p class="text-sm font-semibold text-gray-300 mt-0.5" id="preview-humidity">52%</p>
+                            <!-- Phone Screen UI Content -->
+                            <div id="journal-dynamic-content" class="flex-grow flex flex-col items-center pt-6 px-4 bg-gradient-to-b from-gray-900 to-black z-10 transition-opacity duration-300">
+                                
+                                <!-- Location -->
+                                <div class="text-center mb-2">
+                                    <h2 class="text-lg font-bold tracking-tight" id="preview-city">Miami</h2>
+                                    <p class="text-[9px] text-gray-400 flex items-center justify-center gap-0.5 mt-0.5" id="preview-region">
+                                        Subtropical Atlantic Basin
+                                    </p>
                                 </div>
-                                <div>
-                                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider font-sans">Kinetic Wind</p>
-                                    <p class="text-sm font-semibold text-gray-300 mt-0.5" id="preview-wind">09 mph / NE</p>
-                                </div>
-                            </div>
 
-                            <!-- Warnings & Alerts -->
-                            <div class="mt-6 p-4 bg-white/[0.02] border-l-2 ambient-glow-transition rounded" style="border-color: var(--accent-color)">
-                                <div class="flex items-start gap-3">
-                                    <span class="material-icons text-base mt-0.5 ambient-glow-transition" style="color: var(--accent-color)">report_problem</span>
+                                <!-- Canvas Dial Gage -->
+                                <div class="my-1 flex justify-center items-center relative w-full h-[200px]">
+                                    <canvas id="meteorological-gage" width="220" height="220" class="w-full h-auto max-w-[200px] mx-auto block z-20 cursor-pointer"></canvas>
+                                </div>
+
+                                <!-- Temperature Readings -->
+                                <div class="text-center mb-4">
+                                    <div class="text-4xl font-bold tracking-tighter" id="preview-temp">82°F</div>
+                                    <p class="text-[10px] font-semibold uppercase tracking-wider mt-0.5 ambient-glow-transition" style="color: var(--accent-color)" id="preview-desc">Solaris</p>
+                                </div>
+
+                                <!-- Details Grid -->
+                                <div class="w-full grid grid-cols-3 gap-2 py-3 border-y border-white/5 text-center text-[10px]">
                                     <div>
-                                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider font-sans">Advisory Status</p>
-                                        <p class="text-xs text-gray-300 leading-relaxed font-light mt-1" id="preview-alert">High solar radiation detected. UV index is critical.</p>
+                                        <p class="text-gray-500 font-bold uppercase tracking-wider">Barometer</p>
+                                        <p class="font-semibold text-white mt-0.5" id="preview-barometer">1024 hPa</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500 font-bold uppercase tracking-wider">Humidity</p>
+                                        <p class="font-semibold text-white mt-0.5" id="preview-humidity">52%</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500 font-bold uppercase tracking-wider">Wind</p>
+                                        <p class="font-semibold text-white mt-0.5 truncate" id="preview-wind">09 mph / NE</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-            </div>
-        </section>
-
-        <!-- Catalog Archive Features (Asymmetric Bento Grid) -->
-        <section class="py-24 border-t border-white/5 bg-[#06070a]/20">
-            <div class="max-w-7xl mx-auto px-6 sm:px-8">
-                <div class="max-w-3xl mb-20 text-left scroll-reveal">
-                    <span class="text-xs font-bold tracking-[0.2em] uppercase font-sans text-gray-400">CATALOG OVERVIEW</span>
-                    <h2 class="text-4xl md:text-5xl font-semibold tracking-tight mt-3 text-white">Journal Capabilities & Modules</h2>
-                    <p class="text-gray-400 font-light mt-4 text-lg">Every module is structured for precise, reliable meteorological reporting.</p>
-                </div>
-                
-                <div class="grid md:grid-cols-3 gap-8">
-                    <!-- Row 1: Card 1 (2 cols) & Card 2 (1 col) -->
-                    <div class="md:col-span-2 glass-card p-8 md:p-10 flex flex-col justify-between scroll-reveal" style="transition-delay: 0ms;">
-                        <div class="space-y-4 text-left">
-                            <span class="text-xs font-mono font-bold tracking-widest ambient-glow-transition" style="color: var(--accent-color)">INDEX 01 // QUERY</span>
-                            <h3 class="text-3xl font-semibold tracking-tight text-white">Global Geocoding Query</h3>
-                            <p class="text-gray-400 text-base font-light leading-relaxed max-w-xl">
-                                Search coordinates and city centers globally using structured geo-mapping data hooks. Resolve local administrative boundaries and timezone offsets instantly.
-                            </p>
-                        </div>
-                        <div class="mt-8 pt-8 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-gray-500">
-                            <span>Engine: Open-source OSM Integration</span>
-                            <span class="material-icons text-sm ambient-glow-transition" style="color: var(--accent-color)">arrow_forward</span>
-                        </div>
-                    </div>
-
-                    <div class="md:col-span-1 glass-card p-8 flex flex-col justify-between scroll-reveal" style="transition-delay: 80ms;">
-                        <div class="space-y-4 text-left">
-                            <span class="text-xs font-mono font-bold tracking-widest ambient-glow-transition" style="color: var(--accent-color)">INDEX 02 // FORECASTS</span>
-                            <h3 class="text-2xl font-semibold tracking-tight text-white">Astronomical Forecasts</h3>
-                            <p class="text-gray-400 text-sm font-light leading-relaxed">
-                                Hour-by-hour pressure projections and weekly forecast ledgers compiled smoothly.
-                            </p>
-                        </div>
-                        <div class="mt-6 flex items-center gap-1.5 font-mono text-[10px] text-gray-500">
-                            <span class="px-1.5 py-0.5 bg-white/5 border border-white/5 rounded">7-Day</span>
-                            <span class="px-1.5 py-0.5 bg-white/5 border border-white/5 rounded">Hourly</span>
-                        </div>
-                    </div>
-
-                    <!-- Row 2: Card 3 (1 col), Card 4 (1 col), Card 5 (1 col) -->
-                    <div class="md:col-span-1 glass-card p-8 flex flex-col justify-between scroll-reveal" style="transition-delay: 160ms;">
-                        <div class="space-y-4 text-left">
-                            <span class="text-xs font-mono font-bold tracking-widest ambient-glow-transition" style="color: var(--accent-color)">INDEX 03 // ALERTS</span>
-                            <h3 class="text-2xl font-semibold tracking-tight text-white">Real-time Warning Feeds</h3>
-                            <p class="text-gray-400 text-sm font-light leading-relaxed">
-                                Instant warnings mapping severe storm, snow drifts, and high temperature thresholds.
-                            </p>
-                        </div>
-                        <div class="mt-6 flex justify-between items-center">
-                            <span class="material-icons text-xl text-red-500">crisis_alert</span>
-                            <span class="text-[10px] font-mono text-red-400 bg-red-950/20 px-2 py-0.5 border border-red-900/30 rounded">LIVE ADVISORIES</span>
-                        </div>
-                    </div>
-
-                    <div class="md:col-span-1 glass-card p-8 flex flex-col justify-between scroll-reveal" style="transition-delay: 240ms;">
-                        <div class="space-y-4 text-left">
-                            <span class="text-xs font-mono font-bold tracking-widest ambient-glow-transition" style="color: var(--accent-color)">INDEX 04 // PWA</span>
-                            <h3 class="text-2xl font-semibold tracking-tight text-white">PWA Offline Caching</h3>
-                            <p class="text-gray-400 text-sm font-light leading-relaxed">
-                                Locally caches forecast records via background service workers, keeping data readable offline.
-                            </p>
-                        </div>
-                        <div class="mt-6 flex items-center justify-between text-[10px] font-mono text-gray-500">
-                            <span>Offline Status: Active</span>
-                            <span class="material-icons text-sm text-green-500">offline_pin</span>
-                        </div>
-                    </div>
-
-                    <div class="md:col-span-1 glass-card p-8 flex flex-col justify-between scroll-reveal" style="transition-delay: 320ms;">
-                        <div class="space-y-4 text-left">
-                            <span class="text-xs font-mono font-bold tracking-widest ambient-glow-transition" style="color: var(--accent-color)">INDEX 05 // VISUALS</span>
-                            <h3 class="text-2xl font-semibold tracking-tight text-white">Atmospheric Glow Theme</h3>
-                            <p class="text-gray-400 text-sm font-light leading-relaxed">
-                                A premium glass interface optimized for dynamic meteorological state presentation.
-                            </p>
-                        </div>
-                        <div class="mt-6 flex items-center justify-between text-[10px] font-mono text-gray-500">
-                            <span>Theme: Interactive</span>
-                            <span class="material-icons text-sm">dark_mode</span>
-                        </div>
-                    </div>
-
-                    <!-- Row 3: Card 6 (3 cols) -->
-                    <div class="md:col-span-3 glass-card p-8 md:p-10 flex flex-col justify-between scroll-reveal" style="transition-delay: 400ms;">
-                        <div class="grid md:grid-cols-2 gap-8 text-left">
-                            <div class="space-y-4">
-                                <span class="text-xs font-mono font-bold tracking-widest ambient-glow-transition" style="color: var(--accent-color)">INDEX 06 // METRICS</span>
-                                <h3 class="text-3xl font-semibold tracking-tight text-white">Meteorological Analytics</h3>
-                                <p class="text-gray-400 text-base font-light leading-relaxed">
-                                    Tracks UV indices, precipitation ratios, wind force directions, and ambient air particles with detailed mathematical purity.
-                                </p>
+                        <!-- Floating Card 1: Real-time Alerts -->
+                        <div class="floating-card delay-1 absolute top-20 -left-20 bg-white text-gray-800 rounded-2xl p-3 flex items-center gap-3 z-30 w-44 shadow-xl border border-white/50">
+                            <div class="w-8 h-5 bg-green-500 rounded-full relative shadow-inner">
+                                <div class="absolute top-0.5 right-0.5 w-4 h-4 bg-white rounded-full shadow"></div>
                             </div>
-                            <div class="border-l border-white/5 pl-8 space-y-6">
-                                <div class="grid grid-cols-2 gap-4 text-xs font-mono text-gray-400">
-                                    <div>
-                                        <p class="font-bold text-white">UV INDEX</p>
-                                        <p class="mt-1">0 - 11+ UV Index scale mapping</p>
-                                    </div>
-                                    <div>
-                                        <p class="font-bold text-white">PRECIPITATION</p>
-                                        <p class="mt-1">Intensity and probability tracking</p>
-                                    </div>
-                                    <div>
-                                        <p class="font-bold text-white">WIND VECTORS</p>
-                                        <p class="mt-1">Wind speed and cardinal direction angle</p>
-                                    </div>
-                                    <div>
-                                        <p class="font-bold text-white">AIR QUALITY</p>
-                                        <p class="mt-1">Real-time AQI indices tracking</p>
-                                    </div>
-                                </div>
+                            <span class="text-xs font-bold text-gray-700">Real-time Alerts</span>
+                        </div>
+
+                        <!-- Floating Card 2: Sunrise/Sunset -->
+                        <div class="floating-card delay-2 absolute top-1/2 -right-24 transform -translate-y-1/2 bg-white text-gray-800 rounded-2xl p-3 z-30 w-52 flex justify-between items-center shadow-xl border border-white/50">
+                            <div class="text-[10px]">
+                                <p class="text-gray-400 mb-0.5">Sunrise</p>
+                                <p class="font-bold text-gray-700">5:15 AM</p>
+                            </div>
+                            <!-- Sun Arc Graphic -->
+                            <div class="w-12 h-6 relative overflow-hidden border-b border-gray-200">
+                                <div class="absolute top-1 left-1/2 transform -translate-x-1/2 w-12 h-12 rounded-full border border-dashed border-orange-300"></div>
+                                <div class="absolute top-0.5 right-1 w-2.5 h-2.5 bg-orange-400 rounded-full shadow-[0_0_8px_orange]"></div>
+                            </div>
+                            <div class="text-[10px] text-right">
+                                <p class="text-gray-400 mb-0.5">Sunset</p>
+                                <p class="font-bold text-gray-700">9:30 PM</p>
                             </div>
                         </div>
-                        <div class="mt-8 pt-6 border-t border-white/5 flex justify-between items-center text-[10px] font-mono text-gray-500">
-                            <span>Data source: Global Met Agency</span>
-                            <span>Update rate: 15-minute intervals</span>
+
+                        <!-- Floating Card 3: Weather Alert -->
+                        <div class="floating-card delay-3 absolute bottom-12 -left-28 bg-white text-gray-800 rounded-2xl p-4 z-30 w-64 shadow-xl border border-white/55">
+                            <div class="flex items-center gap-1.5 mb-1.5 text-blue-600">
+                                <span class="material-icons text-sm">report_problem</span>
+                                <span class="text-[9px] uppercase tracking-wider font-bold">Advisory Details</span>
+                            </div>
+                            <p class="text-[11px] text-gray-600 leading-snug" id="preview-alert">
+                                High solar radiation detected. UV index is critical.
+                            </p>
                         </div>
+
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- Pricing Section (Styled as Columns) -->
-        <section id="pricing" class="py-28 px-6 sm:px-8 scroll-reveal">
-            <div class="max-w-4xl mx-auto text-center">
-                <span class="text-xs font-bold tracking-[0.2em] text-gray-400 uppercase font-sans">SUBSCRIPTION LEDGER</span>
-                <h2 class="text-4xl md:text-5xl font-semibold tracking-tight mt-3 mb-6 text-white">Choose Your Access Tier</h2>
-                <p class="text-gray-400 font-light text-lg mb-20">Transparent access terms. Cancel or upgrade your credentials anytime.</p>
-                
-                <div class="grid md:grid-cols-2 gap-12 text-left">
-                    <!-- Free Plan -->
-                    <div class="glass-card p-10 flex flex-col justify-between rounded-2xl">
-                        <div>
-                            <span class="text-xs font-mono font-bold tracking-widest text-gray-500 uppercase">TIER I</span>
-                            <h3 class="text-3xl font-light mt-2 mb-4 text-white">Standard Reader</h3>
-                            <p class="text-4xl font-semibold font-mono text-white mb-10">$0 <span class="text-xs font-sans tracking-wide uppercase text-gray-500 font-normal">/ Free Tier</span></p>
-                            
-                            <ul class="space-y-5 mb-12 border-t border-white/5 pt-8 text-sm text-gray-400">
-                                <li class="flex items-center"><span class="material-icons text-white text-sm mr-3">check</span>100 API queries daily</li>
-                                <li class="flex items-center"><span class="material-icons text-white text-sm mr-3">check</span>Up to 3 saved observation locations</li>
-                                <li class="flex items-center"><span class="material-icons text-white text-sm mr-3">check</span>Current weather reports</li>
-                                <li class="flex items-center"><span class="material-icons text-white text-sm mr-3">check</span>Limited 3-day forecast grids</li>
-                                <li class="flex items-center text-gray-600"><span class="material-icons mr-3 text-sm">close</span>Immediate severe weather alerts</li>
-                                <li class="flex items-center text-gray-600"><span class="material-icons mr-3 text-sm">close</span>Priority support lines</li>
-                            </ul>
-                        </div>
-                        
-                        <button id="pricing-free-btn" class="w-full btn-glass-outline text-xs font-bold uppercase py-4 rounded-lg">
-                            Activate Free Reader
-                        </button>
-                    </div>
-                    
-                    <!-- Premium Plan -->
-                    <div class="glass-card p-10 relative flex flex-col justify-between rounded-2xl" style="border: 2px solid var(--accent-color); box-shadow: 0 0 30px var(--glow-color)">
-                        <div class="absolute top-0 right-0 ambient-glow-transition text-black text-[8px] font-bold tracking-[0.2em] px-3 py-1.5 uppercase font-mono rounded-tr-xl rounded-bl-xl" style="background: var(--accent-color)">RECOMMENDED</div>
-                        <div>
-                            <span class="text-xs font-mono font-bold tracking-widest text-gray-400 uppercase">TIER II</span>
-                            <h3 class="text-3xl font-light mt-2 mb-4 text-white">Journal Fellow</h3>
-                            <p class="text-4xl font-semibold font-mono mb-10 ambient-glow-transition" style="color: var(--accent-color)">$4.99 <span class="text-xs font-sans tracking-wide uppercase text-gray-500 font-normal">/ Monthly Billing</span></p>
-                            
-                            <ul class="space-y-5 mb-12 border-t border-white/5 pt-8 text-sm text-gray-300">
-                                <li class="flex items-center font-semibold"><span class="material-icons text-sm mr-3 ambient-glow-transition" style="color: var(--accent-color)">check</span>Unlimited meteorological queries</li>
-                                <li class="flex items-center font-semibold"><span class="material-icons text-sm mr-3 ambient-glow-transition" style="color: var(--accent-color)">check</span>Unlimited saved observation locations</li>
-                                <li class="flex items-center"><span class="material-icons text-sm mr-3 ambient-glow-transition" style="color: var(--accent-color)">check</span>Full 7-day forecast ledgers</li>
-                                <li class="flex items-center"><span class="material-icons text-sm mr-3 ambient-glow-transition" style="color: var(--accent-color)">check</span>Severe weather alerts (push & sms)</li>
-                                <li class="flex items-center"><span class="material-icons text-sm mr-3 ambient-glow-transition" style="color: var(--accent-color)">check</span>Priority support lines</li>
-                                <li class="flex items-center"><span class="material-icons text-sm mr-3 ambient-glow-transition" style="color: var(--accent-color)">check</span>Ad-free observation interface</li>
-                            </ul>
-                        </div>
-                        
-                        <button id="pricing-premium-btn" class="w-full btn-glass-primary text-xs font-bold uppercase py-4 rounded-lg">
-                            Acquire Fellowship
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Comparison Table (Editorial Ledger Style) -->
-        <section class="py-24 px-6 sm:px-8 border-t border-white/5 bg-[#06070a]/40 scroll-reveal">
-            <div class="max-w-4xl mx-auto text-left">
-                <h2 class="text-3xl font-semibold tracking-tight mb-12 text-center text-white">Comparative Access Features</h2>
-                
-                <div class="border-y border-white/10 overflow-hidden font-sans">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="border-b border-white/10">
-                                <th class="text-left py-5 text-xs font-bold uppercase tracking-widest text-gray-500">Feature Description</th>
-                                <th class="text-center py-5 text-xs font-bold uppercase tracking-widest text-gray-500">Reader (Tier I)</th>
-                                <th class="text-center py-5 text-xs font-bold uppercase tracking-widest ambient-glow-transition" style="color: var(--accent-color)">Fellow (Tier II)</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/5 text-sm font-light text-gray-300">
-                            <tr>
-                                <td class="py-5 italic font-light">Daily API calls</td>
-                                <td class="py-5 text-center">100</td>
-                                <td class="py-5 text-center font-semibold ambient-glow-transition" style="color: var(--accent-color)">Unlimited</td>
-                            </tr>
-                            <tr>
-                                <td class="py-5 italic font-light">Saved Locations</td>
-                                <td class="py-5 text-center">3</td>
-                                <td class="py-5 text-center font-semibold ambient-glow-transition" style="color: var(--accent-color)">Unlimited</td>
-                            </tr>
-                            <tr>
-                                <td class="py-5 italic font-light">Extended Forecast Ledgers</td>
-                                <td class="py-5 text-center">3 Days</td>
-                                <td class="py-5 text-center font-semibold ambient-glow-transition" style="color: var(--accent-color)">7 Days</td>
-                            </tr>
-                            <tr>
-                                <td class="py-5 italic font-light">Historical Observations</td>
-                                <td class="py-5 text-center text-gray-600"><span class="material-icons text-sm">close</span></td>
-                                <td class="py-5 text-center ambient-glow-transition" style="color: var(--accent-color)"><span class="material-icons text-sm">check</span></td>
-                            </tr>
-                            <tr>
-                                <td class="py-5 italic font-light">Severe Weather Advisories</td>
-                                <td class="py-5 text-center text-gray-600"><span class="material-icons text-sm">close</span></td>
-                                <td class="py-5 text-center ambient-glow-transition" style="color: var(--accent-color)"><span class="material-icons text-sm">check</span></td>
-                            </tr>
-                            <tr>
-                                <td class="py-5 italic font-light">Priority Support Dispatch</td>
-                                <td class="py-5 text-center text-gray-600"><span class="material-icons text-sm">close</span></td>
-                                <td class="py-5 text-center ambient-glow-transition" style="color: var(--accent-color)"><span class="material-icons text-sm">check</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="py-20 px-6 sm:px-8 text-center border-t border-white/5">
-            <div class="flex items-center justify-center space-x-2 mb-6">
-                <span class="material-icons text-white text-xl">science</span>
-                <span class="text-xs font-bold tracking-[0.2em] text-white uppercase font-sans">COSMIC WEATHER JOURNAL</span>
-            </div>
-            <p class="text-xs text-gray-500 tracking-wide font-sans mb-1.5">PUBLISHED BY FIRSTMILEDEVS INC.</p>
-            <p class="text-xs text-gray-600 italic">Real-Time Forecast Indexes • Barometric Vector Gauges • Cloud Service Caching</p>
-            <div class="mt-8 pt-8 border-t border-white/5">
-                <a href="https://firstmiledev.ca/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-gray-500 hover:text-white transition text-xs font-semibold tracking-wider uppercase font-sans">
-                    <span>PORTAL SYSTEM PROVIDED BY FIRSTMILEDEVS</span>
-                    <span class="material-icons text-xs ml-1.5">open_in_new</span>
-                </a>
-            </div>
-        </footer>
-
-        <!-- Login Modal -->
-        <div id="login-modal" class="fixed inset-0 bg-[#06070a]/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-            <div class="modal-glass w-full max-w-md p-10 modal-content-animate">
-                <div class="flex justify-between items-center mb-8 pb-3 border-b border-white/5">
-                    <h3 class="text-3xl font-light tracking-wide text-white">Journal Authentication</h3>
-                    <button class="text-gray-400 hover:text-white modal-close-btn transition">
-                        <span class="material-icons text-lg">close</span>
-                    </button>
-                </div>
-                
-                <form id="login-form" class="space-y-6">
-                    <div class="flex flex-col">
-                        <label class="text-[9px] font-mono font-bold text-gray-500 uppercase tracking-widest mb-1">Email Address</label>
-                        <input type="email" id="login-email" required class="input-glass py-2 text-sm text-white placeholder-gray-600">
-                    </div>
-                    <div class="flex flex-col">
-                        <label class="text-[9px] font-mono font-bold text-gray-500 uppercase tracking-widest mb-1">Password</label>
-                        <input type="password" id="login-password" required class="input-glass py-2 text-sm text-white placeholder-gray-600">
-                    </div>
-                    <button type="submit" class="w-full btn-glass-primary text-xs font-bold uppercase py-4 rounded-lg">
-                        Authenticate Session
-                    </button>
-                </form>
-                
-                <p class="text-center text-xs text-gray-400 font-sans mt-8 pt-4 border-t border-white/5 flex items-center justify-between">
-                    <span>New researcher? <button id="switch-to-register-btn" class="text-[#f59e0b] hover:text-white font-bold ml-1 transition">Activate Account</button></span>
-                    <span class="text-[9px] font-mono text-gray-500"><kbd class="px-1.5 py-0.5 border border-white/10 bg-white/5 rounded">Esc</kbd> close</span>
-                </p>
-            </div>
+            </main>
         </div>
-
-        <!-- Register Modal -->
-        <div id="register-modal" class="fixed inset-0 bg-[#06070a]/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-            <div class="modal-glass w-full max-w-md p-10 modal-content-animate">
-                <div class="flex justify-between items-center mb-8 pb-3 border-b border-white/5">
-                    <h3 class="text-3xl font-light tracking-wide text-white">Activate Credentials</h3>
-                    <button class="text-gray-400 hover:text-white modal-close-btn transition">
-                        <span class="material-icons text-lg">close</span>
-                    </button>
-                </div>
-                
-                <form id="register-form" class="space-y-6">
-                    <div class="flex flex-col">
-                        <label class="text-[9px] font-mono font-bold text-gray-500 uppercase tracking-widest mb-1">Email Address</label>
-                        <input type="email" id="register-email" required class="input-glass py-2 text-sm text-white placeholder-gray-600">
-                    </div>
-                    <div class="flex flex-col">
-                        <label class="text-[9px] font-mono font-bold text-gray-500 uppercase tracking-widest mb-1">Secure Password</label>
-                        <input type="password" id="register-password" required minlength="8" class="input-glass py-2 text-sm text-white placeholder-gray-600">
-                        <p class="text-gray-500 text-[9px] font-mono mt-1.5 italic">Must contain at least 8 characters</p>
-                    </div>
-                    
-                    <button type="submit" class="w-full btn-glass-primary text-xs font-bold uppercase py-4 rounded-lg">
-                        Create Observation Account
-                    </button>
-                </form>
-                
-                <p class="text-center text-xs text-gray-400 font-sans mt-8 pt-4 border-t border-white/5 flex items-center justify-between">
-                    <span>Already registered? <button id="switch-to-login-btn" class="text-[#f59e0b] hover:text-white font-bold ml-1 transition">Archive Login</button></span>
-                    <span class="text-[9px] font-mono text-gray-500"><kbd class="px-1.5 py-0.5 border border-white/10 bg-white/5 rounded">Esc</kbd> close</span>
-                </p>
-            </div>
-        </div>
-
-        <!-- Upgrade Modal -->
-        <div id="upgrade-modal" class="fixed inset-0 bg-[#06070a]/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-            <div class="modal-glass w-full max-w-md p-10 text-center modal-content-animate">
-                <span class="material-icons text-[#f59e0b] text-5xl mb-3">workspace_premium</span>
-                <h3 class="text-3xl font-light tracking-wide text-white mb-2">Fellowship Upgrade</h3>
-                <p class="text-sm text-gray-400 font-light mb-6">Unlock unrestricted records, historical observations, and priority data.</p>
-                
-                <div class="border border-white/5 p-5 bg-white/[0.02] mb-6 rounded-lg">
-                    <p class="text-3xl font-semibold font-mono text-white">$4.99 <span class="text-xs font-sans tracking-wide uppercase text-gray-500 font-normal">/ Monthly Billing</span></p>
-                </div>
-                
-                <button id="confirm-upgrade-btn" class="w-full btn-glass-primary text-xs font-bold uppercase py-4 rounded-lg mb-4">
-                    Confirm Fellowship Upgrade
-                </button>
-                
-                <div class="flex items-center justify-between mt-4 text-xs font-mono text-gray-500">
-                    <button class="text-gray-400 hover:text-white text-xs font-semibold tracking-wider uppercase font-sans modal-close-btn transition">
-                        Return to Archive
-                    </button>
-                    <span><kbd class="px-1.5 py-0.5 border border-white/10 bg-white/5 rounded">Esc</kbd> close</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Toast Notification -->
-        <div id="toast" class="fixed bottom-4 right-4 bg-zinc-950 border border-zinc-800 text-white px-6 py-3 rounded-md shadow-2xl z-50 font-medium text-xs tracking-wider uppercase transform translate-y-20 opacity-0 transition-all duration-300">
-            <span id="toast-message"></span>
-        </div>
-
     </div>
+
+    <!-- Catalog Archive Features (Asymmetric Bento Grid) -->
+    <section id="features" class="w-full max-w-6xl mx-auto py-24 scroll-reveal">
+        <div class="max-w-3xl mb-16 text-left">
+            <span class="text-xs font-bold tracking-[0.2em] uppercase text-blue-600">CATALOG OVERVIEW</span>
+            <h2 class="text-4xl md:text-5xl font-semibold tracking-tight mt-3 text-gray-900">Capabilities & Modules</h2>
+            <p class="text-gray-500 font-light mt-4 text-lg">Every module is structured for precise, reliable meteorological reporting.</p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8 w-full">
+            <!-- Row 1: Card 1 (2 cols) & Card 2 (1 col) -->
+            <div class="md:col-span-2 glass-card p-8 md:p-10 flex flex-col justify-between" style="transition-delay: 0ms;">
+                <div class="space-y-4 text-left">
+                    <span class="text-xs font-mono font-bold tracking-widest text-blue-600">INDEX 01 // QUERY</span>
+                    <h3 class="text-3xl font-semibold tracking-tight text-gray-900">Global Geocoding Query</h3>
+                    <p class="text-gray-500 text-base font-light leading-relaxed max-w-xl">
+                        Search coordinates and city centers globally using structured geo-mapping data hooks. Resolve local administrative boundaries and timezone offsets instantly.
+                    </p>
+                </div>
+                <div class="mt-8 pt-8 border-t border-gray-200/50 flex items-center justify-between text-[11px] font-mono text-gray-500">
+                    <span>Engine: Open-source OSM Integration</span>
+                    <span class="material-icons text-sm text-blue-600">arrow_forward</span>
+                </div>
+            </div>
+
+            <div class="md:col-span-1 glass-card p-8 flex flex-col justify-between" style="transition-delay: 80ms;">
+                <div class="space-y-4 text-left">
+                    <span class="text-xs font-mono font-bold tracking-widest text-blue-600">INDEX 02 // FORECASTS</span>
+                    <h3 class="text-2xl font-semibold tracking-tight text-gray-900">Astronomical Forecasts</h3>
+                    <p class="text-gray-500 text-sm font-light leading-relaxed">
+                        Hour-by-hour pressure projections and weekly forecast ledgers compiled smoothly.
+                    </p>
+                </div>
+                <div class="mt-6 flex items-center gap-1.5 font-mono text-[10px] text-gray-400">
+                    <span class="px-1.5 py-0.5 bg-blue-50/50 border border-blue-100 rounded">7-Day</span>
+                    <span class="px-1.5 py-0.5 bg-blue-50/50 border border-blue-100 rounded">Hourly</span>
+                </div>
+            </div>
+
+            <!-- Row 2: Card 3 (1 col), Card 4 (1 col), Card 5 (1 col) -->
+            <div class="md:col-span-1 glass-card p-8 flex flex-col justify-between" style="transition-delay: 160ms;">
+                <div class="space-y-4 text-left">
+                    <span class="text-xs font-mono font-bold tracking-widest text-blue-600">INDEX 03 // ALERTS</span>
+                    <h3 class="text-2xl font-semibold tracking-tight text-gray-900">Real-time Warning Feeds</h3>
+                    <p class="text-gray-500 text-sm font-light leading-relaxed">
+                        Instant warnings mapping severe storm, snow drifts, and high temperature thresholds.
+                    </p>
+                </div>
+                <div class="mt-6 flex justify-between items-center">
+                    <span class="material-icons text-xl text-red-500">crisis_alert</span>
+                    <span class="text-[10px] font-mono text-red-600 bg-red-50 px-2 py-0.5 border border-red-100 rounded">LIVE ADVISORIES</span>
+                </div>
+            </div>
+
+            <div class="md:col-span-1 glass-card p-8 flex flex-col justify-between" style="transition-delay: 240ms;">
+                <div class="space-y-4 text-left">
+                    <span class="text-xs font-mono font-bold tracking-widest text-blue-600">INDEX 04 // PWA</span>
+                    <h3 class="text-2xl font-semibold tracking-tight text-gray-900">PWA Offline Caching</h3>
+                    <p class="text-gray-500 text-sm font-light leading-relaxed">
+                        Locally caches forecast records via background service workers, keeping data readable offline.
+                    </p>
+                </div>
+                <div class="mt-6 flex items-center justify-between text-[10px] font-mono text-gray-500">
+                    <span>Offline Status: Active</span>
+                    <span class="material-icons text-sm text-green-600">offline_pin</span>
+                </div>
+            </div>
+
+            <div class="md:col-span-1 glass-card p-8 flex flex-col justify-between" style="transition-delay: 320ms;">
+                <div class="space-y-4 text-left">
+                    <span class="text-xs font-mono font-bold tracking-widest text-blue-600">INDEX 05 // VISUALS</span>
+                    <h3 class="text-2xl font-semibold tracking-tight text-gray-900">Responsive Themes</h3>
+                    <p class="text-gray-500 text-sm font-light leading-relaxed">
+                        A clean, layout optimized dynamically for low-light observation shifts and night modes.
+                    </p>
+                </div>
+                <div class="mt-6 flex items-center justify-between text-[10px] font-mono text-gray-500">
+                    <span>Theme: Automatic</span>
+                    <span class="material-icons text-sm">dark_mode</span>
+                </div>
+            </div>
+
+            <!-- Row 3: Card 6 (3 cols) -->
+            <div class="md:col-span-3 glass-card p-8 md:p-10 flex flex-col justify-between" style="transition-delay: 400ms;">
+                <div class="grid md:grid-cols-2 gap-8 text-left">
+                    <div class="space-y-4">
+                        <span class="text-xs font-mono font-bold tracking-widest text-blue-600">INDEX 06 // METRICS</span>
+                        <h3 class="text-3xl font-semibold tracking-tight text-gray-900">Meteorological Analytics</h3>
+                        <p class="text-gray-500 text-base font-light leading-relaxed">
+                            Tracks UV indices, precipitation ratios, wind force directions, and ambient air particles with detailed mathematical purity.
+                        </p>
+                    </div>
+                    <div class="border-l border-gray-200/50 pl-8 space-y-6">
+                        <div class="grid grid-cols-2 gap-4 text-xs font-mono text-gray-500">
+                            <div>
+                                <p class="font-bold text-gray-700">UV INDEX</p>
+                                <p class="mt-1">0 - 11+ UV Index scale mapping</p>
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-700">PRECIPITATION</p>
+                                <p class="mt-1">Intensity and probability tracking</p>
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-700">WIND VECTORS</p>
+                                <p class="mt-1">Wind speed and cardinal direction angle</p>
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-700">AIR QUALITY</p>
+                                <p class="mt-1">Real-time AQI indices tracking</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 pt-6 border-t border-gray-200/50 flex justify-between items-center text-[10px] font-mono text-gray-400">
+                    <span>Data source: Global Met Agency</span>
+                    <span>Update rate: 15-minute intervals</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="w-full max-w-4xl mx-auto py-24 scroll-reveal text-center">
+        <span class="text-xs font-bold tracking-[0.2em] text-blue-600 uppercase font-sans">SUBSCRIPTION LEDGER</span>
+        <h2 class="text-4xl md:text-5xl font-semibold tracking-tight mt-3 mb-6 text-gray-900">Choose Your Access Tier</h2>
+        <p class="text-gray-500 font-light text-lg mb-16">Transparent access terms. Cancel or upgrade your credentials anytime.</p>
+        
+        <div class="grid md:grid-cols-2 gap-12 text-left">
+            <!-- Free Plan -->
+            <div class="glass-card p-10 flex flex-col justify-between">
+                <div>
+                    <span class="text-xs font-mono font-bold tracking-widest text-gray-400 uppercase">TIER I</span>
+                    <h3 class="text-3xl font-light mt-2 mb-4 text-gray-900">Standard Reader</h3>
+                    <p class="text-4xl font-semibold font-mono text-gray-900 mb-10">$0 <span class="text-xs font-sans tracking-wide uppercase text-gray-400 font-normal">/ Free Tier</span></p>
+                    
+                    <ul class="space-y-5 mb-12 border-t border-gray-200/50 pt-8 text-sm text-gray-500">
+                        <li class="flex items-center"><span class="material-icons text-blue-600 text-sm mr-3">check</span>100 API queries daily</li>
+                        <li class="flex items-center"><span class="material-icons text-blue-600 text-sm mr-3">check</span>Up to 3 saved observation locations</li>
+                        <li class="flex items-center"><span class="material-icons text-blue-600 text-sm mr-3">check</span>Current weather reports</li>
+                        <li class="flex items-center"><span class="material-icons text-blue-600 text-sm mr-3">check</span>Limited 3-day forecast grids</li>
+                        <li class="flex items-center text-gray-300"><span class="material-icons mr-3 text-sm">close</span>Immediate severe weather alerts</li>
+                        <li class="flex items-center text-gray-300"><span class="material-icons mr-3 text-sm">close</span>Priority support lines</li>
+                    </ul>
+                </div>
+                
+                <button id="pricing-free-btn" class="w-full bg-white hover:bg-gray-50 border border-gray-200 text-gray-800 text-xs font-bold uppercase py-4 rounded-xl shadow-sm transition">
+                    Activate Free Reader
+                </button>
+            </div>
+            
+            <!-- Premium Plan -->
+            <div class="glass-card p-10 relative flex flex-col justify-between" style="border: 2px solid #1d64d8; box-shadow: 0 15px 40px rgba(29, 100, 216, 0.12)">
+                <div class="absolute top-0 right-0 bg-[#1d64d8] text-white text-[8px] font-bold tracking-[0.2em] px-3 py-1.5 uppercase font-mono rounded-tr-[1.1rem] rounded-bl-[1.1rem]">RECOMMENDED</div>
+                <div>
+                    <span class="text-xs font-mono font-bold tracking-widest text-blue-600 uppercase">TIER II</span>
+                    <h3 class="text-3xl font-light mt-2 mb-4 text-gray-900">Journal Fellow</h3>
+                    <p class="text-4xl font-semibold font-mono text-blue-600 mb-10">$4.99 <span class="text-xs font-sans tracking-wide uppercase text-gray-400 font-normal">/ Monthly Billing</span></p>
+                    
+                    <ul class="space-y-5 mb-12 border-t border-gray-200/50 pt-8 text-sm text-gray-700">
+                        <li class="flex items-center font-semibold text-gray-900"><span class="material-icons text-blue-600 text-sm mr-3">check</span>Unlimited meteorological queries</li>
+                        <li class="flex items-center font-semibold text-gray-900"><span class="material-icons text-blue-600 text-sm mr-3">check</span>Unlimited saved observation locations</li>
+                        <li class="flex items-center"><span class="material-icons text-blue-600 text-sm mr-3">check</span>Full 7-day forecast ledgers</li>
+                        <li class="flex items-center"><span class="material-icons text-blue-600 text-sm mr-3">check</span>Severe weather alerts (push & sms)</li>
+                        <li class="flex items-center"><span class="material-icons text-blue-600 text-sm mr-3">check</span>Priority support lines</li>
+                        <li class="flex items-center"><span class="material-icons text-blue-600 text-sm mr-3">check</span>Ad-free observation interface</li>
+                    </ul>
+                </div>
+                
+                <button id="pricing-premium-btn" class="w-full bg-[#1d64d8] hover:bg-[#154fb0] text-white text-xs font-bold uppercase py-4 rounded-xl shadow-md transition">
+                    Acquire Fellowship
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Table (Editorial Ledger Style) -->
+    <section class="w-full max-w-4xl mx-auto py-24 scroll-reveal text-center">
+        <h2 class="text-3xl font-semibold tracking-tight mb-12 text-gray-900">Comparative Access Features</h2>
+        
+        <div class="border-y border-gray-200 overflow-hidden font-sans bg-white/50 backdrop-blur-md rounded-2xl p-4 shadow-sm border border-gray-100">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-150">
+                        <th class="text-left py-5 text-xs font-bold uppercase tracking-widest text-gray-400">Feature Description</th>
+                        <th class="text-center py-5 text-xs font-bold uppercase tracking-widest text-gray-400">Reader (Tier I)</th>
+                        <th class="text-center py-5 text-xs font-bold uppercase tracking-widest text-blue-600">Fellow (Tier II)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-sm font-light text-gray-600">
+                    <tr>
+                        <td class="py-5 font-serif italic text-left pl-4">Daily API calls</td>
+                        <td class="py-5 text-center">100</td>
+                        <td class="py-5 text-center text-blue-600 font-semibold">Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td class="py-5 font-serif italic text-left pl-4">Saved Locations</td>
+                        <td class="py-5 text-center">3</td>
+                        <td class="py-5 text-center text-blue-600 font-semibold">Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td class="py-5 font-serif italic text-left pl-4">Extended Forecast Ledgers</td>
+                        <td class="py-5 text-center">3 Days</td>
+                        <td class="py-5 text-center text-blue-600 font-semibold">7 Days</td>
+                    </tr>
+                    <tr>
+                        <td class="py-5 font-serif italic text-left pl-4">Historical Observations</td>
+                        <td class="py-5 text-center text-gray-300"><span class="material-icons text-sm">close</span></td>
+                        <td class="py-5 text-center text-blue-600"><span class="material-icons text-sm">check</span></td>
+                    </tr>
+                    <tr>
+                        <td class="py-5 font-serif italic text-left pl-4">Severe Weather Advisories</td>
+                        <td class="py-5 text-center text-gray-300"><span class="material-icons text-sm">close</span></td>
+                        <td class="py-5 text-center text-blue-600"><span class="material-icons text-sm">check</span></td>
+                    </tr>
+                    <tr>
+                        <td class="py-5 font-serif italic text-left pl-4">Priority Support Dispatch</td>
+                        <td class="py-5 text-center text-gray-300"><span class="material-icons text-sm">close</span></td>
+                        <td class="py-5 text-center text-blue-600"><span class="material-icons text-sm">check</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="w-full max-w-6xl mx-auto py-16 text-center border-t border-gray-200 mt-12">
+        <div class="flex items-center justify-center space-x-2 mb-6">
+            <span class="material-icons text-gray-800 text-xl">science</span>
+            <span class="text-xs font-bold tracking-[0.2em] text-gray-800 uppercase font-sans">COSMIC WEATHER JOURNAL</span>
+        </div>
+        <p class="text-xs text-gray-400 tracking-wide font-sans mb-1.5">PUBLISHED BY FIRSTMILEDEVS INC.</p>
+        <p class="text-xs text-gray-500 italic">Real-Time Forecast Indexes • Barometric Vector Gauges • Cloud Service Caching</p>
+        <div class="mt-8 pt-8 border-t border-gray-200/50">
+            <a href="https://firstmiledev.ca/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-gray-500 hover:text-blue-600 transition text-xs font-semibold tracking-wider uppercase font-sans">
+                <span>PORTAL SYSTEM PROVIDED BY FIRSTMILEDEVS</span>
+                <span class="material-icons text-xs ml-1.5">open_in_new</span>
+            </a>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-glass w-full max-w-md p-10 modal-content-animate">
+            <div class="flex justify-between items-center mb-8 pb-3 border-b border-gray-150">
+                <h3 class="text-3xl font-light tracking-wide text-gray-800">Journal Authentication</h3>
+                <button class="text-gray-400 hover:text-gray-800 modal-close-btn transition">
+                    <span class="material-icons text-lg">close</span>
+                </button>
+            </div>
+            
+            <form id="login-form" class="space-y-6">
+                <div class="flex flex-col">
+                    <label class="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-widest mb-1">Email Address</label>
+                    <input type="email" id="login-email" required class="input-glass py-2 text-sm text-gray-800 placeholder-gray-300">
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-widest mb-1">Password</label>
+                    <input type="password" id="login-password" required class="input-glass py-2 text-sm text-gray-800 placeholder-gray-300">
+                </div>
+                <button type="submit" class="w-full bg-[#1d64d8] hover:bg-[#154fb0] text-white text-xs font-bold uppercase py-4 rounded-xl transition shadow">
+                    Authenticate Session
+                </button>
+            </form>
+            
+            <p class="text-center text-xs text-gray-500 font-sans mt-8 pt-4 border-t border-gray-150 flex items-center justify-between">
+                <span>New researcher? <button id="switch-to-register-btn" class="text-blue-600 hover:text-blue-800 font-bold ml-1 transition">Activate Account</button></span>
+                <span class="text-[9px] font-mono text-gray-400"><kbd class="px-1.5 py-0.5 border border-gray-200 bg-gray-50 rounded">Esc</kbd> close</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-glass w-full max-w-md p-10 modal-content-animate">
+            <div class="flex justify-between items-center mb-8 pb-3 border-b border-gray-150">
+                <h3 class="text-3xl font-light tracking-wide text-gray-800">Activate Credentials</h3>
+                <button class="text-gray-400 hover:text-gray-800 modal-close-btn transition">
+                    <span class="material-icons text-lg">close</span>
+                </button>
+            </div>
+            
+            <form id="register-form" class="space-y-6">
+                <div class="flex flex-col">
+                    <label class="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-widest mb-1">Email Address</label>
+                    <input type="email" id="register-email" required class="input-glass py-2 text-sm text-gray-800 placeholder-gray-300">
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-widest mb-1">Secure Password</label>
+                    <input type="password" id="register-password" required minlength="8" class="input-glass py-2 text-sm text-gray-800 placeholder-gray-300">
+                    <p class="text-gray-400 text-[9px] font-mono mt-1.5 italic">Must contain at least 8 characters</p>
+                </div>
+                
+                <button type="submit" class="w-full bg-[#1d64d8] hover:bg-[#154fb0] text-white text-xs font-bold uppercase py-4 rounded-xl transition shadow">
+                    Create Observation Account
+                </button>
+            </form>
+            
+            <p class="text-center text-xs text-gray-500 font-sans mt-8 pt-4 border-t border-gray-150 flex items-center justify-between">
+                <span>Already registered? <button id="switch-to-login-btn" class="text-blue-600 hover:text-blue-800 font-bold ml-1 transition">Archive Login</button></span>
+                <span class="text-[9px] font-mono text-gray-400"><kbd class="px-1.5 py-0.5 border border-gray-200 bg-gray-50 rounded">Esc</kbd> close</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Upgrade Modal -->
+    <div id="upgrade-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-glass w-full max-w-md p-10 text-center modal-content-animate">
+            <span class="material-icons text-blue-600 text-5xl mb-3">workspace_premium</span>
+            <h3 class="text-3xl font-light tracking-wide text-gray-800 mb-2">Fellowship Upgrade</h3>
+            <p class="text-sm text-gray-500 font-light mb-6">Unlock unrestricted records, historical observations, and priority data.</p>
+            
+            <div class="border border-gray-200 p-5 bg-blue-50/50 mb-6 rounded-xl">
+                <p class="text-3xl font-semibold font-mono text-gray-800">$4.99 <span class="text-xs font-sans tracking-wide uppercase text-gray-400 font-normal">/ Monthly Billing</span></p>
+            </div>
+            
+            <button id="confirm-upgrade-btn" class="w-full bg-[#1d64d8] hover:bg-[#154fb0] text-white text-xs font-bold uppercase py-4 rounded-xl transition shadow">
+                Confirm Fellowship Upgrade
+            </button>
+            
+            <div class="flex items-center justify-between mt-4 text-xs font-mono text-gray-400">
+                <button class="text-gray-400 hover:text-gray-800 text-xs font-semibold tracking-wider uppercase font-sans modal-close-btn transition">
+                    Return to Archive
+                </button>
+                <span><kbd class="px-1.5 py-0.5 border border-gray-200 bg-gray-50 rounded">Esc</kbd> close</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-zinc-900 border border-zinc-800 text-white px-6 py-3 rounded-lg shadow-2xl z-50 font-medium text-xs tracking-wider uppercase transform translate-y-20 opacity-0 transition-all duration-300">
+        <span id="toast-message"></span>
+    </div>
+
 </body>
 </html>

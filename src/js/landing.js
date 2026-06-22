@@ -297,7 +297,7 @@ class MeteorologicalGage {
         this.ctx.textAlign = 'center';
         this.ctx.fillText('BAROMETRIC PRESSURE', 0, radius * 0.4);
 
-        this.ctx.font = 'italic 500 8px "Outfit"';
+        this.ctx.font = 'italic 500 8px "Space Grotesk"';
         this.ctx.fillStyle = accentColor;
         this.ctx.fillText('Cosmic Weather Journal', 0, radius * 0.52);
 
@@ -440,7 +440,7 @@ function switchWeatherState(state) {
     activeState = state;
 
     // 1. Update body class and styling variables
-    document.body.className = `min-h-screen theme-${state} text-white relative`;
+    document.body.className = `text-gray-800 antialiased font-sans min-h-screen p-4 sm:p-8 flex flex-col items-center justify-start relative theme-${state}`;
     document.documentElement.style.setProperty('--accent-color', data.gageAccent);
     document.documentElement.style.setProperty('--glow-color', data.ambientGlow);
 
