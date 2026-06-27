@@ -117,13 +117,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // GDPR Consent elements
   let consentBanner = document.getElementById("privacy-consent-banner");
 
+  // ⚡ Bolt: Cache regex to avoid recompilation in loops and use test() for faster boolean matching
+  const coordinateRegex = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
+
   function handleConsent(granted) {
     if (granted) {
       localStorage.setItem(CONSENT_KEY, 'granted');
       localStorage.setItem(CONSENT_KEY + '_date', new Date().toISOString());
       // Populate state with cached searches if any
       state.recentSearches = JSON.parse(localStorage.getItem("recentSearches") || "[]")
-        .filter(c => !c.match(/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/));
+        .filter(c => !coordinateRegex.test(c));
       updateRecentSearchesUI();
       updatePinButtonUI();
     } else {

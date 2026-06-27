@@ -36,9 +36,12 @@ const timeFormatter = new Intl.DateTimeFormat("en-US", {
     hour12: true,
 });
 
+// ⚡ Bolt: Cache regex to avoid recompilation and use exec() for faster matching with capture groups
+const timeFormatRegex = /^(?<hour>\d{1,2}):(?<minute>\d{2})(?::(?<second>\d{2}))?$/;
+
 export function formatTime(timeStr) {
     if (!timeStr) return "";
-    const match = timeStr.match(/^(?<hour>\d{1,2}):(?<minute>\d{2})(?::(?<second>\d{2}))?$/);
+    const match = timeFormatRegex.exec(timeStr);
     if (!match) {
         return "";
     }

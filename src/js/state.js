@@ -1,9 +1,12 @@
+// ⚡ Bolt: Cache regex to avoid recompilation in loops and use test() for faster boolean matching
+const coordinateRegex = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
+
 export const state = {
   unitGroup: localStorage.getItem("unitGroup") || "metric",
   fetchedUnitGroup: null, // Tracks the unit weather data was originally fetched in
   currentWeatherData: null,
   isInitialLoad: true,
-  recentSearches: JSON.parse(localStorage.getItem("recentSearches") || "[]").filter(c => !c.match(/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/)),
+  recentSearches: JSON.parse(localStorage.getItem("recentSearches") || "[]").filter(c => !coordinateRegex.test(c)),
 };
 
 export function getDisplayTemp(tempVal) {
