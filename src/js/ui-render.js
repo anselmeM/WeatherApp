@@ -251,6 +251,7 @@ export function updateRecentSearchesUI() {
     deleteBtn.className = "ml-1.5 hover:text-red-500 font-bold text-sm focus-visible:outline-none flex items-center justify-center w-4 h-4 rounded-full hover:bg-white/20";
     deleteBtn.innerHTML = "&times;";
     deleteBtn.title = `Remove ${city}`;
+    deleteBtn.setAttribute("aria-label", `Remove ${city}`);
     deleteBtn.onclick = (e) => {
       e.stopPropagation();
       if (onDeleteLocationCallback) onDeleteLocationCallback(city);

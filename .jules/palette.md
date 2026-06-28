@@ -8,4 +8,6 @@
 
 ## 2024-05-24 - Dropdown Focus Loss
 **Learning:** Floating UI elements (like autocomplete dropdowns) must close not just on external clicks, but also when keyboard focus moves away (e.g., via Tab key). Otherwise, keyboard users leave lingering elements that obscure the page.
-**Action:** When implementing custom floating UI elements, always pair document `click` handlers with document `focusin` handlers to ensure the element correctly closes when keyboard users tab away from it.
+**Action:** When implementing custom floating UI elements, always pair document `click` handlers with document `focusin` handlers to ensure the element correctly closes when keyboard users tab away from it.## 2026-06-28 - Adding Tooltips and ARIA Labels to Dynamic Element
+**Learning:** Dynamic elements created purely in JS (like the recent search delete button) often get missed for accessibility attributes compared to static HTML. They need attributes like aria-label and title just as much as static elements to ensure proper UX for screen readers and sighted users on hover.
+**Action:** Always check dynamically generated DOM elements in JS components for necessary ARIA attributes and title tags.
