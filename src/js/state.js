@@ -1,9 +1,12 @@
+// ⚡ Bolt: Cache regex at module scope and use .test() for boolean checks to reduce CPU overhead
+const coordinateRegex = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
+
 export const state = {
   unitGroup: localStorage.getItem("unitGroup") || "metric",
   fetchedUnitGroup: null, // Tracks the unit weather data was originally fetched in
   currentWeatherData: null,
   isInitialLoad: true,
-  recentSearches: JSON.parse(localStorage.getItem("recentSearches") || "[]").filter(c => !c.match(/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/)),
+  recentSearches: JSON.parse(localStorage.getItem("recentSearches") || "[]").filter(c => !coordinateRegex.test(c)),
 };
 
 export function getDisplayTemp(tempVal) {

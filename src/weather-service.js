@@ -4,12 +4,14 @@ const weatherCache = new Map();
 const CACHE_TTL = 10 * 60 * 1000;
 const MAX_CACHE_SIZE = 100;
 
+// ⚡ Bolt: Cache location validation regexes at module scope to avoid re-compilation per request
+const coordinatePattern = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
+const cityNamePattern = /^[\p{L}\p{N}\s\-.,']+$/u;
+
 export function isValidLocation(location) {
   if (!location || typeof location !== 'string') return false;
   if (location.length > 200) return false;
   if (location.includes('..')) return false;
-  const coordinatePattern = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
-  const cityNamePattern = /^[\p{L}\p{N}\s\-.,']+$/u;
   return coordinatePattern.test(location.trim()) || cityNamePattern.test(location.trim());
 }
 
