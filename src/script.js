@@ -340,16 +340,36 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     
-    suggestions.forEach(loc => {
+    suggestions.forEach((loc, index) => {
       const li = document.createElement("li");
-      li.className = "px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-700 dark:text-gray-200 transition-colors border-b border-gray-100 dark:border-gray-700/50 last:border-0";
+      li.className = "px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none cursor-pointer text-sm text-gray-700 dark:text-gray-200 transition-colors border-b border-gray-100 dark:border-gray-700/50 last:border-0";
       li.textContent = loc;
+      li.setAttribute("role", "option");
+      li.setAttribute("tabindex", "0");
       li.onclick = () => {
         if (searchInput) searchInput.value = "";
         clearSearchButton?.classList.add("hidden");
         autocompleteDropdown.classList.add("hidden");
         updateLocationUrl(loc);
         fetchWeatherData(loc);
+      };
+      li.onkeydown = (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          li.click();
+        } else if (e.key === "ArrowDown") {
+          e.preventDefault();
+          const next = li.nextElementSibling;
+          if (next) next.focus();
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          const prev = li.previousElementSibling;
+          if (prev) {
+            prev.focus();
+          } else {
+            searchInput?.focus();
+          }
+        }
       };
       autocompleteDropdown.appendChild(li);
     });
@@ -364,7 +384,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   searchInput?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && searchInput.value.trim()) {
+    if (e.key === "ArrowDown" && autocompleteDropdown && !autocompleteDropdown.classList.contains("hidden")) {
+      e.preventDefault();
+      const firstSug = autocompleteDropdown.querySelector("li");
+      if (firstSug) firstSug.focus();
+    } else if (e.key === "Enter" && searchInput.value.trim()) {
       const location = searchInput.value.trim();
       const firstSug = autocompleteDropdown?.querySelector("li")?.textContent;
       if (firstSug && autocompleteDropdown && !autocompleteDropdown.classList.contains("hidden")) {
