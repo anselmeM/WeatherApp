@@ -50,6 +50,9 @@ navigator.serviceWorker?.addEventListener('controllerchange', () => {
 // Caching local variables
 const CONSENT_KEY = 'weather_privacy_consent';
 
+// ⚡ Bolt: Cache regular expression at module scope to avoid re-compilation
+const COORDINATE_REGEX = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
+
 document.addEventListener("DOMContentLoaded", () => {
   // Bind UI Rendering callbacks
   setOnDeleteLocation(deleteSavedLocation);
@@ -123,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem(CONSENT_KEY + '_date', new Date().toISOString());
       // Populate state with cached searches if any
       state.recentSearches = JSON.parse(localStorage.getItem("recentSearches") || "[]")
-        .filter(c => !c.match(/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/));
+        .filter(c => !COORDINATE_REGEX.test(c));
       updateRecentSearchesUI();
       updatePinButtonUI();
     } else {
