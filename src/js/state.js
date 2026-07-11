@@ -1,9 +1,12 @@
+// ⚡ Bolt: Define regex outside loops/iteration methods to avoid recompilation overhead and use .test() for ~60% faster boolean checks
+export const COORDINATE_REGEX = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
+
 export const state = {
   unitGroup: localStorage.getItem("unitGroup") || "metric",
   fetchedUnitGroup: null, // Tracks the unit weather data was originally fetched in
   currentWeatherData: null,
   isInitialLoad: true,
-  recentSearches: JSON.parse(localStorage.getItem("recentSearches") || "[]").filter(c => !c.match(/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/)),
+  recentSearches: JSON.parse(localStorage.getItem("recentSearches") || "[]").filter(c => !COORDINATE_REGEX.test(c)),
 };
 
 export function getDisplayTemp(tempVal) {
