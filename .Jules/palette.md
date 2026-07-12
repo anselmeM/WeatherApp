@@ -1,0 +1,3 @@
+## 2026-03-29 - Dynamic Image Alt Text
+**Learning:** When images are dynamically updated via JavaScript (like a city skyline image changing when the user searches for a new city), the `alt` attribute must also be dynamically updated to reflect the new context. Relying on a static placeholder like "City skyline" is inaccessible because it does not describe the specific new image. Furthermore, it's important to avoid redundant prefixes like "Image of" because screen readers already announce the element as an image.
+**Action:** Always ensure that when modifying the `src` of an `<img>` element dynamically, the `alt` attribute is updated concurrently with meaningful context.

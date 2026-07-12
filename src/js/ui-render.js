@@ -418,6 +418,7 @@ export function updateCurrentWeather(current, today, tempUnit, data) {
   
   document.title = `${Math.round(current.temp)}${tempUnit} in ${displayLocation} - Weather Dashboard`;
   locationImage.src = "";
+  locationImage.alt = displayLocation;
   locationImage.classList.add('hidden');
   
   const parentContainer = locationImage.parentElement;
