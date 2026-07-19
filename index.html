@@ -251,13 +251,13 @@
         </div>
     </footer>
 
-    <!-- Upgrade Confirmation Modal (no payment processing yet) -->
+    <!-- Stripe Payment Modal -->
     <div id="payment-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-3xl p-6 sm:p-8 max-w-md w-full border border-white/20 shadow-2xl text-center">
+        <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-3xl p-6 sm:p-8 max-w-md w-full border border-white/20 shadow-2xl">
             <div class="flex justify-between items-center mb-4">
                 <div class="flex items-center">
-                    <span class="material-icons text-yellow-500 mr-2">workspace_premium</span>
-                    <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Upgrade to Premium</h3>
+                    <span class="material-icons text-yellow-500 mr-2">credit_card</span>
+                    <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Secure Checkout</h3>
                 </div>
                 <button id="close-payment-modal" class="text-gray-500 hover:text-gray-800 dark:hover:text-white">
                     <span class="material-icons">close</span>
@@ -272,32 +272,22 @@
                     <span>7-Day Full Forecast</span>
                 </div>
             </div>
-            
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Unlock unlimited saved locations, full 7-day forecasts, and weather alerts. No payment processing set up yet — upgrade is free during development.</p>
 
-            <button id="pay-submit-btn" class="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white py-3.5 rounded-xl font-bold transition shadow-md flex items-center justify-center space-x-2" onclick="(async () => {
-                const btn = document.getElementById('pay-submit-btn');
-                const original = btn.innerHTML;
-                btn.disabled = true;
-                btn.innerHTML = '<span class=\\'material-icons animate-spin text-sm mr-1\\'>sync</span>Upgrading...';
-                try {
-                    const { upgradeCurrentUser } = await import('./src/js/auth.js');
-                    const { showError } = await import('./src/js/ui-render.js');
-                    await upgradeCurrentUser(msg => showError(msg, 'generic'));
-                    document.getElementById('payment-modal')?.classList.add('hidden');
-                } catch(err) {
-                    console.error(err);
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = original;
-                }
-            })()">
-                <span>Confirm Upgrade</span>
-            </button>
+            <!-- Stripe Elements Card Form -->
+            <form id="payment-form" class="space-y-4">
+                <div id="card-element" class="w-full bg-white/50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-4">
+                    <!-- Stripe Card Element mounts here -->
+                </div>
+                <div id="card-errors" class="text-red-500 text-xs mt-1" role="alert"></div>
+                
+                <button type="submit" id="pay-submit-btn" class="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white py-3.5 rounded-xl font-bold transition shadow-md flex items-center justify-center space-x-2">
+                    <span>Pay $4.99 & Upgrade</span>
+                </button>
+            </form>
             
-            <p class="text-xs text-gray-400 mt-4">
-                <span class="material-icons text-xs align-text-bottom">info</span>
-                No real payment required during development.
+            <p class="text-xs text-gray-400 mt-3 text-center">
+                <span class="material-icons text-xs align-text-bottom">lock</span>
+                Secured by Stripe
             </p>
         </div>
     </div>

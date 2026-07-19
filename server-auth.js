@@ -5,6 +5,7 @@ import { pushSchema } from './src/db.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import weatherRoutes from './routes/weather.js';
+import stripeRoutes from './routes/stripe.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -67,6 +68,7 @@ app.get('/favicon.ico', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/weather', weatherRoutes);
+app.use('/api/stripe', stripeRoutes);
 
 // Run schema push on startup to ensure database tables are synchronized
 pushSchema();
