@@ -307,7 +307,7 @@ function MainContentSkeleton() {
     <div className="flex-1 bg-white dark:bg-gray-950 p-8 md:p-12 flex flex-col animate-pulse">
       <div className="flex justify-between mb-10">
         <div className="flex gap-6"><div className="h-6 w-16 bg-gray-200 dark:bg-gray-800 rounded" /><div className="h-6 w-16 bg-gray-200 dark:bg-gray-800 rounded" /></div>
-        <div className="flex gap-3"><div className="h-9 w-20 bg-gray-200 dark:bg-gray-800 rounded-full" /><div className="h-10 w-10 bg-gray-200 dark:bg-gray-800 rounded-xl" /></div>
+        <div className="flex gap-3"><div className="h-9 w-20 bg-gray-200 dark:bg-gray-800 rounded-full" /></div>
       </div>
       <div className="flex gap-4 mb-8 overflow-hidden">
         {[...Array(7)].map((_, i) => <div key={i} className="bg-gray-200 dark:bg-gray-800 rounded-2xl p-4 min-w-[80px] h-32 flex-shrink-0" />)}
@@ -475,9 +475,6 @@ function MainContent({ data, unit, toggleUnit, loading, refresh, darkMode, toggl
               className={`w-8 h-8 rounded-full font-medium flex items-center justify-center text-sm transition-all ${unit === 'metric' ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900' : 'bg-transparent text-gray-400 dark:text-gray-500'}`}>°C</button>
             <button onClick={() => unit !== 'us' && toggleUnit()}
               className={`w-8 h-8 rounded-full font-medium flex items-center justify-center text-sm transition-all ${unit === 'us' ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900' : 'bg-transparent text-gray-400 dark:text-gray-500'}`}>°F</button>
-          </div>
-          <div className="w-10 h-10 rounded-xl overflow-hidden shadow-sm">
-            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80" alt="User" className="w-full h-full object-cover" />
           </div>
         </div>
       </div>
