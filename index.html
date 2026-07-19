@@ -251,13 +251,13 @@
         </div>
     </footer>
 
-    <!-- Mock Payment Modal for SaaS Upgrades -->
+    <!-- Upgrade Confirmation Modal (no payment processing yet) -->
     <div id="payment-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-3xl p-6 sm:p-8 max-w-md w-full border border-white/20 shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
+        <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-3xl p-6 sm:p-8 max-w-md w-full border border-white/20 shadow-2xl text-center">
+            <div class="flex justify-between items-center mb-4">
                 <div class="flex items-center">
-                    <span class="material-icons text-yellow-500 mr-2">credit_card</span>
-                    <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Secure Checkout</h3>
+                    <span class="material-icons text-yellow-500 mr-2">workspace_premium</span>
+                    <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Upgrade to Premium</h3>
                 </div>
                 <button id="close-payment-modal" class="text-gray-500 hover:text-gray-800 dark:hover:text-white">
                     <span class="material-icons">close</span>
@@ -273,37 +273,32 @@
                 </div>
             </div>
             
-            <div class="bg-blue-500/10 border border-blue-400/25 rounded-2xl p-3 mb-4 text-left flex items-start">
-                <span class="material-icons text-blue-500 mr-2 text-sm mt-0.5">info</span>
-                <div>
-                    <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest">Demo / Sandbox Mode</p>
-                    <p class="text-[11px] text-gray-600 dark:text-gray-300 mt-0.5 font-medium leading-relaxed">No real payment details are required. Any dummy card number will work.</p>
-                </div>
-            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Unlock unlimited saved locations, full 7-day forecasts, and weather alerts. No payment processing set up yet — upgrade is free during development.</p>
 
-            <form id="payment-form" class="space-y-4">
-                <div>
-                    <label class="block text-gray-600 dark:text-gray-300 text-xs font-bold uppercase mb-2">Card Number</label>
-                    <div class="relative">
-                        <input type="text" id="card-number" required placeholder="4111 2222 3333 4444" pattern="\d{4}\s?\d{4}\s?\d{4}\s?\d{4}" maxlength="19" class="w-full bg-white/50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 text-gray-800 dark:text-white placeholder-gray-400 focus:border-blue-500">
-                        <span class="material-icons absolute right-3 top-3 text-gray-400">payment</span>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-gray-600 dark:text-gray-300 text-xs font-bold uppercase mb-2">Expiration</label>
-                        <input type="text" id="card-expiry" required placeholder="MM/YY" pattern="(0[1-9]|1[0-2])\/[0-9]{2}" maxlength="5" class="w-full bg-white/50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 text-gray-800 dark:text-white placeholder-gray-400 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-gray-600 dark:text-gray-300 text-xs font-bold uppercase mb-2">CVC</label>
-                        <input type="password" id="card-cvc" required placeholder="•••" pattern="\d{3}" maxlength="3" class="w-full bg-white/50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 text-gray-800 dark:text-white placeholder-gray-400 focus:border-blue-500">
-                    </div>
-                </div>
-                
-                <button type="submit" id="pay-submit-btn" class="w-full mt-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white py-3.5 rounded-xl font-bold transition shadow-md flex items-center justify-center space-x-2">
-                    <span>Pay & Upgrade</span>
-                </button>
-            </form>
+            <button id="pay-submit-btn" class="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white py-3.5 rounded-xl font-bold transition shadow-md flex items-center justify-center space-x-2" onclick="(async () => {
+                const btn = document.getElementById('pay-submit-btn');
+                const original = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<span class=\\'material-icons animate-spin text-sm mr-1\\'>sync</span>Upgrading...';
+                try {
+                    const { upgradeCurrentUser } = await import('./src/js/auth.js');
+                    const { showError } = await import('./src/js/ui-render.js');
+                    await upgradeCurrentUser(msg => showError(msg, 'generic'));
+                    document.getElementById('payment-modal')?.classList.add('hidden');
+                } catch(err) {
+                    console.error(err);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = original;
+                }
+            })()">
+                <span>Confirm Upgrade</span>
+            </button>
+            
+            <p class="text-xs text-gray-400 mt-4">
+                <span class="material-icons text-xs align-text-bottom">info</span>
+                No real payment required during development.
+            </p>
         </div>
     </div>
 

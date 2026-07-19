@@ -195,12 +195,9 @@ export async function downgradeCurrentUser(onError) {
 
 // Payment Modal handling functions
 const paymentModal = document.getElementById('payment-modal');
-const paymentForm = document.getElementById('payment-form');
 const closePaymentModalBtn = document.getElementById('close-payment-modal');
-const paySubmitBtn = document.getElementById('pay-submit-btn');
 
 export function showPaymentModal() {
-  paymentForm?.reset();
   paymentModal?.classList.remove('hidden');
 }
 
@@ -213,66 +210,5 @@ closePaymentModalBtn?.addEventListener('click', hidePaymentModal);
 paymentModal?.addEventListener('click', (e) => {
   if (e.target === paymentModal) {
     hidePaymentModal();
-  }
-});
-
-// Setup dynamic imports locally to prevent circular dependencies at runtime
-paymentForm?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  const originalBtnHTML = paySubmitBtn.innerHTML;
-  paySubmitBtn.disabled = true;
-  paySubmitBtn.innerHTML = '<span class="material-icons animate-spin text-sm mr-1">sync</span>Verifying Card...';
-  
-  try {
-    // Dynamically import showError to show error toast if upgrade fails
-    const { showError } = await import('./ui-render.js');
-    setTimeout(async () => {
-      try {
-        await upgradeCurrentUser(msg => showError(msg, 'generic'));
-        hidePaymentModal();
-      } catch (err) {
-        console.error(err);
-      } finally {
-        paySubmitBtn.disabled = false;
-        paySubmitBtn.innerHTML = originalBtnHTML;
-      }
-    }, 1500);
-  } catch (err) {
-    console.error('Submit handling error:', err);
-    paySubmitBtn.disabled = false;
-    paySubmitBtn.innerHTML = originalBtnHTML;
-  }
-});
-
-// Credit Card input formatting aids
-const cardNumberInput = document.getElementById('card-number');
-const cardExpiryInput = document.getElementById('card-expiry');
-
-cardNumberInput?.addEventListener('input', (e) => {
-  let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-  let matches = value.match(/\d{4,16}/g);
-  let match = matches && matches[0] || '';
-  let parts = [];
-  for (let i = 0, len = match.length; i < len; i += 4) {
-    parts.push(match.substring(i, i + 4));
-  }
-  if (parts.length > 0) {
-    e.target.value = parts.join(' ');
-  } else {
-    e.target.value = value;
-  }
-});
-
-cardExpiryInput?.addEventListener('input', (e) => {
-  let value = e.target.value.replace(/\D/g, '');
-  if (value.length >= 2) {
-    let month = value.substring(0, 2);
-    let year = value.substring(2, 4);
-    if (parseInt(month, 10) > 12) month = '12';
-    if (parseInt(month, 10) === 0) month = '01';
-    e.target.value = `${month}/${year}`;
-  } else {
-    e.target.value = value;
   }
 });
