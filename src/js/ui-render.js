@@ -37,26 +37,36 @@ export function getWeatherIconColor(iconName) {
 }
 
 // Fetch weather info for a saved location to show current temp
-async function getSavedLocationWeather(city) {
+function getSavedLocationWeather(city) {
   if (savedWeatherCache.has(city)) {
     return savedWeatherCache.get(city);
   }
-  try {
-    const response = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
-    if (response.ok) {
-      const data = await response.json();
-      const current = data.currentConditions || data.days[0].hours[0];
-      const result = {
-        temp: current.temp,
-        icon: current.icon
-      };
-      savedWeatherCache.set(city, result);
-      return result;
-    }
-  } catch (e) {
-    console.error(`Failed to fetch weather for saved city ${city}:`, e);
+
+  if (savedWeatherCache.size >= 50) {
+    const oldestKey = savedWeatherCache.keys().next().value;
+    savedWeatherCache.delete(oldestKey);
   }
-  return null;
+
+  const fetchPromise = (async () => {
+    try {
+      const response = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
+      if (response.ok) {
+        const data = await response.json();
+        const current = data.currentConditions || data.days[0].hours[0];
+        return {
+          temp: current.temp,
+          icon: current.icon
+        };
+      }
+    } catch (e) {
+      console.error(`Failed to fetch weather for saved city ${city}:`, e);
+    }
+    savedWeatherCache.delete(city); // Remove failed requests from cache
+    return null;
+  })();
+
+  savedWeatherCache.set(city, fetchPromise);
+  return fetchPromise;
 }
 
 // Helper to animate metric numbers counting up from 0
