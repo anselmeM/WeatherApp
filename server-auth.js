@@ -26,7 +26,7 @@ app.use('/api', csrfProtection);
 
 // Serve static files from dist (Vite build output) with custom cache-control headers
 app.use(express.static('dist', {
-  index: 'landing.html',
+  index: 'index.html',
   setHeaders: (res, path) => {
     if (path.endsWith('.html') || path.includes('sw.js')) {
       // Never cache HTML pages or the Service Worker
@@ -49,16 +49,16 @@ app.get('/', (req, res) => {
     'Pragma': 'no-cache',
     'Expires': '0'
   });
-  res.sendFile('landing.html', { root: 'dist' });
+  res.sendFile('index.html', { root: 'dist' });
 });
 
-app.get('/dashboard', (req, res) => {
+app.get('/landing', (req, res) => {
   res.set({
     'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
     'Pragma': 'no-cache',
     'Expires': '0'
   });
-  res.sendFile('index.html', { root: 'dist' });
+  res.sendFile('landing.html', { root: 'dist' });
 });
 
 app.get('/favicon.ico', (req, res) => {
