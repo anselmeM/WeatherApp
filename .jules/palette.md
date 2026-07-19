@@ -8,4 +8,6 @@
 
 ## 2024-05-24 - Dropdown Focus Loss
 **Learning:** Floating UI elements (like autocomplete dropdowns) must close not just on external clicks, but also when keyboard focus moves away (e.g., via Tab key). Otherwise, keyboard users leave lingering elements that obscure the page.
-**Action:** When implementing custom floating UI elements, always pair document `click` handlers with document `focusin` handlers to ensure the element correctly closes when keyboard users tab away from it.
+**Action:** When implementing custom floating UI elements, always pair document `click` handlers with document `focusin` handlers to ensure the element correctly closes when keyboard users tab away from it.## $(date +%Y-%m-%d) - Accessible Form Labels and Modal Close Buttons
+**Learning:** Found multiple instances where form `<label>` elements were missing `for` attributes, breaking the connection to their respective `<input>` elements for screen readers. Also found icon-only modal close buttons missing `aria-label` and `title` attributes.
+**Action:** Always ensure form labels are explicitly associated with inputs using the `for` attribute and that all icon-only interactive elements have an `aria-label` for screen readers and a `title` attribute to provide a hover tooltip for sighted users.

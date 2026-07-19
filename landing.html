@@ -662,18 +662,18 @@
         <div class="modal-glass w-full max-w-md p-10 modal-content-animate">
             <div class="flex justify-between items-center mb-8 pb-3 border-b border-gray-150">
                 <h3 class="text-3xl font-light tracking-wide text-gray-800">Journal Authentication</h3>
-                <button class="text-gray-400 hover:text-gray-800 modal-close-btn transition">
+                <button class="text-gray-400 hover:text-gray-800 modal-close-btn transition" aria-label="Close modal" title="Close modal">
                     <span class="material-icons text-lg">close</span>
                 </button>
             </div>
             
             <form id="login-form" class="space-y-6">
                 <div class="flex flex-col">
-                    <label class="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-widest mb-1">Email Address</label>
+                    <label for="login-email" class="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-widest mb-1">Email Address</label>
                     <input type="email" id="login-email" required class="input-glass py-2 text-sm text-gray-800 placeholder-gray-300">
                 </div>
                 <div class="flex flex-col">
-                    <label class="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-widest mb-1">Password</label>
+                    <label for="login-password" class="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-widest mb-1">Password</label>
                     <input type="password" id="login-password" required class="input-glass py-2 text-sm text-gray-800 placeholder-gray-300">
                 </div>
                 <button type="submit" class="w-full bg-[#1d64d8] hover:bg-[#154fb0] text-white text-xs font-bold uppercase py-4 rounded-xl transition shadow">
@@ -693,18 +693,18 @@
         <div class="modal-glass w-full max-w-md p-10 modal-content-animate">
             <div class="flex justify-between items-center mb-8 pb-3 border-b border-gray-150">
                 <h3 class="text-3xl font-light tracking-wide text-gray-800">Activate Credentials</h3>
-                <button class="text-gray-400 hover:text-gray-800 modal-close-btn transition">
+                <button class="text-gray-400 hover:text-gray-800 modal-close-btn transition" aria-label="Close modal" title="Close modal">
                     <span class="material-icons text-lg">close</span>
                 </button>
             </div>
             
             <form id="register-form" class="space-y-6">
                 <div class="flex flex-col">
-                    <label class="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-widest mb-1">Email Address</label>
+                    <label for="register-email" class="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-widest mb-1">Email Address</label>
                     <input type="email" id="register-email" required class="input-glass py-2 text-sm text-gray-800 placeholder-gray-300">
                 </div>
                 <div class="flex flex-col">
-                    <label class="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-widest mb-1">Secure Password</label>
+                    <label for="register-password" class="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-widest mb-1">Secure Password</label>
                     <input type="password" id="register-password" required minlength="8" class="input-glass py-2 text-sm text-gray-800 placeholder-gray-300">
                     <p class="text-gray-400 text-[9px] font-mono mt-1.5 italic">Must contain at least 8 characters</p>
                 </div>
@@ -737,7 +737,7 @@
             </button>
             
             <div class="flex items-center justify-between mt-4 text-xs font-mono text-gray-400">
-                <button class="text-gray-400 hover:text-gray-800 text-xs font-semibold tracking-wider uppercase font-sans modal-close-btn transition">
+                <button class="text-gray-400 hover:text-gray-800 text-xs font-semibold tracking-wider uppercase font-sans modal-close-btn transition" aria-label="Close modal" title="Close modal">
                     Return to Archive
                 </button>
                 <span><kbd class="px-1.5 py-0.5 border border-gray-200 bg-gray-50 rounded">Esc</kbd> close</span>
