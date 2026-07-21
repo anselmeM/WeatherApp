@@ -6,7 +6,7 @@ if (!JWT_SECRET_ENV && process.env.NODE_ENV === 'production') {
   throw new Error('FATAL: JWT_SECRET environment variable is missing in production!');
 }
 
-export const JWT_SECRET = JWT_SECRET_ENV || 'dev-secret-change-in-production';
+export const JWT_SECRET = JWT_SECRET_ENV || 'DEV_FALLBACK_INSECURE_KEY';
 export const JWT_EXPIRY = process.env.JWT_EXPIRY || '24h';
 export const SALT_ROUNDS = 10;
 
